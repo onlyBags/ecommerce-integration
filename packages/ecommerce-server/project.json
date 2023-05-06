@@ -1,0 +1,48 @@
+{
+  "name": "ecommerce-server",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "packages/ecommerce-server/src",
+  "projectType": "library",
+  "targets": {
+    "build": {
+      "executor": "@nx/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/packages/ecommerce-server",
+        "main": "packages/ecommerce-server/src/index.ts",
+        "tsConfig": "packages/ecommerce-server/tsconfig.lib.json",
+        "assets": ["packages/ecommerce-server/*.md"]
+      }
+    },
+    "docker-build": {
+      "dependsOn": ["build"],
+      "command": "docker build -f packages/ecommerce-server/Dockerfile . -t ecommerce-server"
+    },
+    "docker-run": {
+      "dependsOn": ["docker-build"],
+      "command": "docker run -d -p 8080:8080 ecommerce-server"
+    },
+    "lint": {
+      "executor": "@nx/linter:eslint",
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "lintFilePatterns": ["packages/ecommerce-server/**/*.ts"]
+      }
+    },
+    "test": {
+      "executor": "@nx/jest:jest",
+      "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
+      "options": {
+        "jestConfig": "packages/ecommerce-server/jest.config.ts",
+        "passWithNoTests": true
+      },
+      "configurations": {
+        "ci": {
+          "ci": true,
+          "codeCoverage": true
+        }
+      }
+    }
+  },
+  "tags": []
+}

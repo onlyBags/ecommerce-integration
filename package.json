@@ -1,21 +1,36 @@
 {
+  "name": "dglive",
+  "version": "0.0.0",
+  "license": "MIT",
+  "scripts": {},
   "private": true,
-  "scripts": {
-    "build": "turbo run build",
-    "dev": "turbo run dev",
-    "lint": "turbo run lint",
-    "format": "prettier --write \"**/*.{ts,tsx,md}\""
+  "dependencies": {
+    "dotenv": "^16.0.3",
+    "express": "^4.18.2",
+    "tslib": "^2.3.0"
   },
   "devDependencies": {
-    "eslint": "^7.32.0",
-    "eslint-config-custom": "*",
-    "prettier": "^2.5.1",
-    "turbo": "latest"
-  },
-  "name": "dg-live-monorepo",
-  "packageManager": "npm@8.19.2",
-  "workspaces": [
-    "apps/*",
-    "packages/*"
-  ]
+    "@nx/eslint-plugin": "16.1.1",
+    "@nx/jest": "16.1.1",
+    "@nx/js": "16.1.1",
+    "@nx/linter": "16.1.1",
+    "@nx/workspace": "16.1.1",
+    "@types/express": "^4.17.17",
+    "@types/jest": "^29.4.0",
+    "@types/node": "16.11.7",
+    "@types/supertest": "^2.0.12",
+    "@typescript-eslint/eslint-plugin": "^5.58.0",
+    "@typescript-eslint/parser": "^5.58.0",
+    "eslint": "~8.15.0",
+    "eslint-config-prettier": "8.1.0",
+    "jest": "^29.4.1",
+    "jest-environment-jsdom": "^29.4.1",
+    "nx": "16.1.1",
+    "nx-cloud": "latest",
+    "prettier": "^2.6.2",
+    "supertest": "^6.3.3",
+    "ts-jest": "^29.1.0",
+    "ts-node": "10.9.1",
+    "typescript": "~5.0.2"
+  }
 }
