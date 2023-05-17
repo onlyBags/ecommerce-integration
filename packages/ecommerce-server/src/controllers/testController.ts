@@ -9,7 +9,7 @@ export class UsersController extends Controller {
 
   @Get('/2')
   @SuccessResponse('200', 'OK')
-  public async getTest2(): Promise<string> {
-    return 'Hi there! s2';
+  public async getTest2(): Promise<{ data: string }> {
+    return { data: 'It Works!' };
   }
 }
