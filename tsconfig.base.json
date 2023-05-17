@@ -15,7 +15,7 @@
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
     "paths": {
-      "@dglive/ecommerce-server": ["packages/ecommerce-server/src/index.ts"]
+      "ecommerce-server": ["packages/ecommerce-server/src/index.ts"]
     }
   },
   "exclude": ["node_modules", "tmp"]

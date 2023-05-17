@@ -1,0 +1,13 @@
+{
+  "entryFile": "./packages/ecommerce-server/src/index.ts",
+  "noImplicitAdditionalProperties": "throw-on-extras",
+  "controllerPathGlobs": ["./packages/ecommerce-server/src/**/*Controller.ts"],
+  "baseDir": ".",
+  "spec": {
+    "outputDirectory": "./packages/ecommerce-server/build",
+    "specVersion": 3
+  },
+  "routes": {
+    "routesDir": "./packages/ecommerce-server/build"
+  }
+}

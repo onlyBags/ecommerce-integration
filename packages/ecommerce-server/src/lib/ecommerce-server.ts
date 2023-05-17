@@ -1,16 +1,13 @@
-import express, { Application, Request, Response } from 'express';
-import config from '../config';
+import express, { Express, Response } from 'express';
+import dotenv from 'dotenv';
+import { RegisterRoutes } from '../../build/routes';
+dotenv.config();
 
-const app: Application = express();
+const app: Express = express();
+const port = process.env.PORT || 8080;
 
-app.use('/', (req: Request, res: Response): void => {
-  res.json({
-    data: 'It Works!',
-  });
+RegisterRoutes(app);
+
+app.listen(port, () => {
+  console.log(`⚡️[server]: Server is running at http://localhost:${port}`);
 });
-
-const server = app.listen(config.port, (): void => {
-  console.log('SERVER IS UP ON PORT:', config.port);
-});
-
-export default server;

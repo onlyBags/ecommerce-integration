@@ -1,13 +1,11 @@
-import type { Config } from 'jest';
-
-const config: Config = {
+/* eslint-disable */
+export default {
   displayName: 'ecommerce-server',
   preset: '../../jest.preset.js',
+  testEnvironment: 'node',
   transform: {
     '^.+\\.[tj]s$': ['ts-jest', { tsconfig: '<rootDir>/tsconfig.spec.json' }],
   },
-  testEnvironment: 'node',
-  moduleFileExtensions: ['ts', 'js', 'json'],
+  moduleFileExtensions: ['ts', 'js', 'html'],
+  coverageDirectory: '../../coverage/packages/ecommerce-server',
 };
-
-export default config;

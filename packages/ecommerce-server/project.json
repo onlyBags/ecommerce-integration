@@ -9,18 +9,11 @@
       "outputs": ["{options.outputPath}"],
       "options": {
         "outputPath": "dist/packages/ecommerce-server",
-        "main": "packages/ecommerce-server/src/index.ts",
         "tsConfig": "packages/ecommerce-server/tsconfig.lib.json",
+        "packageJson": "packages/ecommerce-server/package.json",
+        "main": "packages/ecommerce-server/src/index.ts",
         "assets": ["packages/ecommerce-server/*.md"]
       }
-    },
-    "docker-build": {
-      "dependsOn": ["build"],
-      "command": "docker build -f packages/ecommerce-server/Dockerfile . -t ecommerce-server"
-    },
-    "docker-run": {
-      "dependsOn": ["docker-build"],
-      "command": "docker run -d -p 8080:8080 ecommerce-server"
     },
     "lint": {
       "executor": "@nx/linter:eslint",
