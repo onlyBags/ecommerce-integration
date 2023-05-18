@@ -3,12 +3,36 @@
 // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 import { Controller, ValidationService, FieldErrors, ValidateError, TsoaRoute, HttpStatusCodeLiteral, TsoaResponse, fetchMiddlewares } from '@tsoa/runtime';
 // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-import { UsersController } from './../src/controllers/testController';
+import { DashboardController } from './../controllers/dashboardController.js';
 import type { RequestHandler, Router } from 'express';
 
 // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 
 const models: TsoaRoute.Models = {
+    "User": {
+        "dataType": "refObject",
+        "properties": {
+            "id": {"dataType":"double","required":true},
+            "username": {"dataType":"string","required":true},
+            "platform": {"dataType":"union","subSchemas":[{"dataType":"enum","enums":["Woocommerce"]},{"dataType":"enum","enums":["Magento"]}],"required":true},
+            "clientKey": {"dataType":"string","required":true},
+            "clientSecret": {"dataType":"string","required":true},
+            "isActive": {"dataType":"boolean","required":true},
+        },
+        "additionalProperties": false,
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "SaveUserReq": {
+        "dataType": "refObject",
+        "properties": {
+            "username": {"dataType":"string","required":true},
+            "platform": {"dataType":"union","subSchemas":[{"dataType":"enum","enums":["Woocommerce"]},{"dataType":"enum","enums":["Magento"]}],"required":true},
+            "clientKey": {"dataType":"string","required":true},
+            "clientSecret": {"dataType":"string","required":true},
+        },
+        "additionalProperties": false,
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 };
 const validationService = new ValidationService(models);
 
@@ -19,12 +43,13 @@ export function RegisterRoutes(app: Router) {
     //  NOTE: If you do not see routes for all of your controllers in this file, then you might not have informed tsoa of where to look
     //      Please look into the "controllerPathGlobs" config option described in the readme: https://github.com/lukeautry/tsoa
     // ###########################################################################################################
-        app.get('/test',
-            ...(fetchMiddlewares<RequestHandler>(UsersController)),
-            ...(fetchMiddlewares<RequestHandler>(UsersController.prototype.getTest)),
+        app.post('/v1/dashboard/user-keys',
+            ...(fetchMiddlewares<RequestHandler>(DashboardController)),
+            ...(fetchMiddlewares<RequestHandler>(DashboardController.prototype.saveUserKeys)),
 
-            function UsersController_getTest(request: any, response: any, next: any) {
+            function DashboardController_saveUserKeys(request: any, response: any, next: any) {
             const args = {
+                    requestBody: {"in":"body","name":"requestBody","required":true,"ref":"SaveUserReq"},
             };
 
             // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
@@ -33,22 +58,23 @@ export function RegisterRoutes(app: Router) {
             try {
                 validatedArgs = getValidatedArgs(args, request, response);
 
-                const controller = new UsersController();
+                const controller = new DashboardController();
 
 
-              const promise = controller.getTest.apply(controller, validatedArgs as any);
-              promiseHandler(controller, promise, response, 200, next);
+              const promise = controller.saveUserKeys.apply(controller, validatedArgs as any);
+              promiseHandler(controller, promise, response, 201, next);
             } catch (err) {
                 return next(err);
             }
         });
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-        app.get('/test/2',
-            ...(fetchMiddlewares<RequestHandler>(UsersController)),
-            ...(fetchMiddlewares<RequestHandler>(UsersController.prototype.getTest2)),
+        app.get('/v1/dashboard/user-keys',
+            ...(fetchMiddlewares<RequestHandler>(DashboardController)),
+            ...(fetchMiddlewares<RequestHandler>(DashboardController.prototype.getUserKeys)),
 
-            function UsersController_getTest2(request: any, response: any, next: any) {
+            function DashboardController_getUserKeys(request: any, response: any, next: any) {
             const args = {
+                    id: {"in":"query","name":"id","required":true,"dataType":"double"},
             };
 
             // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
@@ -57,10 +83,10 @@ export function RegisterRoutes(app: Router) {
             try {
                 validatedArgs = getValidatedArgs(args, request, response);
 
-                const controller = new UsersController();
+                const controller = new DashboardController();
 
 
-              const promise = controller.getTest2.apply(controller, validatedArgs as any);
+              const promise = controller.getUserKeys.apply(controller, validatedArgs as any);
               promiseHandler(controller, promise, response, 200, next);
             } catch (err) {
                 return next(err);

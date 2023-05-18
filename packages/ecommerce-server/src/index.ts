@@ -1,1 +1,1 @@
-export * from './lib/ecommerce-server';
+export * from './lib/ecommerce-server.js';

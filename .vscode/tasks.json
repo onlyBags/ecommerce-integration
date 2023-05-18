@@ -1,0 +1,57 @@
+{
+  "tasks": [
+    {
+      "label": "BuildRoutes",
+      "type": "shell",
+      "command": "npm run swagger",
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "presentation": {
+        "reveal": "always"
+      },
+      "options": {
+        "cwd": "${workspaceFolder}/packages/ecommerce-server"
+      }
+    },
+    {
+      "label": "BuildServerTs",
+      "type": "shell",
+      "command": "npm run build",
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "presentation": {
+        "reveal": "always"
+      },
+      "options": {
+        "cwd": "${workspaceFolder}/packages/ecommerce-server"
+      }
+    },
+    {
+      "label": "BuildDbTs",
+      "type": "shell",
+      "command": "npm run build",
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "presentation": {
+        "reveal": "always"
+      },
+      "options": {
+        "cwd": "${workspaceFolder}/packages/ecommerce-db"
+      }
+    },
+    {
+      "label": "BuildServer",
+      "dependsOn": ["BuildRoutes", "BuildServerTs"]
+    },
+    {
+      "label": "BuildDb",
+      "dependsOn": ["BuildDbTs"]
+    }
+  ]
+}

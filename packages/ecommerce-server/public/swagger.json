@@ -1,0 +1,146 @@
+{
+	"components": {
+		"examples": {},
+		"headers": {},
+		"parameters": {},
+		"requestBodies": {},
+		"responses": {},
+		"schemas": {
+			"User": {
+				"properties": {
+					"id": {
+						"type": "number",
+						"format": "double"
+					},
+					"username": {
+						"type": "string"
+					},
+					"platform": {
+						"type": "string",
+						"enum": [
+							"Woocommerce",
+							"Magento"
+						]
+					},
+					"clientKey": {
+						"type": "string"
+					},
+					"clientSecret": {
+						"type": "string"
+					},
+					"isActive": {
+						"type": "boolean"
+					}
+				},
+				"required": [
+					"id",
+					"username",
+					"platform",
+					"clientKey",
+					"clientSecret",
+					"isActive"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"SaveUserReq": {
+				"properties": {
+					"username": {
+						"type": "string"
+					},
+					"platform": {
+						"type": "string",
+						"enum": [
+							"Woocommerce",
+							"Magento"
+						]
+					},
+					"clientKey": {
+						"type": "string"
+					},
+					"clientSecret": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"username",
+					"platform",
+					"clientKey",
+					"clientSecret"
+				],
+				"type": "object",
+				"additionalProperties": false
+			}
+		},
+		"securitySchemes": {}
+	},
+	"info": {
+		"title": "@dg-live/ecommerce-server",
+		"version": "0.0.1",
+		"contact": {}
+	},
+	"openapi": "3.0.0",
+	"paths": {
+		"/dashboard/user-keys": {
+			"post": {
+				"operationId": "SaveUserKeys",
+				"responses": {
+					"201": {
+						"description": "Created",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/User"
+								}
+							}
+						}
+					}
+				},
+				"security": [],
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/SaveUserReq"
+							}
+						}
+					}
+				}
+			},
+			"get": {
+				"operationId": "GetUserKeys",
+				"responses": {
+					"200": {
+						"description": "User",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/User"
+								}
+							}
+						}
+					}
+				},
+				"security": [],
+				"parameters": [
+					{
+						"in": "query",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					}
+				]
+			}
+		}
+	},
+	"servers": [
+		{
+			"url": "/v1"
+		}
+	]
+}

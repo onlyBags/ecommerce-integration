@@ -1,0 +1,18 @@
+{
+  "entryFile": "./src/index.ts",
+  "noImplicitAdditionalProperties": "throw-on-extras",
+  "controllerPathGlobs": ["./src/**/*Controller.ts"],
+  "baseDir": ".",
+  "basePath": "/v1",
+  "spec": {
+    "outputDirectory": "public",
+    "specVersion": 3,
+    "controllerPathGlobs": ["./src/**/*Controller.ts"],
+    "basePath": "/v1"
+  },
+  "routes": {
+    "routesDir": "./src/routes",
+    "basePath": "/v1",
+    "esm": true
+  }
+}

@@ -1,5 +1,16 @@
 {
-  "name": "ecommerce-server",
+  "name": "@dg-live/ecommerce-server",
   "version": "0.0.1",
-  "dependencies": {}
+  "main": "dist/src/index.js",
+  "type": "module",
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "dev": "tsc-watch --noClear -p tsconfig.json --onCompilationStarted \"tsoa routes -c tsoa.json\" --onSuccess \"node ./dist/src/index.js\"",
+    "test": "jest --watchAll",
+    "swagger": "tsoa spec-and-routes"
+  },
+  "dependencies": {
+    "@dg-live/ecommerce-db": "*",
+    "@dg-live/ecommerce-config": "*"
+  }
 }
