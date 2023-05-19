@@ -1,6 +1,7 @@
 export interface SaveUserReq {
   username: string;
   platform: 'Woocommerce' | 'Magento';
-  clientKey: string;
-  clientSecret: string;
+  consumerKey: string;
+  consumerSecret: string;
+  baseUrl: string;
 }

@@ -12,15 +12,18 @@ export class User {
   @Column()
   platform: 'Woocommerce' | 'Magento';
 
-  @Column({
-    transformer: encrypt,
-  })
-  clientKey: string;
+  @Column({ length: 1000 })
+  baseUrl: string;
 
   @Column({
     transformer: encrypt,
   })
-  clientSecret: string;
+  consumerKey: string;
+
+  @Column({
+    transformer: encrypt,
+  })
+  consumerSecret: string;
 
   @Column()
   isActive: boolean;
