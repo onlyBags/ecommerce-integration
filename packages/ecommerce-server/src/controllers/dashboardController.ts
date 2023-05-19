@@ -17,8 +17,6 @@ export class DashboardController extends Controller {
   @SuccessResponse('201', 'Created')
   public async saveUserKeys(@Body() requestBody: SaveUserReq): Promise<User> {
     try {
-      const { username } = requestBody;
-      console.log(username);
       return await dashboardService.saveUserKeys(requestBody);
     } catch (error) {
       throw new Error('');

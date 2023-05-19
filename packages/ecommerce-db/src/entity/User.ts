@@ -15,6 +15,9 @@ export class User {
   @Column({ length: 1000 })
   baseUrl: string;
 
+  @Column({ length: 1000 })
+  apiKey: string;
+
   @Column({
     transformer: encrypt,
   })

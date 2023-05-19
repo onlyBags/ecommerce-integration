@@ -4,4 +4,5 @@ export interface SaveUserReq {
   consumerKey: string;
   consumerSecret: string;
   baseUrl: string;
+  apiKey: string;
 }
