@@ -1,9 +1,10 @@
 {
+  "extends": "./tsconfig.json",
   "compilerOptions": {
     "outDir": "dist",
-    "module": "commonjs",
     "types": ["jest", "node"],
-    "esModuleInterop": true
+    // "module": "CommonJS",
+    "allowJs": true
   },
   "include": [
     "jest.config.ts",

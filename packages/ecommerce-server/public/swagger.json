@@ -22,10 +22,16 @@
 							"Magento"
 						]
 					},
-					"clientKey": {
+					"baseUrl": {
 						"type": "string"
 					},
-					"clientSecret": {
+					"apiKey": {
+						"type": "string"
+					},
+					"consumerKey": {
+						"type": "string"
+					},
+					"consumerSecret": {
 						"type": "string"
 					},
 					"isActive": {
@@ -36,8 +42,10 @@
 					"id",
 					"username",
 					"platform",
-					"clientKey",
-					"clientSecret",
+					"baseUrl",
+					"apiKey",
+					"consumerKey",
+					"consumerSecret",
 					"isActive"
 				],
 				"type": "object",
@@ -55,18 +63,26 @@
 							"Magento"
 						]
 					},
-					"clientKey": {
+					"consumerKey": {
 						"type": "string"
 					},
-					"clientSecret": {
+					"consumerSecret": {
+						"type": "string"
+					},
+					"baseUrl": {
+						"type": "string"
+					},
+					"apiKey": {
 						"type": "string"
 					}
 				},
 				"required": [
 					"username",
 					"platform",
-					"clientKey",
-					"clientSecret"
+					"consumerKey",
+					"consumerSecret",
+					"baseUrl",
+					"apiKey"
 				],
 				"type": "object",
 				"additionalProperties": false

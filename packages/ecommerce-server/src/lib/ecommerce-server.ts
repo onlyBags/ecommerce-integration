@@ -12,6 +12,8 @@ import helmet from 'helmet';
 import { AppDataSource } from '@dg-live/ecommerce-db';
 import { envConfig } from '@dg-live/ecommerce-config';
 import { RegisterRoutes } from '../routes/routes.js';
+
+/* istanbul ignore next */
 import swaggerDocument from '../../public/swagger.json' assert { type: 'json' };
 
 const app: Express = express();

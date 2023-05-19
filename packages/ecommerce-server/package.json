@@ -6,7 +6,6 @@
   "scripts": {
     "build": "tsc -p tsconfig.json",
     "dev": "tsc-watch --noClear -p tsconfig.json --onCompilationStarted \"tsoa routes -c tsoa.json\" --onSuccess \"node ./dist/src/index.js\"",
-    "test": "jest --watchAll",
     "swagger": "tsoa spec-and-routes"
   },
   "dependencies": {
