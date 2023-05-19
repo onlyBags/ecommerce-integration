@@ -2,7 +2,9 @@
   "name": "dg-live",
   "version": "0.0.0",
   "license": "MIT",
-  "scripts": {},
+  "scripts": {
+    "build:all": "nx run-many -t build"
+  },
   "private": true,
   "devDependencies": {
     "@types/express": "^4.17.17",
