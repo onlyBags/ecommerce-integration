@@ -1,9 +1,8 @@
-import { User, UserKey } from '@dg-live/ecommerce-db';
-import { SaveUserKeysReq, SaveUserReq } from 'src/interfaces/dashboard';
-import { AppDataSource } from '@dg-live/ecommerce-db';
+import { AppDataSource, User, Datasource } from '@dg-live/ecommerce-db';
+import { SaveUserDatasourceReq, SaveUserReq } from 'src/interfaces/dashboard';
 
 const userRepository = AppDataSource.getRepository(User);
-const userKeyRepository = AppDataSource.getRepository(UserKey);
+const datasourceRepository = AppDataSource.getRepository(Datasource);
 
 export const saveUser = async (userReq: SaveUserReq): Promise<User> => {
   const user = new User();
@@ -14,27 +13,28 @@ export const saveUser = async (userReq: SaveUserReq): Promise<User> => {
 };
 
 export const saveUserKeys = async (
-  userReq: SaveUserKeysReq
-): Promise<UserKey> => {
+  apiKey: string,
+  userReq: SaveUserDatasourceReq
+): Promise<Datasource> => {
   const user = await userRepository.findOneBy({
     id: userReq.id,
-    apiKey: userReq.apiKey,
+    apiKey: apiKey,
     isActive: true,
   });
 
   if (!user) throw new Error('User not found');
 
-  const userKey = new UserKey();
-  userKey.user = user;
-  userKey.platform = userReq.platform;
-  userKey.consumerKey = userReq.consumerKey;
-  userKey.consumerSecret = userReq.consumerSecret;
-  userKey.baseUrl = userReq.baseUrl;
-  userKey.isActive = true;
-  return await userKeyRepository.save(userKey);
+  const datasource = new Datasource();
+  datasource.user = user;
+  datasource.platform = userReq.platform;
+  datasource.consumerKey = userReq.consumerKey;
+  datasource.consumerSecret = userReq.consumerSecret;
+  datasource.baseUrl = userReq.baseUrl;
+  datasource.isActive = true;
+  return await datasourceRepository.save(datasource);
 };
 
-export const getUserKeys = async (id: string): Promise<User> => {
+export const getUserDatasources = async (id: string): Promise<User> => {
   const foundUser = await userRepository.findOne({
     where: { id },
     relations: ['keys'],

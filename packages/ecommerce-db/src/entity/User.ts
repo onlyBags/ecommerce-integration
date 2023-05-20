@@ -7,7 +7,7 @@ import {
   OneToMany,
   Unique,
 } from 'typeorm';
-import { UserKey } from './UserKey.js';
+import { Datasource } from './Datasource.js';
 
 @Entity()
 @Unique(['username'])
@@ -21,8 +21,8 @@ export class User {
   @Column({ length: 1000 })
   apiKey: string;
 
-  @OneToMany(() => UserKey, (userKey) => userKey.user)
-  keys: UserKey[];
+  @OneToMany(() => Datasource, (datasource) => datasource.user)
+  datasource: Datasource[];
 
   @Column()
   isActive: boolean;

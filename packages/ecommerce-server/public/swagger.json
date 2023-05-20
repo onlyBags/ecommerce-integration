@@ -6,6 +6,25 @@
 		"requestBodies": {},
 		"responses": {},
 		"schemas": {
+			"DGLResponse_any_": {
+				"properties": {
+					"data": {},
+					"status": {
+						"type": "number",
+						"format": "double"
+					},
+					"message": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"data",
+					"status",
+					"message"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
 			"User": {
 				"properties": {
 					"id": {
@@ -17,9 +36,9 @@
 					"apiKey": {
 						"type": "string"
 					},
-					"keys": {
+					"datasource": {
 						"items": {
-							"$ref": "#/components/schemas/UserKey"
+							"$ref": "#/components/schemas/Datasource"
 						},
 						"type": "array"
 					},
@@ -39,7 +58,7 @@
 					"id",
 					"username",
 					"apiKey",
-					"keys",
+					"datasource",
 					"isActive",
 					"createdAt",
 					"updatedAt"
@@ -47,7 +66,7 @@
 				"type": "object",
 				"additionalProperties": false
 			},
-			"UserKey": {
+			"Datasource": {
 				"properties": {
 					"id": {
 						"type": "number",
@@ -139,10 +158,10 @@
 				"type": "object",
 				"additionalProperties": false
 			},
-			"DGLResponse_UserKey_": {
+			"DGLResponse_Datasource_": {
 				"properties": {
 					"data": {
-						"$ref": "#/components/schemas/UserKey"
+						"$ref": "#/components/schemas/Datasource"
 					},
 					"status": {
 						"type": "number",
@@ -160,7 +179,7 @@
 				"type": "object",
 				"additionalProperties": false
 			},
-			"SaveUserKeysReq": {
+			"SaveUserDatasourceReq": {
 				"properties": {
 					"id": {
 						"type": "string"
@@ -180,9 +199,6 @@
 					},
 					"baseUrl": {
 						"type": "string"
-					},
-					"apiKey": {
-						"type": "string"
 					}
 				},
 				"required": [
@@ -190,8 +206,7 @@
 					"platform",
 					"consumerKey",
 					"consumerSecret",
-					"baseUrl",
-					"apiKey"
+					"baseUrl"
 				],
 				"type": "object",
 				"additionalProperties": false
@@ -206,6 +221,84 @@
 	},
 	"openapi": "3.0.0",
 	"paths": {
+		"/catalog": {
+			"get": {
+				"operationId": "GetCatalog",
+				"responses": {
+					"200": {
+						"description": "Created",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/DGLResponse_any_"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Catalog"
+				],
+				"security": [],
+				"parameters": [
+					{
+						"in": "header",
+						"name": "apiKey",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"in": "query",
+						"name": "datasourceId",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				]
+			}
+		},
+		"/catalog/sync": {
+			"get": {
+				"operationId": "SyncCatalog",
+				"responses": {
+					"200": {
+						"description": "Created",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/DGLResponse_any_"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Catalog"
+				],
+				"security": [],
+				"parameters": [
+					{
+						"in": "header",
+						"name": "apiKey",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"in": "query",
+						"name": "datasourceId",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				]
+			}
+		},
 		"/dashboard/user": {
 			"post": {
 				"operationId": "CreateUser",
@@ -247,7 +340,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/DGLResponse_UserKey_"
+									"$ref": "#/components/schemas/DGLResponse_Datasource_"
 								}
 							}
 						}
@@ -257,20 +350,29 @@
 					"User"
 				],
 				"security": [],
-				"parameters": [],
+				"parameters": [
+					{
+						"in": "header",
+						"name": "apiKey",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
 				"requestBody": {
 					"required": true,
 					"content": {
 						"application/json": {
 							"schema": {
-								"$ref": "#/components/schemas/SaveUserKeysReq"
+								"$ref": "#/components/schemas/SaveUserDatasourceReq"
 							}
 						}
 					}
 				}
 			},
 			"get": {
-				"operationId": "GetUserKeys",
+				"operationId": "GetUserDatasources",
 				"responses": {
 					"200": {
 						"description": "User",
@@ -288,6 +390,14 @@
 				],
 				"security": [],
 				"parameters": [
+					{
+						"in": "header",
+						"name": "apiKey",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					},
 					{
 						"in": "query",
 						"name": "id",

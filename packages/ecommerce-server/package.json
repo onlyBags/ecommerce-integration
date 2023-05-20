@@ -1,12 +1,12 @@
 {
   "name": "@dg-live/ecommerce-server",
   "version": "0.0.1",
-  "main": "dist/src/index.js",
+  "main": "dist/index.js",
   "type": "module",
   "scripts": {
     "postbuild": "echo I run before the build script",
     "build": "tsc -p tsconfig.json",
-    "dev": "cross-env NODE_ENV=development tsc-watch -p tsconfig.json --onSuccess \"node ./dist/index.js\"",
+    "dev": "cross-env NODE_ENV=development tsc-watch -p tsconfig.json --onSuccess \"node ./dist/src/index.js\"",
     "swagger": "tsoa spec-and-routes"
   },
   "copyFiles": [
@@ -17,6 +17,7 @@
   ],
   "dependencies": {
     "@dg-live/ecommerce-db": "*",
-    "@dg-live/ecommerce-config": "*"
+    "@dg-live/ecommerce-config": "*",
+    "@dg-live/ecommerce-woocommerce": "*"
   }
 }

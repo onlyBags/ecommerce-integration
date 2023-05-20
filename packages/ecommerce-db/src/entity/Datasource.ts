@@ -10,11 +10,11 @@ import { encrypt } from '../utils/index.js';
 import { User } from './User.js';
 
 @Entity()
-export class UserKey {
+export class Datasource {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @ManyToOne(() => User, (user) => user.keys)
+  @ManyToOne(() => User, (user) => user.datasource)
   user: User;
 
   @Column()

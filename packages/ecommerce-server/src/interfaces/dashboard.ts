@@ -4,11 +4,10 @@ export interface SaveUserReq {
   masterKey: string;
 }
 
-export interface SaveUserKeysReq {
+export interface SaveUserDatasourceReq {
   id: string;
   platform: 'Woocommerce' | 'Magento';
   consumerKey: string;
   consumerSecret: string;
   baseUrl: string;
-  apiKey: string;
 }

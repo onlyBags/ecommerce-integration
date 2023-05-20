@@ -1,12 +1,12 @@
 import 'reflect-metadata';
-import { DataSource } from 'typeorm';
-import { User, UserKey } from '../entity/index.js';
+import * as typeorm from 'typeorm';
+import { User, Datasource } from '../entity/index.js';
 import { envConfig } from '@dg-live/ecommerce-config';
 
 const { dbType, dbHost, dbPort, dbUsername, dbPassword, dbDatabase } =
   envConfig;
 
-export const AppDataSource = new DataSource({
+export const AppDataSource = new typeorm.DataSource({
   type: dbType as 'mysql',
   host: dbHost,
   port: dbPort,
@@ -15,7 +15,7 @@ export const AppDataSource = new DataSource({
   database: dbDatabase,
   synchronize: true,
   logging: false,
-  entities: [User, UserKey],
+  entities: [User, Datasource],
   migrations: [],
   subscribers: [],
 });
