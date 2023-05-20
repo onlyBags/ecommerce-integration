@@ -1,7 +1,9 @@
 import { config } from 'dotenv';
 import { DatabaseType } from 'typeorm';
 
-config({ path: process.cwd() + '/../../.env' });
+if (process.env.NODE_ENV === 'development')
+  config({ path: process.cwd() + '/../../.env' });
+else config();
 
 export const envConfig = Object.freeze({
   port: parseInt(process.env.PORT || '8080'),
