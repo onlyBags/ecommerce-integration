@@ -1,6 +1,6 @@
 import 'reflect-metadata';
 import { DataSource } from 'typeorm';
-import { User } from '../entity/User.js';
+import { User, UserKey } from '../entity/index.js';
 import { envConfig } from '@dg-live/ecommerce-config';
 
 const { dbType, dbHost, dbPort, dbUsername, dbPassword, dbDatabase } =
@@ -15,7 +15,7 @@ export const AppDataSource = new DataSource({
   database: dbDatabase,
   synchronize: true,
   logging: false,
-  entities: [User],
+  entities: [User, UserKey],
   migrations: [],
   subscribers: [],
 });

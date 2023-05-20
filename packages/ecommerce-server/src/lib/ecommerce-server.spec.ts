@@ -1,6 +1,14 @@
 import supertest from 'supertest';
 import server from './ecommerce-server';
 
+// jest.mock(
+//   '../../public/swagger.json',
+//   () => ({
+//     /* Mocked JSON content */
+//   }),
+//   { virtual: true }
+// );
+
 describe('ecommerceServer', () => {
   const request = supertest.agent(server);
 
@@ -8,13 +16,24 @@ describe('ecommerceServer', () => {
     server.close(done);
   });
 
-  it('should get /test', async () => {
-    const res = await request.get('/test');
-    expect(res.status).toBe(200);
+  it('check server', async () => {
+    const res = await request.get('/');
+    expect(res.body).toEqual({ data: 'Hello World' });
   });
 
-  it('shold get data from /test/2', async () => {
-    const res = await request.get('/test/2');
-    expect(res.body).toEqual({ data: 'It Works!' });
+  it('get user data', async () => {
+    const res = await request.get('/v1/dashboard/user-keys?id=5');
+    console.log(res.body);
+
+    expect(res.body).toEqual({
+      id: 5,
+      username: 'maiki',
+      platform: 'Magento',
+      baseUrl: '',
+      apiKey: 'myapi',
+      consumerKey: 'p14eayseettp3tkdbgritadt4gpxv7ut',
+      consumerSecret: 'brj5tqesk6xq7uq7ssdzwa93m430ug60',
+      isActive: false,
+    });
   });
 });

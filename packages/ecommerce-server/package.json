@@ -4,10 +4,17 @@
   "main": "dist/src/index.js",
   "type": "module",
   "scripts": {
+    "postbuild": "echo I run before the build script",
     "build": "tsc -p tsconfig.json",
-    "dev": "tsc-watch --noClear -p tsconfig.json --onCompilationStarted \"tsoa routes -c tsoa.json\" --onSuccess \"node ./dist/src/index.js\"",
+    "dev": "cross-env NODE_ENV=development tsc-watch -p tsconfig.json --onSuccess \"node ./dist/index.js\"",
     "swagger": "tsoa spec-and-routes"
   },
+  "copyFiles": [
+    {
+      "from": "public/swagger.json",
+      "to": "dist/public/swagger.json"
+    }
+  ],
   "dependencies": {
     "@dg-live/ecommerce-db": "*",
     "@dg-live/ecommerce-config": "*"

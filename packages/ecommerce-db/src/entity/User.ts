@@ -1,33 +1,35 @@
-import { encrypt } from '../utils/index.js';
-import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  CreateDateColumn,
+  UpdateDateColumn,
+  OneToMany,
+  Unique,
+} from 'typeorm';
+import { UserKey } from './UserKey.js';
 
 @Entity()
+@Unique(['username'])
 export class User {
   @PrimaryGeneratedColumn()
-  id: number;
+  id: string;
 
   @Column()
   username: string;
 
-  @Column()
-  platform: 'Woocommerce' | 'Magento';
-
-  @Column({ length: 1000 })
-  baseUrl: string;
-
   @Column({ length: 1000 })
   apiKey: string;
 
-  @Column({
-    transformer: encrypt,
-  })
-  consumerKey: string;
-
-  @Column({
-    transformer: encrypt,
-  })
-  consumerSecret: string;
+  @OneToMany(() => UserKey, (userKey) => userKey.user)
+  keys: UserKey[];
 
   @Column()
   isActive: boolean;
+
+  @CreateDateColumn()
+  createdAt: Date;
+
+  @UpdateDateColumn()
+  updatedAt: Date;
 }

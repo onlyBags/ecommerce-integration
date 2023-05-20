@@ -9,11 +9,52 @@
 			"User": {
 				"properties": {
 					"id": {
-						"type": "number",
-						"format": "double"
+						"type": "string"
 					},
 					"username": {
 						"type": "string"
+					},
+					"apiKey": {
+						"type": "string"
+					},
+					"keys": {
+						"items": {
+							"$ref": "#/components/schemas/UserKey"
+						},
+						"type": "array"
+					},
+					"isActive": {
+						"type": "boolean"
+					},
+					"createdAt": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"updatedAt": {
+						"type": "string",
+						"format": "date-time"
+					}
+				},
+				"required": [
+					"id",
+					"username",
+					"apiKey",
+					"keys",
+					"isActive",
+					"createdAt",
+					"updatedAt"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"UserKey": {
+				"properties": {
+					"id": {
+						"type": "number",
+						"format": "double"
+					},
+					"user": {
+						"$ref": "#/components/schemas/User"
 					},
 					"platform": {
 						"type": "string",
@@ -23,9 +64,6 @@
 						]
 					},
 					"baseUrl": {
-						"type": "string"
-					},
-					"apiKey": {
 						"type": "string"
 					},
 					"consumerKey": {
@@ -36,17 +74,47 @@
 					},
 					"isActive": {
 						"type": "boolean"
+					},
+					"createdAt": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"updatedAt": {
+						"type": "string",
+						"format": "date-time"
 					}
 				},
 				"required": [
 					"id",
-					"username",
+					"user",
 					"platform",
 					"baseUrl",
-					"apiKey",
 					"consumerKey",
 					"consumerSecret",
-					"isActive"
+					"isActive",
+					"createdAt",
+					"updatedAt"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"DGLResponse_User_": {
+				"properties": {
+					"data": {
+						"$ref": "#/components/schemas/User"
+					},
+					"status": {
+						"type": "number",
+						"format": "double"
+					},
+					"message": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"data",
+					"status",
+					"message"
 				],
 				"type": "object",
 				"additionalProperties": false
@@ -54,6 +122,47 @@
 			"SaveUserReq": {
 				"properties": {
 					"username": {
+						"type": "string"
+					},
+					"apiKey": {
+						"type": "string"
+					},
+					"masterKey": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"username",
+					"apiKey",
+					"masterKey"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"DGLResponse_UserKey_": {
+				"properties": {
+					"data": {
+						"$ref": "#/components/schemas/UserKey"
+					},
+					"status": {
+						"type": "number",
+						"format": "double"
+					},
+					"message": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"data",
+					"status",
+					"message"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"SaveUserKeysReq": {
+				"properties": {
+					"id": {
 						"type": "string"
 					},
 					"platform": {
@@ -77,7 +186,7 @@
 					}
 				},
 				"required": [
-					"username",
+					"id",
 					"platform",
 					"consumerKey",
 					"consumerSecret",
@@ -97,21 +206,24 @@
 	},
 	"openapi": "3.0.0",
 	"paths": {
-		"/dashboard/user-keys": {
+		"/dashboard/user": {
 			"post": {
-				"operationId": "SaveUserKeys",
+				"operationId": "CreateUser",
 				"responses": {
 					"201": {
 						"description": "Created",
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/User"
+									"$ref": "#/components/schemas/DGLResponse_User_"
 								}
 							}
 						}
 					}
 				},
+				"tags": [
+					"User"
+				],
 				"security": [],
 				"parameters": [],
 				"requestBody": {
@@ -120,6 +232,38 @@
 						"application/json": {
 							"schema": {
 								"$ref": "#/components/schemas/SaveUserReq"
+							}
+						}
+					}
+				}
+			}
+		},
+		"/dashboard/user/keys": {
+			"post": {
+				"operationId": "SaveUserKeys",
+				"responses": {
+					"201": {
+						"description": "Created",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/DGLResponse_UserKey_"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"User"
+				],
+				"security": [],
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/SaveUserKeysReq"
 							}
 						}
 					}
@@ -133,12 +277,15 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/User"
+									"$ref": "#/components/schemas/DGLResponse_User_"
 								}
 							}
 						}
 					}
 				},
+				"tags": [
+					"User"
+				],
 				"security": [],
 				"parameters": [
 					{
@@ -146,8 +293,7 @@
 						"name": "id",
 						"required": true,
 						"schema": {
-							"format": "double",
-							"type": "number"
+							"type": "string"
 						}
 					}
 				]

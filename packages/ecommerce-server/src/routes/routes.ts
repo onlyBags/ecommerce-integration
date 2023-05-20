@@ -12,14 +12,39 @@ const models: TsoaRoute.Models = {
     "User": {
         "dataType": "refObject",
         "properties": {
-            "id": {"dataType":"double","required":true},
+            "id": {"dataType":"string","required":true},
             "username": {"dataType":"string","required":true},
+            "apiKey": {"dataType":"string","required":true},
+            "keys": {"dataType":"array","array":{"dataType":"refObject","ref":"UserKey"},"required":true},
+            "isActive": {"dataType":"boolean","required":true},
+            "createdAt": {"dataType":"datetime","required":true},
+            "updatedAt": {"dataType":"datetime","required":true},
+        },
+        "additionalProperties": false,
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "UserKey": {
+        "dataType": "refObject",
+        "properties": {
+            "id": {"dataType":"double","required":true},
+            "user": {"ref":"User","required":true},
             "platform": {"dataType":"union","subSchemas":[{"dataType":"enum","enums":["Woocommerce"]},{"dataType":"enum","enums":["Magento"]}],"required":true},
             "baseUrl": {"dataType":"string","required":true},
-            "apiKey": {"dataType":"string","required":true},
             "consumerKey": {"dataType":"string","required":true},
             "consumerSecret": {"dataType":"string","required":true},
             "isActive": {"dataType":"boolean","required":true},
+            "createdAt": {"dataType":"datetime","required":true},
+            "updatedAt": {"dataType":"datetime","required":true},
+        },
+        "additionalProperties": false,
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "DGLResponse_User_": {
+        "dataType": "refObject",
+        "properties": {
+            "data": {"ref":"User","required":true},
+            "status": {"dataType":"double","required":true},
+            "message": {"dataType":"string","required":true},
         },
         "additionalProperties": false,
     },
@@ -28,6 +53,26 @@ const models: TsoaRoute.Models = {
         "dataType": "refObject",
         "properties": {
             "username": {"dataType":"string","required":true},
+            "apiKey": {"dataType":"string","required":true},
+            "masterKey": {"dataType":"string","required":true},
+        },
+        "additionalProperties": false,
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "DGLResponse_UserKey_": {
+        "dataType": "refObject",
+        "properties": {
+            "data": {"ref":"UserKey","required":true},
+            "status": {"dataType":"double","required":true},
+            "message": {"dataType":"string","required":true},
+        },
+        "additionalProperties": false,
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "SaveUserKeysReq": {
+        "dataType": "refObject",
+        "properties": {
+            "id": {"dataType":"string","required":true},
             "platform": {"dataType":"union","subSchemas":[{"dataType":"enum","enums":["Woocommerce"]},{"dataType":"enum","enums":["Magento"]}],"required":true},
             "consumerKey": {"dataType":"string","required":true},
             "consumerSecret": {"dataType":"string","required":true},
@@ -47,13 +92,38 @@ export function RegisterRoutes(app: Router) {
     //  NOTE: If you do not see routes for all of your controllers in this file, then you might not have informed tsoa of where to look
     //      Please look into the "controllerPathGlobs" config option described in the readme: https://github.com/lukeautry/tsoa
     // ###########################################################################################################
-        app.post('/v1/dashboard/user-keys',
+        app.post('/v1/dashboard/user',
+            ...(fetchMiddlewares<RequestHandler>(DashboardController)),
+            ...(fetchMiddlewares<RequestHandler>(DashboardController.prototype.createUser)),
+
+            function DashboardController_createUser(request: any, response: any, next: any) {
+            const args = {
+                    requestBody: {"in":"body","name":"requestBody","required":true,"ref":"SaveUserReq"},
+            };
+
+            // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+            let validatedArgs: any[] = [];
+            try {
+                validatedArgs = getValidatedArgs(args, request, response);
+
+                const controller = new DashboardController();
+
+
+              const promise = controller.createUser.apply(controller, validatedArgs as any);
+              promiseHandler(controller, promise, response, 201, next);
+            } catch (err) {
+                return next(err);
+            }
+        });
+        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+        app.post('/v1/dashboard/user/keys',
             ...(fetchMiddlewares<RequestHandler>(DashboardController)),
             ...(fetchMiddlewares<RequestHandler>(DashboardController.prototype.saveUserKeys)),
 
             function DashboardController_saveUserKeys(request: any, response: any, next: any) {
             const args = {
-                    requestBody: {"in":"body","name":"requestBody","required":true,"ref":"SaveUserReq"},
+                    requestBody: {"in":"body","name":"requestBody","required":true,"ref":"SaveUserKeysReq"},
             };
 
             // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
@@ -72,13 +142,13 @@ export function RegisterRoutes(app: Router) {
             }
         });
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-        app.get('/v1/dashboard/user-keys',
+        app.get('/v1/dashboard/user/keys',
             ...(fetchMiddlewares<RequestHandler>(DashboardController)),
             ...(fetchMiddlewares<RequestHandler>(DashboardController.prototype.getUserKeys)),
 
             function DashboardController_getUserKeys(request: any, response: any, next: any) {
             const args = {
-                    id: {"in":"query","name":"id","required":true,"dataType":"double"},
+                    id: {"in":"query","name":"id","required":true,"dataType":"string"},
             };
 
             // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa

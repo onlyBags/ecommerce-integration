@@ -4,6 +4,9 @@ import express, {
   Request as ExRequest,
   NextFunction,
 } from 'express';
+import { fileURLToPath } from 'url';
+import { dirname } from 'path';
+import { readFile } from 'fs/promises';
 import { ValidateError } from 'tsoa';
 import swaggerUI from 'swagger-ui-express';
 import cors from 'cors';
@@ -12,9 +15,18 @@ import helmet from 'helmet';
 import { AppDataSource } from '@dg-live/ecommerce-db';
 import { envConfig } from '@dg-live/ecommerce-config';
 import { RegisterRoutes } from '../routes/routes.js';
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
-/* istanbul ignore next */
-import swaggerDocument from '../../public/swagger.json' assert { type: 'json' };
+let swaggerDocument: any;
+
+if (process.env.NODE_ENV !== 'test') {
+  console.log('__dirname: ', `${__dirname}/../../public/swagger.json`);
+  readFile(`${__dirname}/../../public/swagger.json`, 'utf8').then((data) => {
+    swaggerDocument = JSON.parse(data);
+    // console.log(data);
+  });
+}
 
 const app: Express = express();
 const port = envConfig.port || 8080;
@@ -36,7 +48,7 @@ app.use(
     if (err instanceof ValidateError) {
       console.warn(`Caught Validation Error for ${req.path}:`, err.fields);
       return res.status(422).json({
-        message: 'Validation Failed',
+        message: err?.message ?? 'Validation Failed',
         details: err?.fields,
       });
     }
@@ -63,7 +75,9 @@ const server = app.listen(port, async () => {
     console.log('Error connecting to database', error);
     process.exit(1);
   }
-  console.log(`⚡️[server]: Server is running at http://localhost:${port}`);
+  console.log(
+    `⚡️[server]: Server is running at http://localhost:${port}/docs`
+  );
 });
 
 app.use((_, res: ExResponse) => {

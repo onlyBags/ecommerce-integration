@@ -16,6 +16,7 @@ export const envConfig = Object.freeze({
   dbDatabase: process.env.DB_DATABASE || 'ecommerce',
   magentoTestConsumerKey: process.env.MAGENTO_TEST_CONSUMER_KEY || '',
   magentoTestConsumerSecret: process.env.MAGENTO_TEST_CONSUMER_SECRET || '',
+  masterKey: process.env.MASTER_KEY || 'no-key',
 });
 
 export default envConfig;
