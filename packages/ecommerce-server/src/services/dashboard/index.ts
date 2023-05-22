@@ -12,12 +12,11 @@ export const saveUser = async (userReq: SaveUserReq): Promise<User> => {
   return await userRepository.save(user);
 };
 
-export const saveUserKeys = async (
+export const saveUserDatasource = async (
   apiKey: string,
   userReq: SaveUserDatasourceReq
 ): Promise<Datasource> => {
   const user = await userRepository.findOneBy({
-    id: userReq.id,
     apiKey: apiKey,
     isActive: true,
   });
@@ -37,7 +36,7 @@ export const saveUserKeys = async (
 export const getUserDatasources = async (id: string): Promise<User> => {
   const foundUser = await userRepository.findOne({
     where: { id },
-    relations: ['keys'],
+    relations: ['datasource'],
   });
   if (foundUser) return foundUser;
   throw new Error('User not found');

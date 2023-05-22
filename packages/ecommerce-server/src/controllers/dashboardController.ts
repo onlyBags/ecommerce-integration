@@ -51,7 +51,7 @@ export class DashboardController extends Controller {
 
   @Post('/user/keys')
   @SuccessResponse('201', 'Created')
-  public async saveUserKeys(
+  public async saveUserDatasource(
     @Header() apiKey: string,
     @Body() requestBody: SaveUserDatasourceReq
   ): Promise<DGLResponse<Datasource>> {
@@ -66,9 +66,9 @@ export class DashboardController extends Controller {
     }
     try {
       const resp = {
-        message: 'User keys created successfully',
+        message: 'User datasource created successfully',
         status: 201,
-        data: await dashboardService.saveUserKeys(apiKey, requestBody),
+        data: await dashboardService.saveUserDatasource(apiKey, requestBody),
       };
       return resp;
     } catch (err) {
@@ -80,7 +80,7 @@ export class DashboardController extends Controller {
   @SuccessResponse('200', 'User')
   public async getUserDatasources(
     @Header() apiKey: string,
-    @Query() id: string
+    @Query() datasourceId: string
   ): Promise<DGLResponse<User>> {
     if (!apiKey) {
       const fields: FieldErrors = {
@@ -96,7 +96,7 @@ export class DashboardController extends Controller {
       const resp = {
         message: 'User datasources fetched successfully',
         status: 200,
-        data: await dashboardService.getUserDatasources(id),
+        data: await dashboardService.getUserDatasources(datasourceId),
       };
       return resp;
     } catch (err) {

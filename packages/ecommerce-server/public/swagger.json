@@ -6,6 +6,538 @@
 		"requestBodies": {},
 		"responses": {},
 		"schemas": {
+			"Dimensions": {
+				"properties": {
+					"length": {
+						"type": "string"
+					},
+					"width": {
+						"type": "string"
+					},
+					"height": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"length",
+					"width",
+					"height"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"Category": {
+				"properties": {
+					"id": {
+						"type": "number",
+						"format": "double"
+					},
+					"name": {
+						"type": "string"
+					},
+					"slug": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"id",
+					"name",
+					"slug"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"Tag": {
+				"properties": {
+					"id": {
+						"type": "number",
+						"format": "double"
+					},
+					"name": {
+						"type": "string"
+					},
+					"slug": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"id",
+					"name",
+					"slug"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"Image": {
+				"properties": {
+					"id": {
+						"type": "number",
+						"format": "double"
+					},
+					"date_created": {
+						"type": "string"
+					},
+					"date_created_gmt": {
+						"type": "string"
+					},
+					"date_modified": {
+						"type": "string"
+					},
+					"date_modified_gmt": {
+						"type": "string"
+					},
+					"src": {
+						"type": "string"
+					},
+					"name": {
+						"type": "string"
+					},
+					"alt": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"id",
+					"date_created",
+					"date_created_gmt",
+					"date_modified",
+					"date_modified_gmt",
+					"src",
+					"name",
+					"alt"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"Attribute": {
+				"properties": {
+					"id": {
+						"type": "number",
+						"format": "double"
+					},
+					"name": {
+						"type": "string"
+					},
+					"position": {
+						"type": "number",
+						"format": "double"
+					},
+					"visible": {
+						"type": "boolean"
+					},
+					"variation": {
+						"type": "boolean"
+					},
+					"options": {
+						"items": {
+							"type": "string"
+						},
+						"type": "array"
+					}
+				},
+				"required": [
+					"id",
+					"name",
+					"position",
+					"visible",
+					"variation",
+					"options"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"MetaDaum": {
+				"properties": {
+					"id": {
+						"type": "number",
+						"format": "double"
+					},
+					"key": {
+						"type": "string"
+					},
+					"value": {}
+				},
+				"required": [
+					"id",
+					"key",
+					"value"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"Self": {
+				"properties": {
+					"href": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"href"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"Collection": {
+				"properties": {
+					"href": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"href"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"Links": {
+				"properties": {
+					"self": {
+						"items": {
+							"$ref": "#/components/schemas/Self"
+						},
+						"type": "array"
+					},
+					"collection": {
+						"items": {
+							"$ref": "#/components/schemas/Collection"
+						},
+						"type": "array"
+					}
+				},
+				"required": [
+					"self",
+					"collection"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"WoocomerceProduct": {
+				"properties": {
+					"id": {
+						"type": "number",
+						"format": "double"
+					},
+					"name": {
+						"type": "string"
+					},
+					"slug": {
+						"type": "string"
+					},
+					"permalink": {
+						"type": "string"
+					},
+					"date_created": {
+						"type": "string"
+					},
+					"date_created_gmt": {
+						"type": "string"
+					},
+					"date_modified": {
+						"type": "string"
+					},
+					"date_modified_gmt": {
+						"type": "string"
+					},
+					"type": {
+						"type": "string"
+					},
+					"status": {
+						"type": "string"
+					},
+					"featured": {
+						"type": "boolean"
+					},
+					"catalog_visibility": {
+						"type": "string"
+					},
+					"description": {
+						"type": "string"
+					},
+					"short_description": {
+						"type": "string"
+					},
+					"sku": {
+						"type": "string"
+					},
+					"price": {
+						"type": "string"
+					},
+					"regular_price": {
+						"type": "string"
+					},
+					"sale_price": {
+						"type": "string"
+					},
+					"date_on_sale_from": {},
+					"date_on_sale_from_gmt": {},
+					"date_on_sale_to": {},
+					"date_on_sale_to_gmt": {},
+					"price_html": {
+						"type": "string"
+					},
+					"on_sale": {
+						"type": "boolean"
+					},
+					"purchasable": {
+						"type": "boolean"
+					},
+					"total_sales": {
+						"type": "number",
+						"format": "double"
+					},
+					"virtual": {
+						"type": "boolean"
+					},
+					"downloadable": {
+						"type": "boolean"
+					},
+					"downloads": {
+						"items": {},
+						"type": "array"
+					},
+					"download_limit": {
+						"type": "number",
+						"format": "double"
+					},
+					"download_expiry": {
+						"type": "number",
+						"format": "double"
+					},
+					"external_url": {
+						"type": "string"
+					},
+					"button_text": {
+						"type": "string"
+					},
+					"tax_status": {
+						"type": "string"
+					},
+					"tax_class": {
+						"type": "string"
+					},
+					"manage_stock": {
+						"type": "boolean"
+					},
+					"stock_quantity": {},
+					"stock_status": {
+						"type": "string"
+					},
+					"backorders": {
+						"type": "string"
+					},
+					"backorders_allowed": {
+						"type": "boolean"
+					},
+					"backordered": {
+						"type": "boolean"
+					},
+					"sold_individually": {
+						"type": "boolean"
+					},
+					"weight": {
+						"type": "string"
+					},
+					"dimensions": {
+						"$ref": "#/components/schemas/Dimensions"
+					},
+					"shipping_required": {
+						"type": "boolean"
+					},
+					"shipping_taxable": {
+						"type": "boolean"
+					},
+					"shipping_class": {
+						"type": "string"
+					},
+					"shipping_class_id": {
+						"type": "number",
+						"format": "double"
+					},
+					"reviews_allowed": {
+						"type": "boolean"
+					},
+					"average_rating": {
+						"type": "string"
+					},
+					"rating_count": {
+						"type": "number",
+						"format": "double"
+					},
+					"related_ids": {
+						"items": {
+							"type": "number",
+							"format": "double"
+						},
+						"type": "array"
+					},
+					"upsell_ids": {
+						"items": {},
+						"type": "array"
+					},
+					"cross_sell_ids": {
+						"items": {},
+						"type": "array"
+					},
+					"parent_id": {
+						"type": "number",
+						"format": "double"
+					},
+					"purchase_note": {
+						"type": "string"
+					},
+					"categories": {
+						"items": {
+							"$ref": "#/components/schemas/Category"
+						},
+						"type": "array"
+					},
+					"tags": {
+						"items": {
+							"$ref": "#/components/schemas/Tag"
+						},
+						"type": "array"
+					},
+					"images": {
+						"items": {
+							"$ref": "#/components/schemas/Image"
+						},
+						"type": "array"
+					},
+					"attributes": {
+						"items": {
+							"$ref": "#/components/schemas/Attribute"
+						},
+						"type": "array"
+					},
+					"default_attributes": {
+						"items": {},
+						"type": "array"
+					},
+					"variations": {
+						"items": {
+							"type": "number",
+							"format": "double"
+						},
+						"type": "array"
+					},
+					"grouped_products": {
+						"items": {},
+						"type": "array"
+					},
+					"menu_order": {
+						"type": "number",
+						"format": "double"
+					},
+					"meta_data": {
+						"items": {
+							"$ref": "#/components/schemas/MetaDaum"
+						},
+						"type": "array"
+					},
+					"jetpack_publicize_connections": {
+						"items": {},
+						"type": "array"
+					},
+					"_links": {
+						"$ref": "#/components/schemas/Links"
+					}
+				},
+				"required": [
+					"id",
+					"name",
+					"slug",
+					"permalink",
+					"date_created",
+					"date_created_gmt",
+					"date_modified",
+					"date_modified_gmt",
+					"type",
+					"status",
+					"featured",
+					"catalog_visibility",
+					"description",
+					"short_description",
+					"sku",
+					"price",
+					"regular_price",
+					"sale_price",
+					"date_on_sale_from",
+					"date_on_sale_from_gmt",
+					"date_on_sale_to",
+					"date_on_sale_to_gmt",
+					"price_html",
+					"on_sale",
+					"purchasable",
+					"total_sales",
+					"virtual",
+					"downloadable",
+					"downloads",
+					"download_limit",
+					"download_expiry",
+					"external_url",
+					"button_text",
+					"tax_status",
+					"tax_class",
+					"manage_stock",
+					"stock_quantity",
+					"stock_status",
+					"backorders",
+					"backorders_allowed",
+					"backordered",
+					"sold_individually",
+					"weight",
+					"dimensions",
+					"shipping_required",
+					"shipping_taxable",
+					"shipping_class",
+					"shipping_class_id",
+					"reviews_allowed",
+					"average_rating",
+					"rating_count",
+					"related_ids",
+					"upsell_ids",
+					"cross_sell_ids",
+					"parent_id",
+					"purchase_note",
+					"categories",
+					"tags",
+					"images",
+					"attributes",
+					"default_attributes",
+					"variations",
+					"grouped_products",
+					"menu_order",
+					"meta_data",
+					"jetpack_publicize_connections",
+					"_links"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"DGLResponse_WoocomerceProduct-Array_": {
+				"properties": {
+					"data": {
+						"items": {
+							"$ref": "#/components/schemas/WoocomerceProduct"
+						},
+						"type": "array"
+					},
+					"status": {
+						"type": "number",
+						"format": "double"
+					},
+					"message": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"data",
+					"status",
+					"message"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
 			"DGLResponse_any_": {
 				"properties": {
 					"data": {},
@@ -181,9 +713,6 @@
 			},
 			"SaveUserDatasourceReq": {
 				"properties": {
-					"id": {
-						"type": "string"
-					},
 					"platform": {
 						"type": "string",
 						"enum": [
@@ -202,7 +731,6 @@
 					}
 				},
 				"required": [
-					"id",
 					"platform",
 					"consumerKey",
 					"consumerSecret",
@@ -230,7 +758,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/DGLResponse_any_"
+									"$ref": "#/components/schemas/DGLResponse_WoocomerceProduct-Array_"
 								}
 							}
 						}
@@ -333,7 +861,7 @@
 		},
 		"/dashboard/user/keys": {
 			"post": {
-				"operationId": "SaveUserKeys",
+				"operationId": "SaveUserDatasource",
 				"responses": {
 					"201": {
 						"description": "Created",
@@ -400,7 +928,7 @@
 					},
 					{
 						"in": "query",
-						"name": "id",
+						"name": "datasourceId",
 						"required": true,
 						"schema": {
 							"type": "string"

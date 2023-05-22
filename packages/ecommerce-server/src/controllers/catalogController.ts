@@ -15,7 +15,11 @@ import {
 import { User, Datasource } from '@dg-live/ecommerce-db';
 import * as dashboardService from '../services/dashboard/index.js';
 import { DGLResponse } from '../interfaces/index.js';
-import { syncCatalog, getAllProducts } from '@dg-live/ecommerce-woocommerce';
+import {
+  syncCatalog,
+  getAllProducts,
+  WoocomerceProduct,
+} from '@dg-live/ecommerce-woocommerce';
 import { testLib } from '@dg-live/ecommerce-magento';
 
 @Route('catalog')
@@ -26,7 +30,7 @@ export class ProductsController extends Controller {
   public async getCatalog(
     @Header() apiKey: string,
     @Query() datasourceId: string
-  ): Promise<DGLResponse<any>> {
+  ): Promise<DGLResponse<WoocomerceProduct[]>> {
     const errorFields: FieldErrors = {};
     if (!apiKey) {
       errorFields.apiKey = {
@@ -44,14 +48,14 @@ export class ProductsController extends Controller {
       throw new ValidateError(errorFields, 'Error geting product catalog');
 
     try {
-      ({ apiKey, datasourceId });
+      const wProducts = await getAllProducts({
+        apiKey,
+        datasourceId,
+      });
       const resp = {
         message: 'Products fetched successfully',
         status: 200,
-        data: await getAllProducts({
-          apiKey,
-          datasourceId,
-        }),
+        data: wProducts,
       };
       return resp;
     } catch (err) {
