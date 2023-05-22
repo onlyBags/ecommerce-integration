@@ -1,48 +1,21 @@
-import { AppDataSource, User, Datasource } from '@dg-live/ecommerce-db';
-
+import { AppDataSource, User } from '@dg-live/ecommerce-db';
 import WooCommerceRestApi from '@woocommerce/woocommerce-rest-api';
+
+import { createNewWoocommerceInstance } from '../util/index.js';
 import { WoocomerceProduct } from 'src/index.js';
 
 const userRepository = AppDataSource.getRepository(User);
-const datasourceRepository = AppDataSource.getRepository(Datasource);
 
 const WooCommerceRest = WooCommerceRestApi.default;
-
-const createNewWoocommerceInstance = ({
-  url,
-  consumerKey,
-  consumerSecret,
-}): any => {
-  const WooCommerceApi = new WooCommerceRest({
-    url,
-    consumerKey,
-    consumerSecret,
-    version: 'wc/v3',
-  });
-  return WooCommerceApi;
-};
 
 export const getAllProducts = async ({
   apiKey,
   datasourceId,
 }: any): Promise<WoocomerceProduct[]> => {
   try {
-    const foundUserDatasource = await userRepository.findOne({
-      relations: ['datasource'],
-      where: {
-        apiKey,
-        datasource: {
-          id: datasourceId,
-        },
-      },
-    });
-    if (!foundUserDatasource) return null;
-    const { baseUrl, consumerKey, consumerSecret } =
-      foundUserDatasource.datasource[0];
-    const wc = createNewWoocommerceInstance({
-      url: baseUrl,
-      consumerKey,
-      consumerSecret,
+    const wc = await createNewWoocommerceInstance({
+      apiKey,
+      datasourceId,
     });
     const products = await wc.get('products', {
       on_sale: true,

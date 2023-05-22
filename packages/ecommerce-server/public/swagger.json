@@ -936,6 +936,45 @@
 					}
 				]
 			}
+		},
+		"/shipping": {
+			"get": {
+				"operationId": "GetCatalog",
+				"responses": {
+					"200": {
+						"description": "Fetch Shipping Methods",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/DGLResponse_WoocomerceProduct-Array_"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Shipping"
+				],
+				"security": [],
+				"parameters": [
+					{
+						"in": "header",
+						"name": "apiKey",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"in": "query",
+						"name": "datasourceId",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				]
+			}
 		}
 	},
 	"servers": [

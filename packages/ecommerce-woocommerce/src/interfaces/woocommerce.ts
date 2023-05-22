@@ -124,3 +124,28 @@ export interface WoocomerceProduct {
   jetpack_publicize_connections: any[];
   _links: Links;
 }
+
+export interface WoocomerceShippingZone {
+  id: number;
+  name: string;
+  order: number;
+  _links: Links;
+}
+
+export interface Links {
+  self: Self[];
+  collection: Collection[];
+  describedby: Describedby[];
+}
+
+export interface Self {
+  href: string;
+}
+
+export interface Collection {
+  href: string;
+}
+
+export interface Describedby {
+  href: string;
+}

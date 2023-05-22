@@ -6,6 +6,8 @@ import { Controller, ValidationService, FieldErrors, ValidateError, TsoaRoute, H
 import { ProductsController } from './../controllers/catalogController.js';
 // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 import { DashboardController } from './../controllers/dashboardController.js';
+// WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+import { ShippingController } from './../controllers/shippingController.js';
 import type { RequestHandler, Router } from 'express';
 
 // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
@@ -402,6 +404,32 @@ export function RegisterRoutes(app: Router) {
 
 
               const promise = controller.getUserDatasources.apply(controller, validatedArgs as any);
+              promiseHandler(controller, promise, response, 200, next);
+            } catch (err) {
+                return next(err);
+            }
+        });
+        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+        app.get('/v1/shipping',
+            ...(fetchMiddlewares<RequestHandler>(ShippingController)),
+            ...(fetchMiddlewares<RequestHandler>(ShippingController.prototype.getCatalog)),
+
+            function ShippingController_getCatalog(request: any, response: any, next: any) {
+            const args = {
+                    apiKey: {"in":"header","name":"apiKey","required":true,"dataType":"string"},
+                    datasourceId: {"in":"query","name":"datasourceId","required":true,"dataType":"string"},
+            };
+
+            // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+            let validatedArgs: any[] = [];
+            try {
+                validatedArgs = getValidatedArgs(args, request, response);
+
+                const controller = new ShippingController();
+
+
+              const promise = controller.getCatalog.apply(controller, validatedArgs as any);
               promiseHandler(controller, promise, response, 200, next);
             } catch (err) {
                 return next(err);
