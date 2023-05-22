@@ -1,7 +1,7 @@
 {
   "name": "@dg-live/ecommerce-db",
-  "type": "module",
   "version": "0.0.1",
+  "type": "module",
   "main": "dist/index.js",
   "scripts": {
     "build": "tsc -p tsconfig.json",

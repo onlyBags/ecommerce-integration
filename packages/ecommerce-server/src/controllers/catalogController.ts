@@ -12,10 +12,11 @@ import {
   Header,
 } from 'tsoa';
 
-import { getAllProducts, syncCatalog } from '@dg-live/ecommerce-woocommerce';
 import { User, Datasource } from '@dg-live/ecommerce-db';
 import * as dashboardService from '../services/dashboard/index.js';
 import { DGLResponse } from '../interfaces/index.js';
+import { syncCatalog, getAllProducts } from '@dg-live/ecommerce-woocommerce';
+import { testLib } from '@dg-live/ecommerce-magento';
 
 @Route('catalog')
 @Tags('Catalog')
@@ -43,10 +44,14 @@ export class ProductsController extends Controller {
       throw new ValidateError(errorFields, 'Error geting product catalog');
 
     try {
+      ({ apiKey, datasourceId });
       const resp = {
         message: 'Products fetched successfully',
         status: 200,
-        data: await getAllProducts({ apiKey, datasourceId }),
+        data: await getAllProducts({
+          apiKey,
+          datasourceId,
+        }),
       };
       return resp;
     } catch (err) {

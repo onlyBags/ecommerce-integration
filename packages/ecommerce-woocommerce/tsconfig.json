@@ -2,12 +2,13 @@
   "compilerOptions": {
     "outDir": "./dist",
     "declaration": true,
+    "types": ["node"],
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "lib": ["es5", "es6"],
-    "target": "es2016",
-    "module": "commonjs",
-    "baseUrl": "."
+    "module": "esnext",
+    "baseUrl": ".",
+    "moduleResolution": "nodenext"
   },
   "exclude": ["jest.config.ts", "src/**/*.spec.ts", "src/**/*.test.ts"],
   "include": ["src/**/*.ts"]

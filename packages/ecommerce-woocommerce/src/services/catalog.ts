@@ -5,11 +5,11 @@ const datasourceRepository = AppDataSource.getRepository(Datasource);
 
 const createNewWoocommerceInstance = () => {};
 
-export const getAllProducts = async ({ apiKey, datasourceId }) => {
+export const getAllProducts = async ({ apiKey, datasourceId }: any) => {
   console.log('getAllProducts');
 };
 
-export const syncCatalog = async ({ apiKey, datasourceId }) => {
+export const syncCatalog = async ({ apiKey, datasourceId }: any) => {
   console.log('getAllProducts');
   const foundUserDatasource = await userRepository.findOne({
     relations: ['datasource'],

@@ -1,5 +1,5 @@
 import { AppDataSource, User, Datasource } from '@dg-live/ecommerce-db';
-import { SaveUserDatasourceReq, SaveUserReq } from 'src/interfaces/dashboard';
+import { SaveUserDatasourceReq, SaveUserReq } from '../../interfaces/index';
 
 const userRepository = AppDataSource.getRepository(User);
 const datasourceRepository = AppDataSource.getRepository(Datasource);

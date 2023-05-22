@@ -2,11 +2,10 @@
   "compilerOptions": {
     "outDir": "./dist",
     "declaration": true,
-    "types": ["node"],
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "lib": ["es5", "es6"],
-    "module": "esnext",
+    "module": "ESNext",
     "baseUrl": ".",
     "moduleResolution": "nodenext"
   },
