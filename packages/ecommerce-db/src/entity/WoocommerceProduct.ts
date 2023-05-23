@@ -20,7 +20,6 @@ export class WoocommerceProduct {
   id: number;
 
   @Index()
-  @PrimaryGeneratedColumn()
   datasourceId: number;
 
   @Column({ type: 'varchar' })
