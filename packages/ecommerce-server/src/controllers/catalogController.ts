@@ -12,15 +12,12 @@ import {
   Header,
 } from 'tsoa';
 
-import { User, Datasource } from '@dg-live/ecommerce-db';
-import * as dashboardService from '../services/dashboard/index.js';
 import { DGLResponse } from '../interfaces/index.js';
 import {
   syncCatalog,
   getAllProducts,
   WoocomerceProduct,
 } from '@dg-live/ecommerce-woocommerce';
-import { testLib } from '@dg-live/ecommerce-magento';
 
 @Route('catalog')
 @Tags('Catalog')

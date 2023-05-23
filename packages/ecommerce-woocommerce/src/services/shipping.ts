@@ -1,16 +1,21 @@
+import { WoocomerceShippingZone } from 'src/index.js';
 import { createNewWoocommerceInstance } from '../util/index.js';
 
 export const getShippingZones = async ({
   apiKey,
   datasourceId,
-}: any): Promise<any> => {
+}: any): Promise<WoocomerceShippingZone[]> => {
   try {
     const wc = await createNewWoocommerceInstance({
       apiKey,
       datasourceId,
     });
-    const shippingZones = await wc.get('shipping/zones');
-    if (shippingZones?.data?.length) return shippingZones.data as any;
+    const shippingZonesRes = await wc.get('shipping/zones');
+    const shippingZones = shippingZonesRes?.data as WoocomerceShippingZone[];
+
+    if (shippingZones?.length) {
+      return shippingZones;
+    }
     return [];
   } catch (err) {
     throw err;

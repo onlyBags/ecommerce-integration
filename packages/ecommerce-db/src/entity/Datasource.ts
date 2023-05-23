@@ -14,6 +14,9 @@ export class Datasource {
   @PrimaryGeneratedColumn()
   id: number;
 
+  @Column({ length: 500 })
+  name: String;
+
   @ManyToOne(() => User, (user) => user.datasource)
   user: User;
 
