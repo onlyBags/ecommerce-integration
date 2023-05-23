@@ -6,7 +6,7 @@
 		"requestBodies": {},
 		"responses": {},
 		"schemas": {
-			"Dimensions": {
+			"DimensionsRes": {
 				"properties": {
 					"length": {
 						"type": "string"
@@ -26,7 +26,7 @@
 				"type": "object",
 				"additionalProperties": false
 			},
-			"Category": {
+			"CategoryRes": {
 				"properties": {
 					"id": {
 						"type": "number",
@@ -47,7 +47,7 @@
 				"type": "object",
 				"additionalProperties": false
 			},
-			"Tag": {
+			"TagRes": {
 				"properties": {
 					"id": {
 						"type": "number",
@@ -68,7 +68,7 @@
 				"type": "object",
 				"additionalProperties": false
 			},
-			"Image": {
+			"ImageRes": {
 				"properties": {
 					"id": {
 						"type": "number",
@@ -109,7 +109,7 @@
 				"type": "object",
 				"additionalProperties": false
 			},
-			"Attribute": {
+			"AttributeRes": {
 				"properties": {
 					"id": {
 						"type": "number",
@@ -146,7 +146,7 @@
 				"type": "object",
 				"additionalProperties": false
 			},
-			"MetaDaum": {
+			"MetaDaumRes": {
 				"properties": {
 					"id": {
 						"type": "number",
@@ -189,6 +189,18 @@
 				"type": "object",
 				"additionalProperties": false
 			},
+			"Describedby": {
+				"properties": {
+					"href": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"href"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
 			"Links": {
 				"properties": {
 					"self": {
@@ -202,16 +214,23 @@
 							"$ref": "#/components/schemas/Collection"
 						},
 						"type": "array"
+					},
+					"describedby": {
+						"items": {
+							"$ref": "#/components/schemas/Describedby"
+						},
+						"type": "array"
 					}
 				},
 				"required": [
 					"self",
-					"collection"
+					"collection",
+					"describedby"
 				],
 				"type": "object",
 				"additionalProperties": false
 			},
-			"WoocomerceProduct": {
+			"WoocomerceProductRes": {
 				"properties": {
 					"id": {
 						"type": "number",
@@ -338,7 +357,7 @@
 						"type": "string"
 					},
 					"dimensions": {
-						"$ref": "#/components/schemas/Dimensions"
+						"$ref": "#/components/schemas/DimensionsRes"
 					},
 					"shipping_required": {
 						"type": "boolean"
@@ -387,25 +406,25 @@
 					},
 					"categories": {
 						"items": {
-							"$ref": "#/components/schemas/Category"
+							"$ref": "#/components/schemas/CategoryRes"
 						},
 						"type": "array"
 					},
 					"tags": {
 						"items": {
-							"$ref": "#/components/schemas/Tag"
+							"$ref": "#/components/schemas/TagRes"
 						},
 						"type": "array"
 					},
 					"images": {
 						"items": {
-							"$ref": "#/components/schemas/Image"
+							"$ref": "#/components/schemas/ImageRes"
 						},
 						"type": "array"
 					},
 					"attributes": {
 						"items": {
-							"$ref": "#/components/schemas/Attribute"
+							"$ref": "#/components/schemas/AttributeRes"
 						},
 						"type": "array"
 					},
@@ -430,7 +449,7 @@
 					},
 					"meta_data": {
 						"items": {
-							"$ref": "#/components/schemas/MetaDaum"
+							"$ref": "#/components/schemas/MetaDaumRes"
 						},
 						"type": "array"
 					},
@@ -514,11 +533,11 @@
 				"type": "object",
 				"additionalProperties": false
 			},
-			"DGLResponse_WoocomerceProduct-Array_": {
+			"DGLResponse_WoocomerceProductRes-Array_": {
 				"properties": {
 					"data": {
 						"items": {
-							"$ref": "#/components/schemas/WoocomerceProduct"
+							"$ref": "#/components/schemas/WoocomerceProductRes"
 						},
 						"type": "array"
 					},
@@ -604,6 +623,9 @@
 						"type": "number",
 						"format": "double"
 					},
+					"name": {
+						"type": "string"
+					},
 					"user": {
 						"$ref": "#/components/schemas/User"
 					},
@@ -637,6 +659,7 @@
 				},
 				"required": [
 					"id",
+					"name",
 					"user",
 					"platform",
 					"baseUrl",
@@ -713,6 +736,9 @@
 			},
 			"SaveUserDatasourceReq": {
 				"properties": {
+					"name": {
+						"type": "string"
+					},
 					"platform": {
 						"type": "string",
 						"enum": [
@@ -731,6 +757,7 @@
 					}
 				},
 				"required": [
+					"name",
 					"platform",
 					"consumerKey",
 					"consumerSecret",
@@ -758,7 +785,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/DGLResponse_WoocomerceProduct-Array_"
+									"$ref": "#/components/schemas/DGLResponse_WoocomerceProductRes-Array_"
 								}
 							}
 						}
@@ -859,7 +886,7 @@
 				}
 			}
 		},
-		"/dashboard/user/keys": {
+		"/dashboard/user/datasource": {
 			"post": {
 				"operationId": "SaveUserDatasource",
 				"responses": {
@@ -898,7 +925,9 @@
 						}
 					}
 				}
-			},
+			}
+		},
+		"/dashboard/user/keys": {
 			"get": {
 				"operationId": "GetUserDatasources",
 				"responses": {
@@ -946,7 +975,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/DGLResponse_WoocomerceProduct-Array_"
+									"$ref": "#/components/schemas/DGLResponse_WoocomerceProductRes-Array_"
 								}
 							}
 						}

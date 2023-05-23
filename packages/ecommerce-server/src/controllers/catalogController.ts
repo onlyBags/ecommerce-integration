@@ -16,7 +16,7 @@ import { DGLResponse } from '../interfaces/index.js';
 import {
   syncCatalog,
   getAllProducts,
-  WoocomerceProduct,
+  WoocomerceProductRes,
 } from '@dg-live/ecommerce-woocommerce';
 
 @Route('catalog')
@@ -27,7 +27,7 @@ export class ProductsController extends Controller {
   public async getCatalog(
     @Header() apiKey: string,
     @Query() datasourceId: string
-  ): Promise<DGLResponse<WoocomerceProduct[]>> {
+  ): Promise<DGLResponse<WoocomerceProductRes[]>> {
     const errorFields: FieldErrors = {};
     if (!apiKey) {
       errorFields.apiKey = {

@@ -13,7 +13,7 @@ import type { RequestHandler, Router } from 'express';
 // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 
 const models: TsoaRoute.Models = {
-    "Dimensions": {
+    "DimensionsRes": {
         "dataType": "refObject",
         "properties": {
             "length": {"dataType":"string","required":true},
@@ -23,7 +23,7 @@ const models: TsoaRoute.Models = {
         "additionalProperties": false,
     },
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-    "Category": {
+    "CategoryRes": {
         "dataType": "refObject",
         "properties": {
             "id": {"dataType":"double","required":true},
@@ -33,7 +33,7 @@ const models: TsoaRoute.Models = {
         "additionalProperties": false,
     },
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-    "Tag": {
+    "TagRes": {
         "dataType": "refObject",
         "properties": {
             "id": {"dataType":"double","required":true},
@@ -43,7 +43,7 @@ const models: TsoaRoute.Models = {
         "additionalProperties": false,
     },
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-    "Image": {
+    "ImageRes": {
         "dataType": "refObject",
         "properties": {
             "id": {"dataType":"double","required":true},
@@ -58,7 +58,7 @@ const models: TsoaRoute.Models = {
         "additionalProperties": false,
     },
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-    "Attribute": {
+    "AttributeRes": {
         "dataType": "refObject",
         "properties": {
             "id": {"dataType":"double","required":true},
@@ -71,7 +71,7 @@ const models: TsoaRoute.Models = {
         "additionalProperties": false,
     },
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-    "MetaDaum": {
+    "MetaDaumRes": {
         "dataType": "refObject",
         "properties": {
             "id": {"dataType":"double","required":true},
@@ -97,16 +97,25 @@ const models: TsoaRoute.Models = {
         "additionalProperties": false,
     },
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "Describedby": {
+        "dataType": "refObject",
+        "properties": {
+            "href": {"dataType":"string","required":true},
+        },
+        "additionalProperties": false,
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
     "Links": {
         "dataType": "refObject",
         "properties": {
             "self": {"dataType":"array","array":{"dataType":"refObject","ref":"Self"},"required":true},
             "collection": {"dataType":"array","array":{"dataType":"refObject","ref":"Collection"},"required":true},
+            "describedby": {"dataType":"array","array":{"dataType":"refObject","ref":"Describedby"},"required":true},
         },
         "additionalProperties": false,
     },
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-    "WoocomerceProduct": {
+    "WoocomerceProductRes": {
         "dataType": "refObject",
         "properties": {
             "id": {"dataType":"double","required":true},
@@ -152,7 +161,7 @@ const models: TsoaRoute.Models = {
             "backordered": {"dataType":"boolean","required":true},
             "sold_individually": {"dataType":"boolean","required":true},
             "weight": {"dataType":"string","required":true},
-            "dimensions": {"ref":"Dimensions","required":true},
+            "dimensions": {"ref":"DimensionsRes","required":true},
             "shipping_required": {"dataType":"boolean","required":true},
             "shipping_taxable": {"dataType":"boolean","required":true},
             "shipping_class": {"dataType":"string","required":true},
@@ -165,25 +174,25 @@ const models: TsoaRoute.Models = {
             "cross_sell_ids": {"dataType":"array","array":{"dataType":"any"},"required":true},
             "parent_id": {"dataType":"double","required":true},
             "purchase_note": {"dataType":"string","required":true},
-            "categories": {"dataType":"array","array":{"dataType":"refObject","ref":"Category"},"required":true},
-            "tags": {"dataType":"array","array":{"dataType":"refObject","ref":"Tag"},"required":true},
-            "images": {"dataType":"array","array":{"dataType":"refObject","ref":"Image"},"required":true},
-            "attributes": {"dataType":"array","array":{"dataType":"refObject","ref":"Attribute"},"required":true},
+            "categories": {"dataType":"array","array":{"dataType":"refObject","ref":"CategoryRes"},"required":true},
+            "tags": {"dataType":"array","array":{"dataType":"refObject","ref":"TagRes"},"required":true},
+            "images": {"dataType":"array","array":{"dataType":"refObject","ref":"ImageRes"},"required":true},
+            "attributes": {"dataType":"array","array":{"dataType":"refObject","ref":"AttributeRes"},"required":true},
             "default_attributes": {"dataType":"array","array":{"dataType":"any"},"required":true},
             "variations": {"dataType":"array","array":{"dataType":"double"},"required":true},
             "grouped_products": {"dataType":"array","array":{"dataType":"any"},"required":true},
             "menu_order": {"dataType":"double","required":true},
-            "meta_data": {"dataType":"array","array":{"dataType":"refObject","ref":"MetaDaum"},"required":true},
+            "meta_data": {"dataType":"array","array":{"dataType":"refObject","ref":"MetaDaumRes"},"required":true},
             "jetpack_publicize_connections": {"dataType":"array","array":{"dataType":"any"},"required":true},
             "_links": {"ref":"Links","required":true},
         },
         "additionalProperties": false,
     },
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-    "DGLResponse_WoocomerceProduct-Array_": {
+    "DGLResponse_WoocomerceProductRes-Array_": {
         "dataType": "refObject",
         "properties": {
-            "data": {"dataType":"array","array":{"dataType":"refObject","ref":"WoocomerceProduct"},"required":true},
+            "data": {"dataType":"array","array":{"dataType":"refObject","ref":"WoocomerceProductRes"},"required":true},
             "status": {"dataType":"double","required":true},
             "message": {"dataType":"string","required":true},
         },
@@ -218,6 +227,7 @@ const models: TsoaRoute.Models = {
         "dataType": "refObject",
         "properties": {
             "id": {"dataType":"double","required":true},
+            "name": {"dataType":"string","required":true},
             "user": {"ref":"User","required":true},
             "platform": {"dataType":"union","subSchemas":[{"dataType":"enum","enums":["Woocommerce"]},{"dataType":"enum","enums":["Magento"]}],"required":true},
             "baseUrl": {"dataType":"string","required":true},
@@ -263,6 +273,7 @@ const models: TsoaRoute.Models = {
     "SaveUserDatasourceReq": {
         "dataType": "refObject",
         "properties": {
+            "name": {"dataType":"string","required":true},
             "platform": {"dataType":"union","subSchemas":[{"dataType":"enum","enums":["Woocommerce"]},{"dataType":"enum","enums":["Magento"]}],"required":true},
             "consumerKey": {"dataType":"string","required":true},
             "consumerSecret": {"dataType":"string","required":true},
@@ -358,7 +369,7 @@ export function RegisterRoutes(app: Router) {
             }
         });
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-        app.post('/v1/dashboard/user/keys',
+        app.post('/v1/dashboard/user/datasource',
             ...(fetchMiddlewares<RequestHandler>(DashboardController)),
             ...(fetchMiddlewares<RequestHandler>(DashboardController.prototype.saveUserDatasource)),
 
