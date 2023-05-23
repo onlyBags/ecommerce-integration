@@ -49,7 +49,7 @@ export class DashboardController extends Controller {
     }
   }
 
-  @Post('/user/keys')
+  @Post('/user/datasource')
   @SuccessResponse('201', 'Created')
   public async saveUserDatasource(
     @Header() apiKey: string,

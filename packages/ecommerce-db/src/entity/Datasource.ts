@@ -15,7 +15,7 @@ export class Datasource {
   id: number;
 
   @Column({ length: 500 })
-  name: String;
+  name: string;
 
   @ManyToOne(() => User, (user) => user.datasource)
   user: User;

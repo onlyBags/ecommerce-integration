@@ -25,6 +25,7 @@ export const saveUserDatasource = async (
 
   const datasource = new Datasource();
   datasource.user = user;
+  datasource.name = userReq.name;
   datasource.platform = userReq.platform;
   datasource.consumerKey = userReq.consumerKey;
   datasource.consumerSecret = userReq.consumerSecret;

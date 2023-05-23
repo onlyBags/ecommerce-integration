@@ -5,6 +5,7 @@ export interface SaveUserReq {
 }
 
 export interface SaveUserDatasourceReq {
+  name: string;
   platform: 'Woocommerce' | 'Magento';
   consumerKey: string;
   consumerSecret: string;

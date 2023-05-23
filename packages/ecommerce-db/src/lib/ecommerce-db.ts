@@ -1,6 +1,20 @@
 import 'reflect-metadata';
 import * as typeorm from 'typeorm';
-import { User, Datasource } from '../entity/index.js';
+
+import {
+  User,
+  Datasource,
+  Dimensions,
+  Category,
+  Tag,
+  Image,
+  Attribute,
+  MetaDaum,
+  Self,
+  Collection,
+  Links,
+  WoocomerceProduct,
+} from '../entity/index.js';
 import { envConfig } from '@dg-live/ecommerce-config';
 
 const { dbType, dbHost, dbPort, dbUsername, dbPassword, dbDatabase } =
@@ -15,7 +29,20 @@ export const AppDataSource = new typeorm.DataSource({
   database: dbDatabase,
   synchronize: true,
   logging: false,
-  entities: [User, Datasource],
+  entities: [
+    User,
+    Datasource,
+    Dimensions,
+    Category,
+    Tag,
+    Image,
+    Attribute,
+    MetaDaum,
+    Self,
+    Collection,
+    Links,
+    WoocomerceProduct,
+  ],
   migrations: [],
   subscribers: [],
 });
