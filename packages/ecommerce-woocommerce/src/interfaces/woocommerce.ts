@@ -1,22 +1,22 @@
-export interface Dimensions {
+export interface DimensionsRes {
   length: string;
   width: string;
   height: string;
 }
 
-export interface Category {
+export interface CategoryRes {
   id: number;
   name: string;
   slug: string;
 }
 
-export interface Tag {
+export interface TagRes {
   id: number;
   name: string;
   slug: string;
 }
 
-export interface Image {
+export interface ImageRes {
   id: number;
   date_created: string;
   date_created_gmt: string;
@@ -27,7 +27,7 @@ export interface Image {
   alt: string;
 }
 
-export interface Attribute {
+export interface AttributeRes {
   id: number;
   name: string;
   position: number;
@@ -36,26 +36,26 @@ export interface Attribute {
   options: string[];
 }
 
-export interface MetaDaum {
+export interface MetaDaumRes {
   id: number;
   key: string;
   value: any;
 }
 
-export interface Links {
+export interface LinksRes {
   self: Self[];
   collection: Collection[];
 }
 
-export interface Self {
+export interface SelfRes {
   href: string;
 }
 
-export interface Collection {
+export interface CollectionRes {
   href: string;
 }
 
-export interface WoocomerceProduct {
+export interface WoocomerceProductRes {
   id: number;
   name: string;
   slug: string;
@@ -99,7 +99,7 @@ export interface WoocomerceProduct {
   backordered: boolean;
   sold_individually: boolean;
   weight: string;
-  dimensions: Dimensions;
+  dimensions: DimensionsRes;
   shipping_required: boolean;
   shipping_taxable: boolean;
   shipping_class: string;
@@ -112,15 +112,15 @@ export interface WoocomerceProduct {
   cross_sell_ids: any[];
   parent_id: number;
   purchase_note: string;
-  categories: Category[];
-  tags: Tag[];
-  images: Image[];
-  attributes: Attribute[];
+  categories: CategoryRes[];
+  tags: TagRes[];
+  images: ImageRes[];
+  attributes: AttributeRes[];
   default_attributes: any[];
   variations: number[];
   grouped_products: any[];
   menu_order: number;
-  meta_data: MetaDaum[];
+  meta_data: MetaDaumRes[];
   jetpack_publicize_connections: any[];
   _links: Links;
 }

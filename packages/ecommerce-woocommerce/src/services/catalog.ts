@@ -1,10 +1,10 @@
 import { createNewWoocommerceInstance } from '../util/index.js';
-import { WoocomerceProduct } from '../interfaces/index.js';
+import { WoocomerceProductRes } from '../interfaces/index.js';
 
 export const getAllProducts = async ({
   apiKey,
   datasourceId,
-}: any): Promise<WoocomerceProduct[]> => {
+}: any): Promise<WoocomerceProductRes[]> => {
   try {
     const wc = await createNewWoocommerceInstance({
       apiKey,
@@ -16,7 +16,7 @@ export const getAllProducts = async ({
       per_page: 100,
       stock_status: 'instock',
     });
-    if (products?.data?.length) return products.data as WoocomerceProduct[];
+    if (products?.data?.length) return products.data as WoocomerceProductRes[];
     return [];
   } catch (err) {
     throw err;
@@ -35,7 +35,7 @@ export const syncCatalog = async ({ apiKey, datasourceId }: any) => {
       per_page: 100,
       stock_status: 'instock',
     });
-    if (products?.data?.length) return products.data as WoocomerceProduct[];
+    if (products?.data?.length) return products.data as WoocomerceProductRes[];
     return [];
   } catch (err) {
     throw err;
