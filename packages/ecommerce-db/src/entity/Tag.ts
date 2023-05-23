@@ -1,4 +1,4 @@
-import { Entity, Column, Index, PrimaryGeneratedColumn, Unique } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, Unique } from 'typeorm';
 
 @Entity()
 export class Tag {
@@ -6,12 +6,10 @@ export class Tag {
   id: number;
 
   @Column({ type: 'varchar' })
-  @Index()
   @Unique(['name'])
   name: string;
 
   @Column({ type: 'varchar' })
-  @Index()
   @Unique(['slug'])
   slug: string;
 }

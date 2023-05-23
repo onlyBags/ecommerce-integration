@@ -102,8 +102,8 @@ export class WoocomerceProduct {
   @Column({ type: 'boolean' })
   downloadable: boolean;
 
-  @Column('text', { array: true })
-  downloads: any[];
+  @Column({ type: 'varchar', nullable: true })
+  downloads: string;
 
   @Column({ type: 'int' })
   downloadLimit: number;
@@ -171,14 +171,14 @@ export class WoocomerceProduct {
   @Column({ type: 'int' })
   ratingCount: number;
 
-  @Column('int', { array: true })
-  relatedIds: number[];
+  @Column({ type: 'varchar', nullable: true })
+  relatedIds: string;
 
-  @Column('int', { array: true })
-  upsellIds: number[];
+  @Column({ type: 'varchar', nullable: true })
+  upsellIds: string;
 
-  @Column('int', { array: true })
-  crossSellIds: number[];
+  @Column({ type: 'varchar', nullable: true })
+  crossSellIds: string;
 
   @Column({ type: 'int' })
   parentId: number;
@@ -198,14 +198,14 @@ export class WoocomerceProduct {
   @OneToMany((type) => Attribute, (attribute) => attribute.id)
   attributes: Attribute[];
 
-  @Column('text', { array: true })
+  @Column({ type: 'varchar', nullable: true })
   defaultAttributes: any[];
 
-  @Column('int', { array: true })
-  variations: number[];
+  @Column({ type: 'varchar', nullable: true })
+  variations: string;
 
-  @Column('int', { array: true })
-  groupedProducts: number[];
+  @Column({ type: 'varchar', nullable: true })
+  groupedProducts: string;
 
   @Column({ type: 'int' })
   menuOrder: number;
@@ -213,8 +213,8 @@ export class WoocomerceProduct {
   @OneToMany((type) => MetaDaum, (metaDaum) => metaDaum.id)
   metaData: MetaDaum[];
 
-  @Column('text', { array: true })
-  jetpackPublicizeConnections: any[];
+  @Column({ type: 'varchar', nullable: true })
+  jetpackPublicizeConnections: string;
 
   @ManyToOne((type) => Links, (links) => links.id)
   _links: Links;

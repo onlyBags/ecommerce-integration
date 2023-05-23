@@ -1,4 +1,4 @@
-import { Entity, Column, Index, PrimaryGeneratedColumn } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity()
 export class Dimensions {
@@ -6,14 +6,11 @@ export class Dimensions {
   id: number;
 
   @Column({ type: 'varchar' })
-  @Index()
   length: string;
 
   @Column({ type: 'varchar' })
-  @Index()
   width: string;
 
   @Column({ type: 'varchar' })
-  @Index()
   height: string;
 }

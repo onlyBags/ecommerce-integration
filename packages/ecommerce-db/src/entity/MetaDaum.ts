@@ -1,4 +1,4 @@
-import { Entity, PrimaryGeneratedColumn, Column, Index, Unique } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, Unique } from 'typeorm';
 
 @Entity()
 export class MetaDaum {
@@ -6,7 +6,6 @@ export class MetaDaum {
   id: number;
 
   @Column({ type: 'varchar' })
-  @Index()
   @Unique(['key'])
   key: string;
 

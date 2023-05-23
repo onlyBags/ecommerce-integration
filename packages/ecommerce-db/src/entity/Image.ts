@@ -1,4 +1,4 @@
-import { Entity, PrimaryGeneratedColumn, Column, Index, Unique } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, Unique } from 'typeorm';
 
 @Entity()
 export class Image {
@@ -6,7 +6,6 @@ export class Image {
   id: number;
 
   @Column({ type: 'varchar' })
-  @Index()
   dateCreated: string;
 
   @Column({ type: 'varchar' })
@@ -19,7 +18,6 @@ export class Image {
   dateModifiedGmt: string;
 
   @Column({ type: 'varchar' })
-  @Index()
   @Unique(['src'])
   src: string;
 

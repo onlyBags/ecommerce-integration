@@ -1,4 +1,4 @@
-import { Entity, PrimaryGeneratedColumn, Column, Index, Unique } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, Unique } from 'typeorm';
 
 @Entity()
 export class Attribute {
@@ -6,7 +6,6 @@ export class Attribute {
   id: number;
 
   @Column({ type: 'varchar' })
-  @Index()
   @Unique(['name'])
   name: string;
 
@@ -19,6 +18,6 @@ export class Attribute {
   @Column({ type: 'boolean' })
   variation: boolean;
 
-  @Column('text', { array: true })
-  options: string[];
+  @Column({ type: 'varchar', nullable: true })
+  options: string;
 }
