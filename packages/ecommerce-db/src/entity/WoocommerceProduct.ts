@@ -15,9 +15,13 @@ import { MetaDaum } from './MetaDaum.js';
 import { Links } from './Links.js';
 
 @Entity()
-export class WoocomerceProduct {
+export class WoocommerceProduct {
   @PrimaryGeneratedColumn()
   id: number;
+
+  @Index()
+  @PrimaryGeneratedColumn()
+  datasourceId: number;
 
   @Column({ type: 'varchar' })
   @Index()

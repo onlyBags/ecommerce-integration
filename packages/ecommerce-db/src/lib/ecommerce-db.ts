@@ -13,7 +13,7 @@ import {
   Self,
   Collection,
   Links,
-  WoocomerceProduct,
+  WoocommerceProduct,
 } from '../entity/index.js';
 import { envConfig } from '@dg-live/ecommerce-config';
 
@@ -41,7 +41,7 @@ export const AppDataSource = new typeorm.DataSource({
     Self,
     Collection,
     Links,
-    WoocomerceProduct,
+    WoocommerceProduct,
   ],
   migrations: [],
   subscribers: [],

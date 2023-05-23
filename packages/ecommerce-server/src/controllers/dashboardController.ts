@@ -36,7 +36,7 @@ export class DashboardController extends Controller {
           value: requestBody?.masterKey || '',
         },
       };
-      throw new ValidateError(fields, 'Error generating payment link');
+      throw new ValidateError(fields, 'Error adding user');
     }
     try {
       const resp = {
@@ -63,7 +63,7 @@ export class DashboardController extends Controller {
           value: apiKey,
         },
       };
-      throw new ValidateError(fields, 'Error saving user keys');
+      throw new ValidateError(fields, 'Error saving user datasource');
     }
     try {
       const resp = {
@@ -80,8 +80,7 @@ export class DashboardController extends Controller {
   @Get('/user/datasource')
   @SuccessResponse('200', 'User')
   public async getUserDatasources(
-    @Header('api-key') apiKey: string,
-    @Query() datasourceId: string
+    @Header('api-key') apiKey: string
   ): Promise<DGLResponse<Datasource[]>> {
     if (!apiKey) {
       const fields: FieldErrors = {
@@ -93,11 +92,10 @@ export class DashboardController extends Controller {
       throw new ValidateError(fields, 'Error fetching user datasources');
     }
     try {
-      console.log('apiKey', apiKey);
       const resp = {
         message: 'User datasources fetched successfully',
         status: 200,
-        data: await dashboardService.getUserDatasources(datasourceId),
+        data: await dashboardService.getUserDatasources(apiKey),
       };
       return resp;
     } catch (err) {

@@ -16,8 +16,9 @@ import { DGLResponse } from '../interfaces/index.js';
 import {
   syncCatalog,
   getAllProducts,
-  WoocomerceProductRes,
+  WoocommerceProductRes,
 } from '@dg-live/ecommerce-woocommerce';
+import { WoocommerceProduct } from '@dg-live/ecommerce-db';
 
 @Route('catalog')
 @Tags('Catalog')
@@ -25,9 +26,9 @@ export class ProductsController extends Controller {
   @Get('/')
   @SuccessResponse('200', 'Created')
   public async getCatalog(
-    @Header() apiKey: string,
-    @Query() datasourceId: string
-  ): Promise<DGLResponse<WoocomerceProductRes[]>> {
+    @Header('api-key') apiKey: string,
+    @Query() datasourceId: number
+  ): Promise<DGLResponse<WoocommerceProduct[]>> {
     const errorFields: FieldErrors = {};
     if (!apiKey) {
       errorFields.apiKey = {
@@ -63,8 +64,8 @@ export class ProductsController extends Controller {
   @Get('/sync')
   @SuccessResponse('200', 'Created')
   public async syncCatalog(
-    @Header() apiKey: string,
-    @Query() datasourceId: string
+    @Header('api-key') apiKey: string,
+    @Query() datasourceId: number
   ): Promise<DGLResponse<any>> {
     const errorFields: FieldErrors = {};
     if (!apiKey) {

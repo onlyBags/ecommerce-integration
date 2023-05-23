@@ -18,7 +18,7 @@ import { DGLResponse } from '../interfaces/index.js';
 import {
   syncCatalog,
   getAllProducts,
-  WoocomerceProductRes,
+  WoocommerceProductRes,
   getShippingZones,
 } from '@dg-live/ecommerce-woocommerce';
 
@@ -28,9 +28,9 @@ export class ShippingController extends Controller {
   @Get('/')
   @SuccessResponse('200', 'Fetch Shipping Methods')
   public async getCatalog(
-    @Header() apiKey: string,
+    @Header('api-key') apiKey: string,
     @Query() datasourceId: string
-  ): Promise<DGLResponse<WoocomerceProductRes[]>> {
+  ): Promise<DGLResponse<WoocommerceProductRes[]>> {
     const errorFields: FieldErrors = {};
     if (!apiKey) {
       errorFields.apiKey = {

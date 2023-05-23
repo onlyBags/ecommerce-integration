@@ -55,7 +55,7 @@ export interface CollectionRes {
   href: string;
 }
 
-export interface WoocomerceProductRes {
+export interface WoocommerceProductRes {
   id: number;
   name: string;
   slug: string;
