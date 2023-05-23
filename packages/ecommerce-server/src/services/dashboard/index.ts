@@ -34,11 +34,22 @@ export const saveUserDatasource = async (
   return await datasourceRepository.save(datasource);
 };
 
-export const getUserDatasources = async (id: string): Promise<User> => {
+export const getUserDatasources = async (id: string): Promise<Datasource[]> => {
   const foundUser = await userRepository.findOne({
     where: { id },
     relations: ['datasource'],
   });
-  if (foundUser) return foundUser;
+  if (foundUser?.datasource) return foundUser.datasource;
+  throw new Error('User not found');
+};
+
+export const getUserDatasource = async (id: string): Promise<Datasource> => {
+  const foundUser = await userRepository.findOne({
+    where: { id, datasource: { isActive: true } },
+    relations: ['datasource'],
+  });
+  if (foundUser?.datasource) {
+    foundUser.datasource.length ? foundUser.datasource[0] : [];
+  }
   throw new Error('User not found');
 };

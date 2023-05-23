@@ -10,6 +10,7 @@ import {
   FieldErrors,
   ValidateError,
   Header,
+  Path,
 } from 'tsoa';
 
 import { envConfig } from '@dg-live/ecommerce-config';
@@ -52,7 +53,7 @@ export class DashboardController extends Controller {
   @Post('/user/datasource')
   @SuccessResponse('201', 'Created')
   public async saveUserDatasource(
-    @Header() apiKey: string,
+    @Header('api-key') apiKey: string,
     @Body() requestBody: SaveUserDatasourceReq
   ): Promise<DGLResponse<Datasource>> {
     if (!apiKey) {
@@ -76,12 +77,12 @@ export class DashboardController extends Controller {
     }
   }
 
-  @Get('/user/keys')
+  @Get('/user/datasource')
   @SuccessResponse('200', 'User')
   public async getUserDatasources(
-    @Header() apiKey: string,
+    @Header('api-key') apiKey: string,
     @Query() datasourceId: string
-  ): Promise<DGLResponse<User>> {
+  ): Promise<DGLResponse<Datasource[]>> {
     if (!apiKey) {
       const fields: FieldErrors = {
         apiKey: {
@@ -97,6 +98,33 @@ export class DashboardController extends Controller {
         message: 'User datasources fetched successfully',
         status: 200,
         data: await dashboardService.getUserDatasources(datasourceId),
+      };
+      return resp;
+    } catch (err) {
+      throw new ValidateError({}, err.message);
+    }
+  }
+
+  @Get('/user/datasource/{datasourceId}')
+  @SuccessResponse('200', 'User')
+  public async getUserDatasource(
+    @Header('api-key') apiKey: string,
+    @Path() datasourceId: string
+  ): Promise<DGLResponse<Datasource>> {
+    if (!apiKey) {
+      const fields: FieldErrors = {
+        apiKey: {
+          message: 'Invalid apiKey',
+          value: apiKey,
+        },
+      };
+      throw new ValidateError(fields, 'Error fetching user datasources');
+    }
+    try {
+      const resp = {
+        message: 'User datasources fetched successfully',
+        status: 200,
+        data: await dashboardService.getUserDatasource(datasourceId),
       };
       return resp;
     } catch (err) {

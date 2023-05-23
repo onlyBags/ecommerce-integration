@@ -282,6 +282,16 @@ const models: TsoaRoute.Models = {
         "additionalProperties": false,
     },
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "DGLResponse_Datasource-Array_": {
+        "dataType": "refObject",
+        "properties": {
+            "data": {"dataType":"array","array":{"dataType":"refObject","ref":"Datasource"},"required":true},
+            "status": {"dataType":"double","required":true},
+            "message": {"dataType":"string","required":true},
+        },
+        "additionalProperties": false,
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 };
 const validationService = new ValidationService(models);
 
@@ -375,7 +385,7 @@ export function RegisterRoutes(app: Router) {
 
             function DashboardController_saveUserDatasource(request: any, response: any, next: any) {
             const args = {
-                    apiKey: {"in":"header","name":"apiKey","required":true,"dataType":"string"},
+                    apiKey: {"in":"header","name":"api-key","required":true,"dataType":"string"},
                     requestBody: {"in":"body","name":"requestBody","required":true,"ref":"SaveUserDatasourceReq"},
             };
 
@@ -395,13 +405,13 @@ export function RegisterRoutes(app: Router) {
             }
         });
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-        app.get('/v1/dashboard/user/keys',
+        app.get('/v1/dashboard/user/datasource',
             ...(fetchMiddlewares<RequestHandler>(DashboardController)),
             ...(fetchMiddlewares<RequestHandler>(DashboardController.prototype.getUserDatasources)),
 
             function DashboardController_getUserDatasources(request: any, response: any, next: any) {
             const args = {
-                    apiKey: {"in":"header","name":"apiKey","required":true,"dataType":"string"},
+                    apiKey: {"in":"header","name":"api-key","required":true,"dataType":"string"},
                     datasourceId: {"in":"query","name":"datasourceId","required":true,"dataType":"string"},
             };
 
@@ -415,6 +425,32 @@ export function RegisterRoutes(app: Router) {
 
 
               const promise = controller.getUserDatasources.apply(controller, validatedArgs as any);
+              promiseHandler(controller, promise, response, 200, next);
+            } catch (err) {
+                return next(err);
+            }
+        });
+        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+        app.get('/v1/dashboard/user/datasource/:datasourceId',
+            ...(fetchMiddlewares<RequestHandler>(DashboardController)),
+            ...(fetchMiddlewares<RequestHandler>(DashboardController.prototype.getUserDatasource)),
+
+            function DashboardController_getUserDatasource(request: any, response: any, next: any) {
+            const args = {
+                    apiKey: {"in":"header","name":"api-key","required":true,"dataType":"string"},
+                    datasourceId: {"in":"path","name":"datasourceId","required":true,"dataType":"string"},
+            };
+
+            // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+            let validatedArgs: any[] = [];
+            try {
+                validatedArgs = getValidatedArgs(args, request, response);
+
+                const controller = new DashboardController();
+
+
+              const promise = controller.getUserDatasource.apply(controller, validatedArgs as any);
               promiseHandler(controller, promise, response, 200, next);
             } catch (err) {
                 return next(err);
