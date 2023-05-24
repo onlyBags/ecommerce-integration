@@ -5,7 +5,7 @@ export * from './Category.js';
 export * from './Tag.js';
 export * from './Image.js';
 export * from './Attribute.js';
-export * from './MetaDaum.js';
+export * from './MetaData.js';
 export * from './Self.js';
 export * from './Collection.js';
 export * from './Links.js';

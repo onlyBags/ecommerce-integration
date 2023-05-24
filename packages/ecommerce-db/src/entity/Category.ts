@@ -1,15 +1,30 @@
-import { Entity, Column, PrimaryGeneratedColumn, Unique } from 'typeorm';
+import {
+  Entity,
+  Column,
+  PrimaryGeneratedColumn,
+  Unique,
+  ManyToOne,
+} from 'typeorm';
+import { WoocommerceProduct } from './WoocommerceProduct.js';
 
 @Entity()
 export class Category {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ type: 'varchar' })
-  @Unique(['name'])
+  @Unique('UQ_CATEGORY_ID', ['categoryId'])
+  @Column()
+  categoryId: number;
+
+  @Column({ type: 'varchar', nullable: true })
   name: string;
 
-  @Column({ type: 'varchar' })
-  @Unique(['slug'])
+  @Column({ type: 'varchar', nullable: true })
   slug: string;
+
+  @ManyToOne(
+    () => WoocommerceProduct,
+    (woocommerceProduct) => woocommerceProduct.categories
+  )
+  woocommerceProduct: WoocommerceProduct;
 }

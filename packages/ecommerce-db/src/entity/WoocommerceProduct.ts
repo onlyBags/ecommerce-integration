@@ -5,19 +5,31 @@ import {
   Index,
   ManyToOne,
   OneToMany,
+  OneToOne,
 } from 'typeorm';
-import { Dimensions } from './Dimensions.js';
-import { Category } from './Category.js';
-import { Tag } from './Tag.js';
-import { Image } from './Image.js';
-import { Attribute } from './Attribute.js';
-import { MetaDaum } from './MetaDaum.js';
-import { Links } from './Links.js';
+
+import {
+  Dimensions,
+  Category,
+  Tag,
+  Image,
+  Attribute,
+  MetaData,
+  Links,
+} from './index.js';
 
 @Entity()
 export class WoocommerceProduct {
   @PrimaryGeneratedColumn()
   id: number;
+
+  @Index()
+  @Column()
+  productId: number;
+
+  @Index()
+  @Column({ type: 'int' })
+  syncedAt: Date;
 
   @Index()
   @Column({ type: 'int' })
@@ -27,53 +39,53 @@ export class WoocommerceProduct {
   @Index()
   name: string;
 
-  @Column({ type: 'varchar' })
+  @Column({ type: 'varchar', nullable: true })
   @Index()
   slug: string;
 
-  @Column({ type: 'varchar' })
+  @Column({ type: 'varchar', nullable: true })
   permalink: string;
 
-  @Column({ type: 'varchar' })
+  @Column({ type: 'varchar', nullable: true })
   dateCreated: string;
 
-  @Column({ type: 'varchar' })
+  @Column({ type: 'varchar', nullable: true })
   dateCreatedGmt: string;
 
-  @Column({ type: 'varchar' })
+  @Column({ type: 'varchar', nullable: true })
   dateModified: string;
 
-  @Column({ type: 'varchar' })
+  @Column({ type: 'varchar', nullable: true })
   dateModifiedGmt: string;
 
-  @Column({ type: 'varchar' })
+  @Column({ type: 'varchar', nullable: true })
   type: string;
 
-  @Column({ type: 'varchar' })
+  @Column({ type: 'varchar', nullable: true })
   status: string;
 
-  @Column({ type: 'boolean' })
+  @Column({ type: 'boolean', nullable: true })
   featured: boolean;
 
-  @Column({ type: 'varchar' })
+  @Column({ type: 'varchar', nullable: true })
   catalogVisibility: string;
 
-  @Column({ type: 'text' })
+  @Column({ type: 'text', nullable: true })
   description: string;
 
-  @Column({ type: 'text' })
+  @Column({ type: 'text', nullable: true })
   shortDescription: string;
 
-  @Column({ type: 'varchar' })
+  @Column({ type: 'varchar', nullable: true })
   sku: string;
 
-  @Column({ type: 'varchar' })
+  @Column({ type: 'varchar', nullable: true })
   price: string;
 
-  @Column({ type: 'varchar' })
+  @Column({ type: 'varchar', nullable: true })
   regularPrice: string;
 
-  @Column({ type: 'varchar' })
+  @Column({ type: 'varchar', nullable: true })
   salePrice: string;
 
   @Column({ type: 'varchar', nullable: true })
@@ -88,91 +100,88 @@ export class WoocommerceProduct {
   @Column({ type: 'varchar', nullable: true })
   dateOnSaleToGmt: string;
 
-  @Column({ type: 'varchar' })
+  @Column({ type: 'varchar', nullable: true })
   priceHtml: string;
 
-  @Column({ type: 'boolean' })
+  @Column({ type: 'boolean', nullable: true })
   onSale: boolean;
 
-  @Column({ type: 'boolean' })
+  @Column({ type: 'boolean', nullable: true })
   purchasable: boolean;
 
-  @Column({ type: 'int' })
+  @Column({ type: 'int', nullable: true })
   totalSales: number;
 
-  @Column({ type: 'boolean' })
+  @Column({ type: 'boolean', nullable: true })
   virtual: boolean;
 
-  @Column({ type: 'boolean' })
+  @Column({ type: 'boolean', nullable: true })
   downloadable: boolean;
 
   @Column({ type: 'varchar', nullable: true })
   downloads: string;
 
-  @Column({ type: 'int' })
+  @Column({ type: 'int', nullable: true })
   downloadLimit: number;
 
-  @Column({ type: 'int' })
+  @Column({ type: 'int', nullable: true })
   downloadExpiry: number;
 
-  @Column({ type: 'varchar' })
+  @Column({ type: 'varchar', nullable: true })
   externalUrl: string;
 
-  @Column({ type: 'varchar' })
+  @Column({ type: 'varchar', nullable: true })
   buttonText: string;
 
-  @Column({ type: 'varchar' })
+  @Column({ type: 'varchar', nullable: true })
   taxStatus: string;
 
-  @Column({ type: 'varchar' })
+  @Column({ type: 'varchar', nullable: true })
   taxClass: string;
 
-  @Column({ type: 'boolean' })
+  @Column({ type: 'boolean', nullable: true })
   manageStock: boolean;
 
   @Column({ type: 'varchar', nullable: true })
   stockQuantity: string;
 
-  @Column({ type: 'varchar' })
+  @Column({ type: 'varchar', nullable: true })
   stockStatus: string;
 
-  @Column({ type: 'varchar' })
+  @Column({ type: 'varchar', nullable: true })
   backorders: string;
 
-  @Column({ type: 'boolean' })
+  @Column({ type: 'boolean', nullable: true })
   backordersAllowed: boolean;
 
-  @Column({ type: 'boolean' })
+  @Column({ type: 'boolean', nullable: true })
   backordered: boolean;
 
-  @Column({ type: 'boolean' })
+  @Column({ type: 'boolean', nullable: true })
   soldIndividually: boolean;
 
-  @Column({ type: 'varchar' })
+  @Column({ type: 'varchar', nullable: true })
   weight: string;
 
-  @ManyToOne((type) => Dimensions, (dimensions) => dimensions.id)
-  dimensions: Dimensions;
-
-  @Column({ type: 'boolean' })
+  @Column({ type: 'boolean', nullable: true })
   shippingRequired: boolean;
 
-  @Column({ type: 'boolean' })
+  @Column({ type: 'boolean', nullable: true })
   shippingTaxable: boolean;
 
-  @Column({ type: 'varchar' })
+  @Column({ type: 'varchar', nullable: true })
   shippingClass: string;
 
-  @Column({ type: 'int' })
+  @Column({ type: 'int', nullable: true })
   shippingClassId: number;
 
-  @Column({ type: 'boolean' })
+  @Column({ type: 'boolean', nullable: true })
   reviewsAllowed: boolean;
 
-  @Column({ type: 'varchar' })
+  @Column({ type: 'varchar', nullable: true })
   averageRating: string;
 
-  @Column({ type: 'int' })
+  @Column({ type: 'int', nullable: true })
   ratingCount: number;
 
   @Column({ type: 'varchar', nullable: true })
@@ -184,23 +193,11 @@ export class WoocommerceProduct {
   @Column({ type: 'varchar', nullable: true })
   crossSellIds: string;
 
-  @Column({ type: 'int' })
+  @Column({ type: 'int', nullable: true })
   parentId: number;
 
-  @Column({ type: 'varchar' })
+  @Column({ type: 'varchar', nullable: true })
   purchaseNote: string;
-
-  @OneToMany((type) => Category, (category) => category.id)
-  categories: Category[];
-
-  @OneToMany((type) => Tag, (tag) => tag.id)
-  tags: Tag[];
-
-  @OneToMany((type) => Image, (image) => image.id)
-  images: Image[];
-
-  @OneToMany((type) => Attribute, (attribute) => attribute.id)
-  attributes: Attribute[];
 
   @Column({ type: 'varchar', nullable: true })
   defaultAttributes: any[];
@@ -211,15 +208,33 @@ export class WoocommerceProduct {
   @Column({ type: 'varchar', nullable: true })
   groupedProducts: string;
 
-  @Column({ type: 'int' })
+  @Column({ type: 'int', nullable: true })
   menuOrder: number;
-
-  @OneToMany((type) => MetaDaum, (metaDaum) => metaDaum.id)
-  metaData: MetaDaum[];
-
   @Column({ type: 'varchar', nullable: true })
   jetpackPublicizeConnections: string;
 
-  @ManyToOne((type) => Links, (links) => links.id)
-  _links: Links;
+  @OneToOne(() => Dimensions, (dimensions) => dimensions.woocommerceProduct)
+  dimensions: Dimensions;
+
+  @OneToMany(() => Category, (category) => category.woocommerceProduct)
+  categories: Category[];
+
+  @OneToMany(() => Tag, (tag) => tag.woocommerceProduct)
+  tags: Tag[];
+
+  @OneToMany(() => Image, (image) => image.woocommerceProduct)
+  images: Image[];
+
+  @OneToMany(() => Attribute, (attribute) => attribute.woocommerceProduct)
+  attributes: Attribute[];
+
+  @OneToMany(() => MetaData, (metaData) => metaData.woocommerceProduct, {
+    nullable: true,
+  })
+  metaData: MetaData[];
+
+  // @ManyToOne((type) => Links, (links) => links.id, {
+  //   nullable: true,
+  // })
+  // _links: Links;
 }

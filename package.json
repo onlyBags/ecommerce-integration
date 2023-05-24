@@ -5,7 +5,8 @@
   "scripts": {
     "build:all": "nx run-many -t build",
     "watch:all": "nx run-many -t watch",
-    "dev": "cd packages/ecommerce-server && npm run dev"
+    "dev": "cd packages/ecommerce-server && npm run dev",
+    "affected:graph": "nx affected:graph"
   },
   "private": true,
   "devDependencies": {
