@@ -5,7 +5,7 @@ import {
 import { WoocommerceProductRes } from '../interfaces/index.js';
 
 import { AppDataSource, WoocommerceProduct } from '@dg-live/ecommerce-db';
-import { myData } from './mydata.js';
+// import { myData } from './mydata.js';
 
 const woocommerceProductRepository =
   AppDataSource.getRepository(WoocommerceProduct);
@@ -44,15 +44,15 @@ export const syncCatalog = async ({
       apiKey,
       datasourceId,
     });
-    const products: any = {
-      data: JSON.parse(myData),
-    };
-    // const products = await wc.get('products', {
-    //   on_sale: true,
-    //   status: 'publish',
-    //   per_page: 100,
-    //   stock_status: 'instock',
-    // });
+    // const products: any = {
+    //   data: JSON.parse(myData),
+    // };
+    const products = await wc.get('products', {
+      on_sale: true,
+      status: 'publish',
+      per_page: 100,
+      stock_status: 'instock',
+    });
     const syncedAt = new Date();
     if (products?.data?.length) {
       const woocommerceProducts = await parseProductResponse(
