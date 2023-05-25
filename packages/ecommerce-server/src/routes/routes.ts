@@ -468,14 +468,14 @@ export function RegisterRoutes(app: Router) {
     //  NOTE: If you do not see routes for all of your controllers in this file, then you might not have informed tsoa of where to look
     //      Please look into the "controllerPathGlobs" config option described in the readme: https://github.com/lukeautry/tsoa
     // ###########################################################################################################
-        app.get('/v1/catalog',
+        app.get('/v1/catalog/:datasourceId',
             ...(fetchMiddlewares<RequestHandler>(ProductsController)),
             ...(fetchMiddlewares<RequestHandler>(ProductsController.prototype.getCatalog)),
 
             function ProductsController_getCatalog(request: any, response: any, next: any) {
             const args = {
                     apiKey: {"in":"header","name":"api-key","required":true,"dataType":"string"},
-                    datasourceId: {"in":"query","name":"datasourceId","required":true,"dataType":"double"},
+                    datasourceId: {"in":"path","name":"datasourceId","required":true,"dataType":"double"},
             };
 
             // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
@@ -494,14 +494,14 @@ export function RegisterRoutes(app: Router) {
             }
         });
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-        app.get('/v1/catalog/sync',
+        app.get('/v1/catalog/sync/:datasourceId',
             ...(fetchMiddlewares<RequestHandler>(ProductsController)),
             ...(fetchMiddlewares<RequestHandler>(ProductsController.prototype.syncCatalog)),
 
             function ProductsController_syncCatalog(request: any, response: any, next: any) {
             const args = {
                     apiKey: {"in":"header","name":"api-key","required":true,"dataType":"string"},
-                    datasourceId: {"in":"query","name":"datasourceId","required":true,"dataType":"double"},
+                    datasourceId: {"in":"path","name":"datasourceId","required":true,"dataType":"double"},
             };
 
             // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
@@ -603,7 +603,7 @@ export function RegisterRoutes(app: Router) {
             function DashboardController_getUserDatasource(request: any, response: any, next: any) {
             const args = {
                     apiKey: {"in":"header","name":"api-key","required":true,"dataType":"string"},
-                    datasourceId: {"in":"path","name":"datasourceId","required":true,"dataType":"string"},
+                    datasourceId: {"in":"path","name":"datasourceId","required":true,"dataType":"double"},
             };
 
             // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
@@ -622,14 +622,14 @@ export function RegisterRoutes(app: Router) {
             }
         });
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-        app.get('/v1/shipping',
+        app.get('/v1/shipping/:datasourceId',
             ...(fetchMiddlewares<RequestHandler>(ShippingController)),
-            ...(fetchMiddlewares<RequestHandler>(ShippingController.prototype.getCatalog)),
+            ...(fetchMiddlewares<RequestHandler>(ShippingController.prototype.getShippings)),
 
-            function ShippingController_getCatalog(request: any, response: any, next: any) {
+            function ShippingController_getShippings(request: any, response: any, next: any) {
             const args = {
                     apiKey: {"in":"header","name":"api-key","required":true,"dataType":"string"},
-                    datasourceId: {"in":"query","name":"datasourceId","required":true,"dataType":"string"},
+                    datasourceId: {"in":"path","name":"datasourceId","required":true,"dataType":"double"},
             };
 
             // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
@@ -641,7 +641,7 @@ export function RegisterRoutes(app: Router) {
                 const controller = new ShippingController();
 
 
-              const promise = controller.getCatalog.apply(controller, validatedArgs as any);
+              const promise = controller.getShippings.apply(controller, validatedArgs as any);
               promiseHandler(controller, promise, response, 200, next);
             } catch (err) {
                 return next(err);

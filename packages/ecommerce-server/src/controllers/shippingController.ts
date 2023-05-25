@@ -12,7 +12,7 @@ import {
 
 import { DGLResponse } from '../interfaces/index.js';
 import {
-  WoocommerceProductRes,
+  WoocomerceShippingZone,
   getShippingZones,
 } from '@dg-live/ecommerce-woocommerce';
 
@@ -24,7 +24,7 @@ export class ShippingController extends Controller {
   public async getShippings(
     @Header('api-key') apiKey: string,
     @Path() datasourceId: number
-  ): Promise<DGLResponse<WoocommerceProductRes[]>> {
+  ): Promise<DGLResponse<WoocomerceShippingZone[]>> {
     const errorFields: FieldErrors = {};
     if (!apiKey) {
       errorFields.apiKey = {

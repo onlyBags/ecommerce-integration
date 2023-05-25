@@ -1347,7 +1347,7 @@
 	},
 	"openapi": "3.0.0",
 	"paths": {
-		"/catalog": {
+		"/catalog/{datasourceId}": {
 			"get": {
 				"operationId": "GetCatalog",
 				"responses": {
@@ -1376,7 +1376,7 @@
 						}
 					},
 					{
-						"in": "query",
+						"in": "path",
 						"name": "datasourceId",
 						"required": true,
 						"schema": {
@@ -1387,7 +1387,7 @@
 				]
 			}
 		},
-		"/catalog/sync": {
+		"/catalog/sync/{datasourceId}": {
 			"get": {
 				"operationId": "SyncCatalog",
 				"responses": {
@@ -1416,7 +1416,7 @@
 						}
 					},
 					{
-						"in": "query",
+						"in": "path",
 						"name": "datasourceId",
 						"required": true,
 						"schema": {
@@ -1562,15 +1562,16 @@
 						"name": "datasourceId",
 						"required": true,
 						"schema": {
-							"type": "string"
+							"format": "double",
+							"type": "number"
 						}
 					}
 				]
 			}
 		},
-		"/shipping": {
+		"/shipping/{datasourceId}": {
 			"get": {
-				"operationId": "GetCatalog",
+				"operationId": "GetShippings",
 				"responses": {
 					"200": {
 						"description": "Fetch Shipping Methods",
@@ -1597,11 +1598,12 @@
 						}
 					},
 					{
-						"in": "query",
+						"in": "path",
 						"name": "datasourceId",
 						"required": true,
 						"schema": {
-							"type": "string"
+							"format": "double",
+							"type": "number"
 						}
 					}
 				]
