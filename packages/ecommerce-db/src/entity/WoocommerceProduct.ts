@@ -28,7 +28,7 @@ export class WoocommerceProduct {
   productId: number;
 
   @Index()
-  @Column({ type: 'int' })
+  @Column()
   syncedAt: Date;
 
   @Index()
