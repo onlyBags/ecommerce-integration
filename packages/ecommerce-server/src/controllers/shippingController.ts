@@ -2,22 +2,16 @@ import {
   Controller,
   Route,
   SuccessResponse,
-  Post,
-  Body,
   Get,
-  Query,
   Tags,
   FieldErrors,
   ValidateError,
   Header,
+  Path,
 } from 'tsoa';
 
-import { User, Datasource } from '@dg-live/ecommerce-db';
-import * as dashboardService from '../services/dashboard/index.js';
 import { DGLResponse } from '../interfaces/index.js';
 import {
-  syncCatalog,
-  getAllProducts,
   WoocommerceProductRes,
   getShippingZones,
 } from '@dg-live/ecommerce-woocommerce';
@@ -25,11 +19,11 @@ import {
 @Route('shipping')
 @Tags('Shipping')
 export class ShippingController extends Controller {
-  @Get('/')
+  @Get('/{datasourceId}')
   @SuccessResponse('200', 'Fetch Shipping Methods')
-  public async getCatalog(
+  public async getShippings(
     @Header('api-key') apiKey: string,
-    @Query() datasourceId: string
+    @Path() datasourceId: number
   ): Promise<DGLResponse<WoocommerceProductRes[]>> {
     const errorFields: FieldErrors = {};
     if (!apiKey) {

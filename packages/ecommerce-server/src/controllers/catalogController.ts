@@ -10,24 +10,21 @@ import {
   FieldErrors,
   ValidateError,
   Header,
+  Path,
 } from 'tsoa';
 
 import { DGLResponse } from '../interfaces/index.js';
-import {
-  syncCatalog,
-  getAllProducts,
-  WoocommerceProductRes,
-} from '@dg-live/ecommerce-woocommerce';
+import { syncCatalog, getAllProducts } from '@dg-live/ecommerce-woocommerce';
 import { WoocommerceProduct } from '@dg-live/ecommerce-db';
 
 @Route('catalog')
 @Tags('Catalog')
 export class ProductsController extends Controller {
-  @Get('/')
+  @Get('/{datasourceId}')
   @SuccessResponse('200', 'Created')
   public async getCatalog(
     @Header('api-key') apiKey: string,
-    @Query() datasourceId: number
+    @Path() datasourceId: number
   ): Promise<DGLResponse<WoocommerceProduct[]>> {
     const errorFields: FieldErrors = {};
     if (!apiKey) {
@@ -61,11 +58,11 @@ export class ProductsController extends Controller {
     }
   }
 
-  @Get('/sync')
+  @Get('/sync/{datasourceId}')
   @SuccessResponse('200', 'Created')
   public async syncCatalog(
     @Header('api-key') apiKey: string,
-    @Query() datasourceId: number
+    @Path() datasourceId: number
   ): Promise<DGLResponse<any>> {
     const errorFields: FieldErrors = {};
     if (!apiKey) {

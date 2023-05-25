@@ -2,7 +2,10 @@ import {
   createNewWoocommerceInstance,
   parseProductResponse,
 } from '../util/index.js';
-import { WoocommerceProductRes } from '../interfaces/index.js';
+import {
+  ECRequestOptions,
+  WoocommerceProductRes,
+} from '../interfaces/index.js';
 
 import { AppDataSource, WoocommerceProduct } from '@dg-live/ecommerce-db';
 // import { myData } from './mydata.js';
@@ -12,10 +15,7 @@ const woocommerceProductRepository =
 export const getAllProducts = async ({
   apiKey,
   datasourceId,
-}: {
-  apiKey: string;
-  datasourceId: number;
-}): Promise<WoocommerceProduct[]> => {
+}: ECRequestOptions): Promise<WoocommerceProduct[]> => {
   try {
     const products = await woocommerceProductRepository.find({
       where: {
@@ -32,10 +32,7 @@ export const getAllProducts = async ({
 export const syncCatalog = async ({
   apiKey,
   datasourceId,
-}: {
-  apiKey: string;
-  datasourceId: number;
-}): Promise<{
+}: ECRequestOptions): Promise<{
   savedProducts?: WoocommerceProduct[];
   updatedProducts?: WoocommerceProduct[];
 }> => {

@@ -1,10 +1,13 @@
-import { WoocomerceShippingZone } from 'src/index.js';
+import {
+  ECRequestOptions,
+  WoocomerceShippingZone,
+} from '../interfaces/index.js';
 import { createNewWoocommerceInstance } from '../util/index.js';
 
 export const getShippingZones = async ({
   apiKey,
   datasourceId,
-}: any): Promise<WoocomerceShippingZone[]> => {
+}: ECRequestOptions): Promise<WoocomerceShippingZone[]> => {
   try {
     const wc = await createNewWoocommerceInstance({
       apiKey,

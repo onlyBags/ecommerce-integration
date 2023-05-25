@@ -107,7 +107,7 @@ export class DashboardController extends Controller {
   @SuccessResponse('200', 'User')
   public async getUserDatasource(
     @Header('api-key') apiKey: string,
-    @Path() datasourceId: string
+    @Path() datasourceId: number
   ): Promise<DGLResponse<Datasource>> {
     if (!apiKey) {
       const fields: FieldErrors = {
@@ -122,7 +122,7 @@ export class DashboardController extends Controller {
       const resp = {
         message: 'User datasources fetched successfully',
         status: 200,
-        data: await dashboardService.getUserDatasource(datasourceId),
+        data: await dashboardService.getUserDatasource(apiKey, datasourceId),
       };
       return resp;
     } catch (err) {
