@@ -6,6 +6,113 @@
 		"requestBodies": {},
 		"responses": {},
 		"schemas": {
+			"Datasource": {
+				"properties": {
+					"id": {
+						"type": "number",
+						"format": "double"
+					},
+					"name": {
+						"type": "string"
+					},
+					"user": {
+						"$ref": "#/components/schemas/User"
+					},
+					"woocommerceProduct": {
+						"items": {
+							"$ref": "#/components/schemas/WoocommerceProduct"
+						},
+						"type": "array"
+					},
+					"platform": {
+						"type": "string",
+						"enum": [
+							"Woocommerce",
+							"Magento"
+						]
+					},
+					"baseUrl": {
+						"type": "string"
+					},
+					"consumerKey": {
+						"type": "string"
+					},
+					"consumerSecret": {
+						"type": "string"
+					},
+					"webhookSecret": {
+						"type": "string"
+					},
+					"isActive": {
+						"type": "boolean"
+					},
+					"createdAt": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"updatedAt": {
+						"type": "string",
+						"format": "date-time"
+					}
+				},
+				"required": [
+					"id",
+					"name",
+					"user",
+					"woocommerceProduct",
+					"platform",
+					"baseUrl",
+					"consumerKey",
+					"consumerSecret",
+					"webhookSecret",
+					"isActive",
+					"createdAt",
+					"updatedAt"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"User": {
+				"properties": {
+					"id": {
+						"type": "string"
+					},
+					"username": {
+						"type": "string"
+					},
+					"apiKey": {
+						"type": "string"
+					},
+					"datasource": {
+						"items": {
+							"$ref": "#/components/schemas/Datasource"
+						},
+						"type": "array"
+					},
+					"isActive": {
+						"type": "boolean"
+					},
+					"createdAt": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"updatedAt": {
+						"type": "string",
+						"format": "date-time"
+					}
+				},
+				"required": [
+					"id",
+					"username",
+					"apiKey",
+					"datasource",
+					"isActive",
+					"createdAt",
+					"updatedAt"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
 			"WoocommerceProduct": {
 				"properties": {
 					"id": {
@@ -15,6 +122,9 @@
 					"productId": {
 						"type": "number",
 						"format": "double"
+					},
+					"datasource": {
+						"$ref": "#/components/schemas/Datasource"
 					},
 					"syncedAt": {
 						"type": "string",
@@ -246,6 +356,7 @@
 				"required": [
 					"id",
 					"productId",
+					"datasource",
 					"syncedAt",
 					"datasourceId",
 					"name",
@@ -568,102 +679,6 @@
 					"data",
 					"status",
 					"message"
-				],
-				"type": "object",
-				"additionalProperties": false
-			},
-			"User": {
-				"properties": {
-					"id": {
-						"type": "string"
-					},
-					"username": {
-						"type": "string"
-					},
-					"apiKey": {
-						"type": "string"
-					},
-					"datasource": {
-						"items": {
-							"$ref": "#/components/schemas/Datasource"
-						},
-						"type": "array"
-					},
-					"isActive": {
-						"type": "boolean"
-					},
-					"createdAt": {
-						"type": "string",
-						"format": "date-time"
-					},
-					"updatedAt": {
-						"type": "string",
-						"format": "date-time"
-					}
-				},
-				"required": [
-					"id",
-					"username",
-					"apiKey",
-					"datasource",
-					"isActive",
-					"createdAt",
-					"updatedAt"
-				],
-				"type": "object",
-				"additionalProperties": false
-			},
-			"Datasource": {
-				"properties": {
-					"id": {
-						"type": "number",
-						"format": "double"
-					},
-					"name": {
-						"type": "string"
-					},
-					"user": {
-						"$ref": "#/components/schemas/User"
-					},
-					"platform": {
-						"type": "string",
-						"enum": [
-							"Woocommerce",
-							"Magento"
-						]
-					},
-					"baseUrl": {
-						"type": "string"
-					},
-					"consumerKey": {
-						"type": "string"
-					},
-					"consumerSecret": {
-						"type": "string"
-					},
-					"isActive": {
-						"type": "boolean"
-					},
-					"createdAt": {
-						"type": "string",
-						"format": "date-time"
-					},
-					"updatedAt": {
-						"type": "string",
-						"format": "date-time"
-					}
-				},
-				"required": [
-					"id",
-					"name",
-					"user",
-					"platform",
-					"baseUrl",
-					"consumerKey",
-					"consumerSecret",
-					"isActive",
-					"createdAt",
-					"updatedAt"
 				],
 				"type": "object",
 				"additionalProperties": false

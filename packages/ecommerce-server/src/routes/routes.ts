@@ -13,11 +13,45 @@ import type { RequestHandler, Router } from 'express';
 // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 
 const models: TsoaRoute.Models = {
+    "Datasource": {
+        "dataType": "refObject",
+        "properties": {
+            "id": {"dataType":"double","required":true},
+            "name": {"dataType":"string","required":true},
+            "user": {"ref":"User","required":true},
+            "woocommerceProduct": {"dataType":"array","array":{"dataType":"refObject","ref":"WoocommerceProduct"},"required":true},
+            "platform": {"dataType":"union","subSchemas":[{"dataType":"enum","enums":["Woocommerce"]},{"dataType":"enum","enums":["Magento"]}],"required":true},
+            "baseUrl": {"dataType":"string","required":true},
+            "consumerKey": {"dataType":"string","required":true},
+            "consumerSecret": {"dataType":"string","required":true},
+            "webhookSecret": {"dataType":"string","required":true},
+            "isActive": {"dataType":"boolean","required":true},
+            "createdAt": {"dataType":"datetime","required":true},
+            "updatedAt": {"dataType":"datetime","required":true},
+        },
+        "additionalProperties": false,
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "User": {
+        "dataType": "refObject",
+        "properties": {
+            "id": {"dataType":"string","required":true},
+            "username": {"dataType":"string","required":true},
+            "apiKey": {"dataType":"string","required":true},
+            "datasource": {"dataType":"array","array":{"dataType":"refObject","ref":"Datasource"},"required":true},
+            "isActive": {"dataType":"boolean","required":true},
+            "createdAt": {"dataType":"datetime","required":true},
+            "updatedAt": {"dataType":"datetime","required":true},
+        },
+        "additionalProperties": false,
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
     "WoocommerceProduct": {
         "dataType": "refObject",
         "properties": {
             "id": {"dataType":"double","required":true},
             "productId": {"dataType":"double","required":true},
+            "datasource": {"ref":"Datasource","required":true},
             "syncedAt": {"dataType":"datetime","required":true},
             "datasourceId": {"dataType":"double","required":true},
             "name": {"dataType":"string","required":true},
@@ -185,37 +219,6 @@ const models: TsoaRoute.Models = {
             "data": {"dataType":"any","required":true},
             "status": {"dataType":"double","required":true},
             "message": {"dataType":"string","required":true},
-        },
-        "additionalProperties": false,
-    },
-    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-    "User": {
-        "dataType": "refObject",
-        "properties": {
-            "id": {"dataType":"string","required":true},
-            "username": {"dataType":"string","required":true},
-            "apiKey": {"dataType":"string","required":true},
-            "datasource": {"dataType":"array","array":{"dataType":"refObject","ref":"Datasource"},"required":true},
-            "isActive": {"dataType":"boolean","required":true},
-            "createdAt": {"dataType":"datetime","required":true},
-            "updatedAt": {"dataType":"datetime","required":true},
-        },
-        "additionalProperties": false,
-    },
-    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-    "Datasource": {
-        "dataType": "refObject",
-        "properties": {
-            "id": {"dataType":"double","required":true},
-            "name": {"dataType":"string","required":true},
-            "user": {"ref":"User","required":true},
-            "platform": {"dataType":"union","subSchemas":[{"dataType":"enum","enums":["Woocommerce"]},{"dataType":"enum","enums":["Magento"]}],"required":true},
-            "baseUrl": {"dataType":"string","required":true},
-            "consumerKey": {"dataType":"string","required":true},
-            "consumerSecret": {"dataType":"string","required":true},
-            "isActive": {"dataType":"boolean","required":true},
-            "createdAt": {"dataType":"datetime","required":true},
-            "updatedAt": {"dataType":"datetime","required":true},
         },
         "additionalProperties": false,
     },

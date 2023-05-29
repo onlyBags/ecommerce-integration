@@ -1,5 +1,6 @@
 import { AppDataSource, User, Datasource } from '@dg-live/ecommerce-db';
-import { SaveUserDatasourceReq, SaveUserReq } from '../../interfaces/index';
+import { SaveUserDatasourceReq, SaveUserReq } from '../../interfaces/index.js';
+import { getPassword } from '../../util/index.js';
 
 const userRepository = AppDataSource.getRepository(User);
 const datasourceRepository = AppDataSource.getRepository(Datasource);
@@ -30,6 +31,7 @@ export const saveUserDatasource = async (
   datasource.consumerKey = userReq.consumerKey;
   datasource.consumerSecret = userReq.consumerSecret;
   datasource.baseUrl = userReq.baseUrl;
+  datasource.webhookSecret = getPassword();
   datasource.isActive = true;
   return await datasourceRepository.save(datasource);
 };

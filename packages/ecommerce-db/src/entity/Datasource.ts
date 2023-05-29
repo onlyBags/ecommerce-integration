@@ -44,6 +44,11 @@ export class Datasource {
   })
   consumerSecret: string;
 
+  @Column({
+    transformer: encrypt,
+  })
+  webhookSecret: string;
+
   @Column()
   isActive: boolean;
 
