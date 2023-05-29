@@ -149,3 +149,14 @@ export interface Collection {
 export interface Describedby {
   href: string;
 }
+
+export interface WebhookData {
+  create?: WebhookCreate[];
+  delete?: number[];
+}
+export interface WebhookCreate {
+  name: string;
+  topic: string;
+  delivery_url: string;
+  secret: string;
+}

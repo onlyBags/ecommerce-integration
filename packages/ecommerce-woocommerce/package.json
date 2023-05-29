@@ -8,6 +8,7 @@
     "watch": "tsc -p tsconfig.json --watch"
   },
   "dependencies": {
-    "@dg-live/ecommerce-config": "^0.0.1"
+    "@dg-live/ecommerce-config": "*",
+    "@dg-live/ecommerce-db": "*"
   }
 }
