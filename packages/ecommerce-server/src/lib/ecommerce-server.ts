@@ -15,6 +15,7 @@ import helmet from 'helmet';
 import { AppDataSource } from '@dg-live/ecommerce-db';
 import { envConfig } from '@dg-live/ecommerce-config';
 import { RegisterRoutes } from '../routes/routes.js';
+import { handleWebhook } from '@dg-live/ecommerce-webhooks';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
@@ -30,6 +31,12 @@ if (process.env.NODE_ENV !== 'test') {
 
 const app: Express = express();
 const port = envConfig.port || 8080;
+
+app.use(
+  '/v1/webhooks/:apiKey/:datasourceId',
+  express.raw({ type: '*/*' }),
+  handleWebhook
+);
 
 app.use(helmet());
 app.use(cors());
@@ -85,5 +92,4 @@ app.use((_, res: ExResponse) => {
     message: 'Not Found',
   });
 });
-
 export default server;

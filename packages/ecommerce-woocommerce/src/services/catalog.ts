@@ -2,6 +2,7 @@ import {
   createNewWoocommerceInstance,
   parseProductResponse,
 } from '../util/index.js';
+
 import {
   ECRequestOptions,
   WoocommerceProductRes,

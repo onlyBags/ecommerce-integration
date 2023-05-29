@@ -20,6 +20,7 @@
     "@dg-live/ecommerce-db": "*",
     "@dg-live/ecommerce-config": "*",
     "@dg-live/ecommerce-magento": "*",
-    "@dg-live/ecommerce-woocommerce": "*"
+    "@dg-live/ecommerce-woocommerce": "*",
+    "@dg-live/ecommerce-webhooks": "*"
   }
 }

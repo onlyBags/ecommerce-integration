@@ -1,5 +1,5 @@
 {
-  "name": "@dg-live/ecommerce-woocommerce",
+  "name": "@dg-live/ecommerce-webhooks",
   "version": "0.0.1",
   "type": "module",
   "main": "./dist/index.js",
@@ -8,6 +8,6 @@
     "watch": "tsc -p tsconfig.json --watch"
   },
   "dependencies": {
-    "@dg-live/ecommerce-config": "^0.0.1"
+    "@dg-live/ecommerce-config": "*"
   }
 }

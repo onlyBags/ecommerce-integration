@@ -18,7 +18,12 @@ export const envConfig = Object.freeze({
   dbDatabase: process.env.DB_DATABASE || 'ecommerce',
   magentoTestConsumerKey: process.env.MAGENTO_TEST_CONSUMER_KEY || '',
   magentoTestConsumerSecret: process.env.MAGENTO_TEST_CONSUMER_SECRET || '',
+  magentoTestBaseUrl: process.env.MAGENTO_TEST_BASE_URL || '',
   masterKey: process.env.MASTER_KEY || 'no-key',
+  webhookSecret: process.env.WEBHOOK_SECRET || '',
+  woocommerceTestConsumerKey: process.env.WOOCOMMERCE_TEST_CONSUMER_KEY || '',
+  woocommerceTestConsumerSecret: process.env.WOOCOMMERCE_TEST_CONSUMER_SECRET,
+  woocommerceTestBaseUrl: process.env.WOOCOMMERCE_TEST_BASE_URL || '',
 });
 
 export default envConfig;

@@ -23,17 +23,16 @@ const metaDataRepository = AppDataSource.getRepository(MetaData);
 export const createNewWoocommerceInstance = async ({
   apiKey,
   datasourceId,
+}: {
+  apiKey: string;
+  datasourceId: number;
 }): Promise<InstanceType<typeof WooCommerceRest> | null> => {
   const foundUserDatasource = await userRepository.findOne({
+    where: { apiKey, datasource: { id: datasourceId } },
     relations: ['datasource'],
-    where: {
-      apiKey,
-      datasource: {
-        id: datasourceId,
-      },
-    },
   });
-  if (!foundUserDatasource) return null;
+  if (!foundUserDatasource) throw new Error("User's datasource not found");
+
   const { baseUrl, consumerKey, consumerSecret } =
     foundUserDatasource.datasource[0];
 

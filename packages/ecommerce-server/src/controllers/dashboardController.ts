@@ -124,7 +124,7 @@ export class DashboardController extends Controller {
         status: 200,
         data: await dashboardService.getUserDatasource(apiKey, datasourceId),
       };
-      return resp;
+      return resp as DGLResponse<Datasource>;
     } catch (err) {
       throw new ValidateError({}, err.message);
     }
