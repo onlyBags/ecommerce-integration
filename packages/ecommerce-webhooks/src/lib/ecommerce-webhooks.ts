@@ -10,11 +10,7 @@ export const handleWebhook = async (req: Request, res: Response) => {
     const { body } = req;
     const { params } = req;
     const { apiKey, datasourceId } = params;
-    const source =
-      headers['x-wc-webhook-source'] &&
-      typeof headers['x-wc-webhook-source'] === 'string'
-        ? headers['x-wc-webhook-source']
-        : '';
+
     const whSignature =
       headers['x-wc-webhook-signature'] &&
       typeof headers['x-wc-webhook-signature'] === 'string'
@@ -46,9 +42,20 @@ export const handleWebhook = async (req: Request, res: Response) => {
       return res.status(200).json({ message: `hi ${reqIp}` });
     if (!whSignature) throw new Error("Signature doesn't exist");
 
+    const foundUser = await userRepository.findOne({
+      where: { apiKey, datasource: { id: +datasourceId } },
+      relations: ['datasource'],
+    });
+
+    if (!foundUser)
+      return res.status(404).json({ message: 'Datasource not found' });
     if (
-      !validateWebhookBody(whSignature, body) ||
-      !(await validateSource(apiKey, +datasourceId, source))
+      !validateWebhookBody(
+        whSignature,
+        body,
+        foundUser.datasource[0].webhookSecret
+      ) ||
+      !(await validateSource(foundUser, whSource))
     ) {
       return res.status(401).json({
         message: 'Unauthorized',
@@ -59,6 +66,7 @@ export const handleWebhook = async (req: Request, res: Response) => {
       case 'product.deleted':
         break;
       case 'product.updated':
+        debugger;
         break;
       case 'product.created':
         break;
@@ -72,19 +80,10 @@ export const handleWebhook = async (req: Request, res: Response) => {
   }
 };
 
-const validateSource = async (
-  apiKey: string,
-  datasourceId: number,
-  source: string
-): Promise<boolean> => {
-  const foundUser = await userRepository.findOne({
-    where: { apiKey, datasource: { id: datasourceId } },
-    relations: ['datasource'],
-  });
-  if (!foundUser) throw new Error('User not found');
-  if (foundUser?.datasource) {
-    if (foundUser?.datasource.length) {
-      foundUser?.datasource[0].baseUrl === source;
+const validateSource = async (user: User, source: string): Promise<boolean> => {
+  if (user?.datasource) {
+    if (user?.datasource.length) {
+      user?.datasource[0].baseUrl === source;
     }
     return false;
   }

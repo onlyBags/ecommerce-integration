@@ -36,7 +36,7 @@ export interface AttributeRes {
   options: string[];
 }
 
-export interface MetaDaumRes {
+export interface MetaDataRes {
   id: number;
   key: string;
   value: any;
@@ -120,7 +120,7 @@ export interface WoocommerceProductRes {
   variations: number[];
   grouped_products: any[];
   menu_order: number;
-  meta_data: MetaDaumRes[];
+  meta_data: MetaDataRes[];
   jetpack_publicize_connections: any[];
   _links: Links;
 }

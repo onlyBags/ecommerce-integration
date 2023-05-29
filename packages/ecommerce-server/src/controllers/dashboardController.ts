@@ -21,6 +21,7 @@ import {
   SaveUserDatasourceReq,
   DGLResponse,
 } from '../interfaces/index.js';
+import { createWebhooks } from '@dg-live/ecommerce-woocommerce';
 @Route('dashboard')
 @Tags('User')
 export class DashboardController extends Controller {
@@ -71,6 +72,10 @@ export class DashboardController extends Controller {
         status: 201,
         data: await dashboardService.saveUserDatasource(apiKey, requestBody),
       };
+      await createWebhooks({
+        apiKey,
+        datasourceId: resp.data.id,
+      });
       return resp;
     } catch (err) {
       throw new ValidateError({}, err.message);

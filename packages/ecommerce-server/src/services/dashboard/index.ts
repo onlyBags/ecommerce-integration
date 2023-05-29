@@ -39,12 +39,15 @@ export const saveUserDatasource = async (
 export const getUserDatasources = async (
   apiKey: string
 ): Promise<Datasource[]> => {
-  const foundUser = await userRepository.findOne({
-    where: { apiKey },
-    relations: ['datasource'],
-  });
-  if (foundUser?.datasource) return foundUser.datasource;
-  throw new Error('User not found');
+  try {
+    const foundUser = await userRepository.findOne({
+      where: { apiKey },
+      relations: ['datasource'],
+    });
+    return foundUser?.datasource || [];
+  } catch (err) {
+    throw err;
+  }
 };
 
 export const getUserDatasource = async (

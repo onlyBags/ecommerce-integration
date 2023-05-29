@@ -18,7 +18,7 @@ export const createWebhooks = async ({
           id: datasourceId,
         },
       },
-      relations: ['datasources'],
+      relations: ['datasource'],
     });
     if (!foundUser) throw new Error('User not found');
     const secret = foundUser.datasource[0].webhookSecret;
@@ -36,7 +36,6 @@ export const createWebhooks = async ({
     const data: WebhookData = {
       create: [],
     };
-    // https://ab95-181-169-89-127.ngrok-free.app
     for (const topic of webhookTopics) {
       data.create.push(
         {
@@ -54,26 +53,7 @@ export const createWebhooks = async ({
       );
     }
     return await wc.post('webhooks/batch', data);
-    // for (const topic of webhookTopics) {
-    //   const webhookData = {
-    //     name: `DG-Live-Webhook-Prod-${topic}`,
-    //     topic,
-    //     delivery_url: `https://ecommerce-api.dglive.org/v1/webhooks/${apiKey}/${datasourceId}`,
-    //     secret: envConfig.webhookSecret,
-    //   };
-    //   const savedWh = await wc.post('webhooks', webhookData);
-    //   console.log('savedWh: ', savedWh);
-    //   const webhookDataDev = {
-    //     name: `DG-Live-Webhook-Dev-${topic}`,
-    //     topic,
-    //     delivery_url: `https://4384-179-27-110-110.ngrok-free.app/v1/webhooks/${apiKey}/${datasourceId}`,
-    //     secret: envConfig.webhookSecret,
-    //   };
-    //   await wc.post('webhooks', webhookDataDev);
-    // }
   } catch (err) {
-    console.log(err);
-    debugger;
     throw err;
   }
 };

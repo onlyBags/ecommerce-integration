@@ -1,3 +1,4 @@
+import { In } from 'typeorm';
 import {
   AppDataSource,
   User,
@@ -10,7 +11,15 @@ import {
   MetaData,
 } from '@dg-live/ecommerce-db';
 import WooCommerceRestApi from '@woocommerce/woocommerce-rest-api';
-import { WoocommerceProductRes } from '../interfaces/index.js';
+import {
+  WoocommerceProductRes,
+  CategoryRes,
+  TagRes,
+  ImageRes,
+  AttributeRes,
+  MetaDataRes,
+} from '../interfaces/index.js';
+
 const WooCommerceRest = WooCommerceRestApi.default;
 const userRepository = AppDataSource.getRepository(User);
 const categoryRepository = AppDataSource.getRepository(Category);
@@ -47,10 +56,12 @@ export const createNewWoocommerceInstance = async ({
 
 export const parseProductResponse = async (
   response: WoocommerceProductRes[],
+  apiKey: string,
   datasourceId: number,
   syncedAt: Date
 ): Promise<WoocommerceProduct[]> => {
   const data: WoocommerceProduct[] = [];
+  debugger;
   for (const woocommerceProduct of response) {
     await AppDataSource.manager.transaction(
       async (transactionalEntityManager) => {
@@ -87,13 +98,12 @@ export const parseProductResponse = async (
 
         let dimensionToSave: Dimensions;
         const dimension = new Dimensions();
-        const foundDimension = await dimensionRepository.findOne({
-          where: {
-            width: productData.dimensions.width,
-            height: productData.dimensions.height,
-            length: productData.dimensions.length,
-          },
+        const foundDimension = await findDimension(apiKey, datasourceId, {
+          width: productData.dimensions.width,
+          height: productData.dimensions.height,
+          length: productData.dimensions.length,
         });
+
         if (foundDimension) dimensionToSave = foundDimension;
         else {
           dimension.length = productData.dimensions.length || '0';
@@ -103,15 +113,15 @@ export const parseProductResponse = async (
         }
         product.dimensions = dimensionToSave;
 
-        let categoriesToSave: Category[] = [];
-        for (const categoryData of productData.categories) {
-          const foundCategory = await categoryRepository.findOne({
-            where: {
-              categoryId: categoryData.id,
-            },
-          });
-          if (foundCategory) categoriesToSave.push(foundCategory);
-          else {
+        const categoriesToSave: Category[] = [];
+        const categoriesToDelete: Category[] = [];
+        const foundCategories = await findCategories(
+          apiKey,
+          datasourceId,
+          productData.categories
+        );
+        if (!foundCategories.length) {
+          for (const categoryData of productData.categories) {
             const category = new Category();
             category.categoryId = categoryData.id;
             category.name = categoryData.name;
@@ -121,18 +131,37 @@ export const parseProductResponse = async (
             );
             categoriesToSave.push(savedCategory);
           }
+        } else {
+          for (const category of foundCategories) {
+            const catToUpdate = product.categories.find(
+              (x) => x.categoryId === category.categoryId
+            );
+            if (catToUpdate) {
+              catToUpdate.name = category.name;
+              catToUpdate.slug = category.slug;
+              await transactionalEntityManager.save(catToUpdate);
+            } else {
+              categoriesToDelete.push(category);
+            }
+          }
         }
         if (categoriesToSave.length) product.categories = categoriesToSave;
+        if (categoriesToDelete.length) {
+          for (const category of categoriesToDelete) {
+            await transactionalEntityManager.remove(category);
+          }
+        }
 
-        let tagsToSave: Tag[] = [];
-        for (const tagData of productData.tags) {
-          const foundTag = await tagRepository.findOne({
-            where: {
-              tagId: tagData.id,
-            },
-          });
-          if (foundTag) tagsToSave.push(foundTag);
-          else {
+        const tagsToSave: Tag[] = [];
+        const tagsToDelete: Tag[] = [];
+        const foundTags = await findTags(
+          apiKey,
+          datasourceId,
+          productData.tags
+        );
+
+        if (!foundTags.length) {
+          for (const tagData of productData.tags) {
             const tag = new Tag();
             tag.tagId = tagData.id;
             tag.name = tagData.name;
@@ -140,18 +169,34 @@ export const parseProductResponse = async (
             const savedTag = await transactionalEntityManager.save(tag);
             tagsToSave.push(savedTag);
           }
+        } else {
+          for (const tag of foundTags) {
+            const exists = product.tags.find((x) => x.tagId === tag.tagId);
+            if (exists) {
+              exists.name = tag.name;
+              exists.slug = tag.slug;
+              await transactionalEntityManager.save(exists);
+            } else {
+              tagsToDelete.push(tag);
+            }
+          }
         }
         if (tagsToSave.length) product.tags = tagsToSave;
+        if (tagsToDelete.length) {
+          for (const tag of tagsToDelete) {
+            await transactionalEntityManager.remove(tag);
+          }
+        }
 
         let imagesToSave: Image[] = [];
-        for (const imageData of productData.images) {
-          const foundImage = await imageRepository.findOne({
-            where: {
-              src: imageData.src,
-            },
-          });
-          if (foundImage) imagesToSave.push(foundImage);
-          else {
+        let imagesToDelete: Image[] = [];
+        const foundIamges = await findImages(
+          apiKey,
+          datasourceId,
+          productData.images
+        );
+        if (!foundIamges.length) {
+          for (const imageData of productData.images) {
             const image = new Image();
             image.imageId = imageData.id;
             image.src = imageData.src;
@@ -159,18 +204,35 @@ export const parseProductResponse = async (
             const savedImage = await transactionalEntityManager.save(image);
             imagesToSave.push(savedImage);
           }
+        } else {
+          for (const image of foundIamges) {
+            const exists = product.images.find((x) => x.imageId === image.id);
+            if (exists) {
+              exists.src = image.src;
+              exists.name = image.name;
+              await transactionalEntityManager.save(exists);
+            } else {
+              imagesToDelete.push(image);
+            }
+          }
         }
         if (imagesToSave.length) product.images = imagesToSave;
+        if (imagesToDelete.length) {
+          for (const image of imagesToDelete) {
+            await transactionalEntityManager.remove(image);
+          }
+        }
 
         let attributesToSave: Attribute[] = [];
-        for (const attributeData of productData.attributes) {
-          const foundAttribute = await attributeRepository.findOne({
-            where: {
-              name: attributeData.name,
-            },
-          });
-          if (foundAttribute) attributesToSave.push(foundAttribute);
-          else {
+        let attributesToDelete: Attribute[] = [];
+        const foundAttributes = await findAttributes(
+          apiKey,
+          datasourceId,
+          productData.attributes
+        );
+
+        if (!foundAttributes.length) {
+          for (const attributeData of productData.attributes) {
             const attribute = new Attribute();
             attribute.attributeId = attributeData.id;
             attribute.name = attributeData.name;
@@ -183,31 +245,73 @@ export const parseProductResponse = async (
             );
             attributesToSave.push(savedAttribute);
           }
+        } else {
+          for (const attribute of foundAttributes) {
+            const exists = product.attributes.find(
+              (x) => x.attributeId === attribute.attributeId
+            );
+            if (exists) {
+              exists.name = attribute.name;
+              exists.position = attribute.position;
+              exists.visible = attribute.visible;
+              exists.variation = attribute.variation;
+              exists.options = JSON.stringify(attribute.options);
+              await transactionalEntityManager.save(exists);
+            } else {
+              attributesToDelete.push(attribute);
+            }
+          }
         }
         if (attributesToSave.length) product.attributes = attributesToSave;
+        if (attributesToDelete.length) {
+          for (const attribute of attributesToDelete) {
+            await transactionalEntityManager.remove(attribute);
+          }
+        }
 
         const metaDataToSave: MetaData[] = [];
-        for (const metaDataData of productData.meta_data) {
-          const foundMetaData = await metaDataRepository.findOne({
-            where: {
-              key: metaDataData.key,
-            },
-          });
-          if (foundMetaData) metaDataToSave.push(foundMetaData);
-          else {
+        const metaDataToDelete: MetaData[] = [];
+
+        const foundMetaData = await findMetaData(
+          apiKey,
+          datasourceId,
+          productData.meta_data
+        );
+        if (!foundMetaData.length) {
+          for (const metaDataData of productData.meta_data) {
             const metaData = new MetaData();
             metaData.metaDataId = metaDataData.id;
             metaData.key = metaDataData.key;
             metaData.value = isJson(metaDataData.value)
               ? JSON.stringify(metaDataData.value)
               : metaDataData.value;
-            const savedMetaDaum = await transactionalEntityManager.save(
+            const savedMetaData = await transactionalEntityManager.save(
               metaData
             );
-            metaDataToSave.push(savedMetaDaum);
+            metaDataToSave.push(savedMetaData);
+          }
+        } else {
+          for (const metaData of foundMetaData) {
+            const exists = product.metaData.find(
+              (x) => x.metaDataId === metaData.metaDataId
+            );
+            if (exists) {
+              exists.key = metaData.key;
+              exists.value = isJson(metaData.value)
+                ? JSON.stringify(metaData.value)
+                : metaData.value;
+              await transactionalEntityManager.save(exists);
+            } else {
+              metaDataToDelete.push(metaData);
+            }
           }
         }
         if (metaDataToSave.length) product.metaData = metaDataToSave;
+        if (metaDataToDelete.length) {
+          for (const metaData of metaDataToDelete) {
+            await transactionalEntityManager.remove(metaData);
+          }
+        }
 
         product.downloadLimit = productData.download_limit;
         product.downloadExpiry = productData.download_expiry;
@@ -239,6 +343,201 @@ export const parseProductResponse = async (
     );
   }
   return data;
+};
+
+const findDimension = async (
+  apiKey: string,
+  datasourceId: number,
+  dimensions: {
+    width: string;
+    height: string;
+    length: string;
+  }
+): Promise<Dimensions | null> => {
+  const foundItem = await userRepository.findOne({
+    relations: {
+      datasource: {
+        woocommerceProduct: {
+          dimensions: true,
+        },
+      },
+    },
+    where: {
+      apiKey,
+      datasource: {
+        id: datasourceId,
+        woocommerceProduct: {
+          dimensions: {
+            width: dimensions.width,
+            height: dimensions.height,
+            length: dimensions.length,
+          },
+        },
+      },
+    },
+  });
+  if (foundItem && foundItem.datasource[0].woocommerceProduct[0].dimensions)
+    return foundItem.datasource[0].woocommerceProduct[0].dimensions;
+  return null;
+};
+
+const findCategories = async (
+  apiKey: string,
+  datasourceId: number,
+  categories: CategoryRes[]
+) => {
+  const foundCategories = await userRepository.findOne({
+    relations: {
+      datasource: {
+        woocommerceProduct: {
+          categories: true,
+        },
+      },
+    },
+    where: {
+      apiKey,
+      datasource: {
+        id: datasourceId,
+        woocommerceProduct: {
+          categories: {
+            categoryId: In(categories.map((category) => category.id)),
+          },
+        },
+      },
+    },
+  });
+  if (
+    foundCategories &&
+    foundCategories.datasource[0].woocommerceProduct[0].categories
+  )
+    return foundCategories.datasource[0].woocommerceProduct[0].categories;
+  return [];
+};
+
+const findTags = async (
+  apiKey: string,
+  datasourceId: number,
+  tags: TagRes[]
+) => {
+  const foundTags = await userRepository.findOne({
+    relations: {
+      datasource: {
+        woocommerceProduct: {
+          tags: true,
+        },
+      },
+    },
+    where: {
+      apiKey,
+      datasource: {
+        id: datasourceId,
+        woocommerceProduct: {
+          tags: {
+            tagId: In(tags.map((tag) => tag.id)),
+          },
+        },
+      },
+    },
+  });
+  if (foundTags && foundTags.datasource[0].woocommerceProduct[0].tags)
+    return foundTags.datasource[0].woocommerceProduct[0].tags;
+  return [];
+};
+
+const findImages = async (
+  apiKey: string,
+  datasourceId: number,
+  images: ImageRes[]
+) => {
+  const foundImages = await userRepository.findOne({
+    relations: {
+      datasource: {
+        woocommerceProduct: {
+          images: true,
+        },
+      },
+    },
+    where: {
+      apiKey,
+      datasource: {
+        id: datasourceId,
+        woocommerceProduct: {
+          images: {
+            src: In(images.map((image) => image.src)),
+          },
+        },
+      },
+    },
+  });
+  if (foundImages && foundImages.datasource[0].woocommerceProduct[0].images)
+    return foundImages.datasource[0].woocommerceProduct[0].images;
+  return [];
+};
+
+const findAttributes = async (
+  apiKey: string,
+  datasourceId: number,
+  attributes: AttributeRes[]
+) => {
+  const foundAttributes = await userRepository.findOne({
+    relations: {
+      datasource: {
+        woocommerceProduct: {
+          attributes: true,
+        },
+      },
+    },
+    where: {
+      apiKey,
+      datasource: {
+        id: datasourceId,
+        woocommerceProduct: {
+          attributes: {
+            attributeId: In(attributes.map((attribute) => attribute.id)),
+          },
+        },
+      },
+    },
+  });
+  if (
+    foundAttributes &&
+    foundAttributes.datasource[0].woocommerceProduct[0].attributes
+  )
+    return foundAttributes.datasource[0].woocommerceProduct[0].attributes;
+  return [];
+};
+
+const findMetaData = async (
+  apiKey: string,
+  datasourceId: number,
+  metadata: MetaDataRes[]
+) => {
+  const foundMetaData = await userRepository.findOne({
+    relations: {
+      datasource: {
+        woocommerceProduct: {
+          metaData: true,
+        },
+      },
+    },
+    where: {
+      apiKey,
+      datasource: {
+        id: datasourceId,
+        woocommerceProduct: {
+          metaData: {
+            metaDataId: In(metadata.map((meta) => meta.id)),
+          },
+        },
+      },
+    },
+  });
+  if (
+    foundMetaData &&
+    foundMetaData.datasource[0].woocommerceProduct[0].metaData
+  )
+    return foundMetaData.datasource[0].woocommerceProduct[0].metaData;
+  return [];
 };
 
 export const isJson = (val: string | object) => {

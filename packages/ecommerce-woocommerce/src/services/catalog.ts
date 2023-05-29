@@ -44,9 +44,6 @@ export const syncCatalog = async ({
       apiKey,
       datasourceId,
     });
-    // const products: any = {
-    //   data: JSON.parse(myData),
-    // };
     const products = await wc.get('products', {
       on_sale: true,
       status: 'publish',
@@ -57,6 +54,7 @@ export const syncCatalog = async ({
     if (products?.data?.length) {
       const woocommerceProducts = await parseProductResponse(
         products.data as WoocommerceProductRes[],
+        apiKey,
         datasourceId,
         syncedAt
       );
@@ -119,6 +117,7 @@ export const updateProduct = async ({
     if (foundProduct) {
       const woocommerceProduct = await parseProductResponse(
         [product],
+        apiKey,
         datasourceId,
         new Date()
       );
