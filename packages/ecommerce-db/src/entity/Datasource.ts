@@ -5,9 +5,11 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
   ManyToOne,
+  OneToMany,
 } from 'typeorm';
 import { encrypt } from '../utils/index.js';
 import { User } from './User.js';
+import { WoocommerceProduct } from './WoocommerceProduct.js';
 
 @Entity()
 export class Datasource {
@@ -19,6 +21,12 @@ export class Datasource {
 
   @ManyToOne(() => User, (user) => user.datasource)
   user: User;
+
+  @OneToMany(
+    () => WoocommerceProduct,
+    (woocommerceProduct) => woocommerceProduct.datasource
+  )
+  woocommerceProduct: WoocommerceProduct[];
 
   @Column()
   platform: 'Woocommerce' | 'Magento';

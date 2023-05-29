@@ -1,11 +1,11 @@
-import { ECRequestOptions } from '../interfaces/index.js';
+import { WCRequestOptions } from '../interfaces/index.js';
 import { createNewWoocommerceInstance } from '../util/index.js';
 import { envConfig } from '@dg-live/ecommerce-config';
 
 export const createWebhooks = async ({
   apiKey,
   datasourceId,
-}: ECRequestOptions) => {
+}: WCRequestOptions) => {
   try {
     const wc = await createNewWoocommerceInstance({ apiKey, datasourceId });
     if (!wc) throw new Error('Could not create woocomerce instance');

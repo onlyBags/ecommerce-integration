@@ -16,6 +16,7 @@ import {
   Attribute,
   MetaData,
   Links,
+  Datasource,
 } from './index.js';
 
 @Entity()
@@ -26,6 +27,9 @@ export class WoocommerceProduct {
   @Index()
   @Column()
   productId: number;
+
+  @ManyToOne(() => Datasource, (datasource) => datasource.woocommerceProduct)
+  datasource: Datasource;
 
   @Index()
   @Column()

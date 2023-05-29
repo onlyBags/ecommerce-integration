@@ -4,19 +4,21 @@ import {
 } from '../util/index.js';
 
 import {
-  ECRequestOptions,
+  WCRequestOptions,
+  WCUpdateProduct,
   WoocommerceProductRes,
 } from '../interfaces/index.js';
 
-import { AppDataSource, WoocommerceProduct } from '@dg-live/ecommerce-db';
+import { AppDataSource, WoocommerceProduct, User } from '@dg-live/ecommerce-db';
 // import { myData } from './mydata.js';
 
+const userRepository = AppDataSource.getRepository(User);
 const woocommerceProductRepository =
   AppDataSource.getRepository(WoocommerceProduct);
 export const getAllProducts = async ({
   apiKey,
   datasourceId,
-}: ECRequestOptions): Promise<WoocommerceProduct[]> => {
+}: WCRequestOptions): Promise<WoocommerceProduct[]> => {
   try {
     const products = await woocommerceProductRepository.find({
       where: {
@@ -33,7 +35,7 @@ export const getAllProducts = async ({
 export const syncCatalog = async ({
   apiKey,
   datasourceId,
-}: ECRequestOptions): Promise<{
+}: WCRequestOptions): Promise<{
   savedProducts?: WoocommerceProduct[];
   updatedProducts?: WoocommerceProduct[];
 }> => {
@@ -87,6 +89,61 @@ export const syncCatalog = async ({
   }
 };
 
+export const updateProduct = async ({
+  apiKey,
+  datasourceId,
+  product,
+}: WCUpdateProduct): Promise<{
+  savedProducts?: WoocommerceProduct[];
+  updatedProducts?: WoocommerceProduct[];
+}> => {
+  try {
+    const foundUser = await userRepository.findOne({
+      where: { apiKey, datasource: { id: datasourceId } },
+      relations: ['datasource'],
+    });
+    const foundProduct = await woocommerceProductRepository.findOne({
+      where: {
+        productId: product.id,
+      },
+      relations: {
+        categories: true,
+        tags: true,
+        images: true,
+        attributes: true,
+        dimensions: true,
+        metaData: true,
+      },
+    });
+
+    if (foundProduct) {
+      const woocommerceProduct = await parseProductResponse(
+        [product],
+        datasourceId,
+        new Date()
+      );
+      if (woocommerceProduct.length > 1)
+        throw new Error(
+          "Can't update product, more than one product found for id: " +
+            product.id
+        );
+      const updateRes = await upsertProduct(woocommerceProduct[0]);
+      if (updateRes.updatedProduct) {
+        return {
+          updatedProducts: [updateRes.updatedProduct],
+        };
+      }
+      throw new Error("Can't update product, for id: " + product.id);
+    }
+    throw new Error(
+      "Can't update product, no products found for id: " + product.id
+    );
+  } catch (err) {
+    console.log(err);
+    throw err;
+  }
+};
+
 const upsertProduct = async (woocommerceProduct: WoocommerceProduct) => {
   let savedProduct: WoocommerceProduct;
   let updatedProduct: WoocommerceProduct;
@@ -94,6 +151,7 @@ const upsertProduct = async (woocommerceProduct: WoocommerceProduct) => {
     const foundProduct = await woocommerceProductRepository.findOne({
       where: {
         productId: woocommerceProduct.productId,
+        datasourceId: woocommerceProduct.datasourceId,
       },
     });
     if (foundProduct) {
