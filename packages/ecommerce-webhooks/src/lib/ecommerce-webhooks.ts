@@ -1,19 +1,20 @@
-import { Request, Response, NextFunction } from 'express';
-import { envConfig } from '@dg-live/ecommerce-config';
+import { Request, Response } from 'express';
 import { validateWebhookBody } from '../utils/index.js';
+import { AppDataSource, User } from '@dg-live/ecommerce-db';
 
-export const handleWebhook = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
+const userRepository = AppDataSource.getRepository(User);
+
+export const handleWebhook = async (req: Request, res: Response) => {
   try {
     const { headers } = req;
     const { body } = req;
-    const { type } = body;
     const { params } = req;
     const { apiKey, datasourceId } = params;
-    const source = headers['x-wc-webhook-source'];
+    const source =
+      headers['x-wc-webhook-source'] &&
+      typeof headers['x-wc-webhook-source'] === 'string'
+        ? headers['x-wc-webhook-source']
+        : '';
     const whSignature =
       headers['x-wc-webhook-signature'] &&
       typeof headers['x-wc-webhook-signature'] === 'string'
@@ -46,15 +47,15 @@ export const handleWebhook = async (
     if (!whSignature) throw new Error("Signature doesn't exist");
 
     if (
-      !validateWebhookBody(whSignature, body)
-      // !validateSource(apiKey, datasourceId)
+      !validateWebhookBody(whSignature, body) ||
+      !(await validateSource(apiKey, +datasourceId, source))
     ) {
       return res.status(401).json({
         message: 'Unauthorized',
       });
     }
 
-    switch (whEvent) {
+    switch (whTopic) {
       case 'product.deleted':
         break;
       case 'product.updated':
@@ -62,23 +63,8 @@ export const handleWebhook = async (
       case 'product.created':
         break;
       default:
-        break;
+        return res.status(200).json({ message: `hi ${reqIp}` });
     }
-    if (type === 'order.created') {
-      return res.status(200).json({
-        apiKey: apiKey,
-        datasourceId: datasourceId,
-        type,
-        source,
-        whSignature,
-      });
-    }
-    return res.status(201).json({
-      apiKey: apiKey,
-      datasourceId: datasourceId,
-      source,
-      whSignature,
-    });
   } catch (err) {
     return res.status(500).json({
       message: err.message || 'Internal Server Error',
@@ -86,6 +72,20 @@ export const handleWebhook = async (
   }
 };
 
-// const validateSource = async (apiKey: string, datasourceId: number) => {
-
-// }
+const validateSource = async (
+  apiKey: string,
+  datasourceId: number,
+  source: string
+): Promise<boolean> => {
+  const foundUser = await userRepository.findOne({
+    where: { apiKey, datasource: { id: datasourceId } },
+    relations: ['datasource'],
+  });
+  if (!foundUser) throw new Error('User not found');
+  if (foundUser?.datasource) {
+    if (foundUser?.datasource.length) {
+      foundUser?.datasource[0].baseUrl === source;
+    }
+    return false;
+  }
+};

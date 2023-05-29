@@ -92,4 +92,5 @@ app.use((_, res: ExResponse) => {
     message: 'Not Found',
   });
 });
+
 export default server;
