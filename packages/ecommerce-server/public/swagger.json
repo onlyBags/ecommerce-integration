@@ -322,6 +322,12 @@
 					"dimensions": {
 						"$ref": "#/components/schemas/Dimensions"
 					},
+					"images": {
+						"items": {
+							"$ref": "#/components/schemas/Image"
+						},
+						"type": "array"
+					},
 					"categories": {
 						"items": {
 							"$ref": "#/components/schemas/Category"
@@ -331,12 +337,6 @@
 					"tags": {
 						"items": {
 							"$ref": "#/components/schemas/Tag"
-						},
-						"type": "array"
-					},
-					"images": {
-						"items": {
-							"$ref": "#/components/schemas/Image"
 						},
 						"type": "array"
 					},
@@ -419,9 +419,9 @@
 					"menuOrder",
 					"jetpackPublicizeConnections",
 					"dimensions",
+					"images",
 					"categories",
 					"tags",
-					"images",
 					"attributes",
 					"metaData"
 				],
@@ -452,6 +452,56 @@
 					"length",
 					"width",
 					"height",
+					"woocommerceProduct"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"Image": {
+				"properties": {
+					"id": {
+						"type": "number",
+						"format": "double"
+					},
+					"imageId": {
+						"type": "number",
+						"format": "double"
+					},
+					"dateCreated": {
+						"type": "string"
+					},
+					"dateCreatedGmt": {
+						"type": "string"
+					},
+					"dateModified": {
+						"type": "string"
+					},
+					"dateModifiedGmt": {
+						"type": "string"
+					},
+					"src": {
+						"type": "string"
+					},
+					"name": {
+						"type": "string"
+					},
+					"alt": {
+						"type": "string"
+					},
+					"woocommerceProduct": {
+						"$ref": "#/components/schemas/WoocommerceProduct"
+					}
+				},
+				"required": [
+					"id",
+					"imageId",
+					"dateCreated",
+					"dateCreatedGmt",
+					"dateModified",
+					"dateModifiedGmt",
+					"src",
+					"name",
+					"alt",
 					"woocommerceProduct"
 				],
 				"type": "object",
@@ -512,56 +562,6 @@
 					"tagId",
 					"name",
 					"slug",
-					"woocommerceProduct"
-				],
-				"type": "object",
-				"additionalProperties": false
-			},
-			"Image": {
-				"properties": {
-					"id": {
-						"type": "number",
-						"format": "double"
-					},
-					"imageId": {
-						"type": "number",
-						"format": "double"
-					},
-					"dateCreated": {
-						"type": "string"
-					},
-					"dateCreatedGmt": {
-						"type": "string"
-					},
-					"dateModified": {
-						"type": "string"
-					},
-					"dateModifiedGmt": {
-						"type": "string"
-					},
-					"src": {
-						"type": "string"
-					},
-					"name": {
-						"type": "string"
-					},
-					"alt": {
-						"type": "string"
-					},
-					"woocommerceProduct": {
-						"$ref": "#/components/schemas/WoocommerceProduct"
-					}
-				},
-				"required": [
-					"id",
-					"imageId",
-					"dateCreated",
-					"dateCreatedGmt",
-					"dateModified",
-					"dateModifiedGmt",
-					"src",
-					"name",
-					"alt",
 					"woocommerceProduct"
 				],
 				"type": "object",

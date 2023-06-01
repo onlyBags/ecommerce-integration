@@ -4,10 +4,14 @@ import {
   PrimaryGeneratedColumn,
   Unique,
   ManyToOne,
+  JoinTable,
+  ManyToMany,
 } from 'typeorm';
 import { WoocommerceProduct } from './WoocommerceProduct.js';
 
-@Entity()
+@Entity({
+  name: 'wc_tag',
+})
 export class Tag {
   @PrimaryGeneratedColumn()
   id: number;
@@ -22,7 +26,7 @@ export class Tag {
   @Column({ type: 'varchar', nullable: true })
   slug: string;
 
-  @ManyToOne(
+  @ManyToMany(
     () => WoocommerceProduct,
     (woocommerceProduct) => woocommerceProduct.tags
   )

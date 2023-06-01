@@ -2,7 +2,9 @@ import { Entity, PrimaryGeneratedColumn, OneToMany } from 'typeorm';
 import { Self } from './Self.js';
 import { Collection } from './Collection.js';
 
-@Entity()
+@Entity({
+  name: 'wc_links',
+})
 export class Links {
   @PrimaryGeneratedColumn()
   id: number;

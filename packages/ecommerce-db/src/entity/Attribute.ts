@@ -4,15 +4,18 @@ import {
   Column,
   Unique,
   ManyToOne,
+  ManyToMany,
 } from 'typeorm';
 import { WoocommerceProduct } from './WoocommerceProduct.js';
 
-@Entity()
+@Entity({
+  name: 'wc_attribute',
+})
 export class Attribute {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ type: 'varchar' })
+  @Column()
   attributeId: number;
 
   @Column({ type: 'varchar' })
@@ -31,7 +34,7 @@ export class Attribute {
   @Column({ type: 'varchar', nullable: true })
   options: string;
 
-  @ManyToOne(
+  @ManyToMany(
     () => WoocommerceProduct,
     (woocommerceProduct) => woocommerceProduct.attributes
   )

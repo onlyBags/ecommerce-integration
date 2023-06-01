@@ -1,7 +1,16 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne } from 'typeorm';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  ManyToOne,
+  JoinTable,
+  ManyToMany,
+} from 'typeorm';
 import { WoocommerceProduct } from './WoocommerceProduct.js';
 
-@Entity()
+@Entity({
+  name: 'wc_meta_data',
+})
 export class MetaData {
   @PrimaryGeneratedColumn()
   id: number;
@@ -15,7 +24,7 @@ export class MetaData {
   @Column({ type: 'text', nullable: true })
   value: string;
 
-  @ManyToOne(
+  @ManyToMany(
     () => WoocommerceProduct,
     (woocommerceProduct) => woocommerceProduct.metaData
   )

@@ -20,13 +20,11 @@ export const getAllProducts = async ({
   datasourceId,
 }: WCRequestOptions): Promise<WoocommerceProduct[]> => {
   try {
-    const products = await woocommerceProductRepository.find({
-      where: {
-        datasourceId,
-      },
+    const foundUser = await userRepository.findOne({
+      where: { apiKey, datasource: { id: datasourceId } },
     });
-    if (products && products.length) return products;
-    return [];
+    if (!foundUser || !!foundUser.datasource.length) return [];
+    return foundUser.datasource[0].woocommerceProduct;
   } catch (err) {
     throw err;
   }
@@ -92,28 +90,49 @@ export const updateProduct = async ({
   datasourceId,
   product,
 }: WCUpdateProduct): Promise<{
-  savedProducts?: WoocommerceProduct[];
-  updatedProducts?: WoocommerceProduct[];
+  updatedProducts: WoocommerceProduct[];
 }> => {
   try {
     const foundUser = await userRepository.findOne({
-      where: { apiKey, datasource: { id: datasourceId } },
-      relations: ['datasource'],
+      where: {
+        apiKey,
+        datasource: {
+          id: datasourceId,
+          woocommerceProduct: {
+            productId: product.id,
+          },
+        },
+      },
+      relations: {
+        datasource: {
+          woocommerceProduct: {
+            categories: true,
+            tags: true,
+            images: true,
+            attributes: true,
+            dimensions: true,
+            metaData: true,
+          },
+        },
+      },
     });
+    debugger;
+    if (!foundUser || !foundUser.datasource.length)
+      return { updatedProducts: [] };
+    debugger;
     const foundProduct = await woocommerceProductRepository.findOne({
       where: {
         productId: product.id,
       },
-      relations: {
-        categories: true,
-        tags: true,
-        images: true,
-        attributes: true,
-        dimensions: true,
-        metaData: true,
-      },
+      // relations: {
+      //   categories: true,
+      //   tags: true,
+      //   images: true,
+      //   attributes: true,
+      //   dimensions: true,
+      //   metaData: true,
+      // },
     });
-
     if (foundProduct) {
       const woocommerceProduct = await parseProductResponse(
         [product],
@@ -121,24 +140,28 @@ export const updateProduct = async ({
         datasourceId,
         new Date()
       );
-      if (woocommerceProduct.length > 1)
-        throw new Error(
-          "Can't update product, more than one product found for id: " +
-            product.id
-        );
-      const updateRes = await upsertProduct(woocommerceProduct[0]);
-      if (updateRes.updatedProduct) {
-        return {
-          updatedProducts: [updateRes.updatedProduct],
-        };
-      }
-      throw new Error("Can't update product, for id: " + product.id);
+      // if (woocommerceProduct.length > 1)
+      //   throw new Error(
+      //     "Can't update product, more than one product found for id: " +
+      //       product.id
+      //   );
+      // debugger;
+      // const updateRes = await upsertProduct(woocommerceProduct[0]);
+      // debugger;
+      // if (updateRes.updatedProduct) {
+      //   debugger;
+      //   return {
+      //     updatedProducts: [updateRes.updatedProduct],
+      //   };
+      // }
+      // throw new Error("Can't update product, for id: " + product.id);
     }
     throw new Error(
       "Can't update product, no products found for id: " + product.id
     );
   } catch (err) {
     console.log(err);
+    debugger;
     throw err;
   }
 };
@@ -147,22 +170,27 @@ const upsertProduct = async (woocommerceProduct: WoocommerceProduct) => {
   let savedProduct: WoocommerceProduct;
   let updatedProduct: WoocommerceProduct;
   try {
+    debugger;
     const foundProduct = await woocommerceProductRepository.findOne({
       where: {
         productId: woocommerceProduct.productId,
         datasourceId: woocommerceProduct.datasourceId,
       },
     });
+    debugger;
     if (foundProduct) {
+      debugger;
       updatedProduct = await woocommerceProductRepository.save({
         ...foundProduct,
         ...woocommerceProduct,
       });
     } else {
+      debugger;
       savedProduct = await woocommerceProductRepository.save(
         woocommerceProduct
       );
     }
+    debugger;
     return {
       savedProduct,
       updatedProduct,

@@ -7,7 +7,9 @@ import {
 } from 'typeorm';
 import { WoocommerceProduct } from './WoocommerceProduct.js';
 
-@Entity()
+@Entity({
+  name: 'wc_dimensions',
+})
 export class Dimensions {
   @PrimaryGeneratedColumn()
   id: number;

@@ -6,6 +6,8 @@ import {
   ManyToOne,
   OneToMany,
   OneToOne,
+  ManyToMany,
+  JoinTable,
 } from 'typeorm';
 
 import {
@@ -19,7 +21,9 @@ import {
   Datasource,
 } from './index.js';
 
-@Entity()
+@Entity({
+  name: 'wc_product',
+})
 export class WoocommerceProduct {
   @PrimaryGeneratedColumn()
   id: number;
@@ -214,26 +218,35 @@ export class WoocommerceProduct {
 
   @Column({ type: 'int', nullable: true })
   menuOrder: number;
+
   @Column({ type: 'varchar', nullable: true })
   jetpackPublicizeConnections: string;
 
   @OneToOne(() => Dimensions, (dimensions) => dimensions.woocommerceProduct)
   dimensions: Dimensions;
 
-  @OneToMany(() => Category, (category) => category.woocommerceProduct)
-  categories: Category[];
-
-  @OneToMany(() => Tag, (tag) => tag.woocommerceProduct)
-  tags: Tag[];
-
   @OneToMany(() => Image, (image) => image.woocommerceProduct)
   images: Image[];
 
-  @OneToMany(() => Attribute, (attribute) => attribute.woocommerceProduct)
+  @ManyToMany(() => Category, (category) => category.woocommerceProduct)
+  @JoinTable({ name: 'wc_product_x_category' })
+  categories: Category[];
+
+  @ManyToMany(() => Tag, (tag) => tag.woocommerceProduct)
+  @JoinTable({
+    name: 'wc_product_x_tag',
+  })
+  tags: Tag[];
+
+  @ManyToMany(() => Attribute, (attribute) => attribute.woocommerceProduct)
+  @JoinTable({
+    name: 'wc_product_x_attribute',
+  })
   attributes: Attribute[];
 
-  @OneToMany(() => MetaData, (metaData) => metaData.woocommerceProduct, {
-    nullable: true,
+  @ManyToMany(() => MetaData, (metaData) => metaData.woocommerceProduct)
+  @JoinTable({
+    name: 'wc_product_x_meta_data',
   })
   metaData: MetaData[];
 
