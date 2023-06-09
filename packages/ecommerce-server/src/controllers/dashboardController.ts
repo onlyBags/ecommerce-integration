@@ -57,13 +57,54 @@ export class DashboardController extends Controller {
     @Header('api-key') apiKey: string,
     @Body() requestBody: SaveUserDatasourceReq
   ): Promise<DGLResponse<Datasource>> {
+    const fields: FieldErrors = {};
+    const {
+      platform,
+      consumerKey,
+      consumerSecret,
+      accessToken,
+      accessTokenSecret,
+      baseUrl,
+    } = requestBody;
     if (!apiKey) {
-      const fields: FieldErrors = {
-        apiKey: {
-          message: 'Invalid apiKey',
-          value: apiKey,
-        },
+      fields.apiKey = {
+        message: 'Invalid apiKey',
+        value: apiKey,
       };
+    }
+    if (!consumerKey) {
+      fields.consumerKey = {
+        message: 'Invalid consumerKey',
+        value: consumerKey,
+      };
+    }
+    if (!consumerSecret) {
+      fields.consumerSecret = {
+        message: 'Invalid consumerSecret',
+        value: consumerSecret,
+      };
+    }
+    if (!baseUrl) {
+      fields.baseUrl = {
+        message: 'Invalid baseUrl',
+        value: baseUrl,
+      };
+    }
+    if (platform === 'magento') {
+      if (!accessToken) {
+        fields.accessToken = {
+          message: 'Invalid accessToken',
+          value: accessToken,
+        };
+      }
+      if (!accessTokenSecret) {
+        fields.accessTokenSecret = {
+          message: 'Invalid accessTokenSecret',
+          value: accessTokenSecret,
+        };
+      }
+    }
+    if (Object.keys(fields).length) {
       throw new ValidateError(fields, 'Error saving user datasource');
     }
     try {

@@ -29,7 +29,7 @@ export class Datasource {
   woocommerceProduct: WoocommerceProduct[];
 
   @Column()
-  platform: 'Woocommerce' | 'Magento';
+  platform: 'woocommerce' | 'magento';
 
   @Column({ length: 1000 })
   baseUrl: string;
