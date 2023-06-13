@@ -6,6 +6,47 @@
 		"requestBodies": {},
 		"responses": {},
 		"schemas": {
+			"User": {
+				"properties": {
+					"id": {
+						"type": "string"
+					},
+					"username": {
+						"type": "string"
+					},
+					"apiKey": {
+						"type": "string"
+					},
+					"datasource": {
+						"items": {
+							"$ref": "#/components/schemas/Datasource"
+						},
+						"type": "array"
+					},
+					"isActive": {
+						"type": "boolean"
+					},
+					"createdAt": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"updatedAt": {
+						"type": "string",
+						"format": "date-time"
+					}
+				},
+				"required": [
+					"id",
+					"username",
+					"apiKey",
+					"datasource",
+					"isActive",
+					"createdAt",
+					"updatedAt"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
 			"Datasource": {
 				"properties": {
 					"id": {
@@ -73,47 +114,6 @@
 					"accessToken",
 					"accessTokenSecret",
 					"webhookSecret",
-					"isActive",
-					"createdAt",
-					"updatedAt"
-				],
-				"type": "object",
-				"additionalProperties": false
-			},
-			"User": {
-				"properties": {
-					"id": {
-						"type": "string"
-					},
-					"username": {
-						"type": "string"
-					},
-					"apiKey": {
-						"type": "string"
-					},
-					"datasource": {
-						"items": {
-							"$ref": "#/components/schemas/Datasource"
-						},
-						"type": "array"
-					},
-					"isActive": {
-						"type": "boolean"
-					},
-					"createdAt": {
-						"type": "string",
-						"format": "date-time"
-					},
-					"updatedAt": {
-						"type": "string",
-						"format": "date-time"
-					}
-				},
-				"required": [
-					"id",
-					"username",
-					"apiKey",
-					"datasource",
 					"isActive",
 					"createdAt",
 					"updatedAt"
@@ -648,49 +648,6 @@
 				"type": "object",
 				"additionalProperties": false
 			},
-			"DGLResponse_WoocommerceProduct-Array_": {
-				"properties": {
-					"data": {
-						"items": {
-							"$ref": "#/components/schemas/WoocommerceProduct"
-						},
-						"type": "array"
-					},
-					"status": {
-						"type": "number",
-						"format": "double"
-					},
-					"message": {
-						"type": "string"
-					}
-				},
-				"required": [
-					"data",
-					"status",
-					"message"
-				],
-				"type": "object",
-				"additionalProperties": false
-			},
-			"DGLResponse_any_": {
-				"properties": {
-					"data": {},
-					"status": {
-						"type": "number",
-						"format": "double"
-					},
-					"message": {
-						"type": "string"
-					}
-				},
-				"required": [
-					"data",
-					"status",
-					"message"
-				],
-				"type": "object",
-				"additionalProperties": false
-			},
 			"DGLResponse_User_": {
 				"properties": {
 					"data": {
@@ -799,6 +756,49 @@
 						},
 						"type": "array"
 					},
+					"status": {
+						"type": "number",
+						"format": "double"
+					},
+					"message": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"data",
+					"status",
+					"message"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"DGLResponse_WoocommerceProduct-Array_": {
+				"properties": {
+					"data": {
+						"items": {
+							"$ref": "#/components/schemas/WoocommerceProduct"
+						},
+						"type": "array"
+					},
+					"status": {
+						"type": "number",
+						"format": "double"
+					},
+					"message": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"data",
+					"status",
+					"message"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"DGLResponse_any_": {
+				"properties": {
+					"data": {},
 					"status": {
 						"type": "number",
 						"format": "double"
@@ -940,86 +940,6 @@
 	},
 	"openapi": "3.0.0",
 	"paths": {
-		"/catalog/{datasourceId}": {
-			"get": {
-				"operationId": "GetCatalog",
-				"responses": {
-					"200": {
-						"description": "Created",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/DGLResponse_WoocommerceProduct-Array_"
-								}
-							}
-						}
-					}
-				},
-				"tags": [
-					"Catalog"
-				],
-				"security": [],
-				"parameters": [
-					{
-						"in": "header",
-						"name": "api-key",
-						"required": true,
-						"schema": {
-							"type": "string"
-						}
-					},
-					{
-						"in": "path",
-						"name": "datasourceId",
-						"required": true,
-						"schema": {
-							"format": "double",
-							"type": "number"
-						}
-					}
-				]
-			}
-		},
-		"/catalog/sync/{datasourceId}": {
-			"get": {
-				"operationId": "SyncCatalog",
-				"responses": {
-					"200": {
-						"description": "Created",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/DGLResponse_any_"
-								}
-							}
-						}
-					}
-				},
-				"tags": [
-					"Catalog"
-				],
-				"security": [],
-				"parameters": [
-					{
-						"in": "header",
-						"name": "api-key",
-						"required": true,
-						"schema": {
-							"type": "string"
-						}
-					},
-					{
-						"in": "path",
-						"name": "datasourceId",
-						"required": true,
-						"schema": {
-							"format": "double",
-							"type": "number"
-						}
-					}
-				]
-			}
-		},
 		"/dashboard/user": {
 			"post": {
 				"operationId": "CreateUser",
@@ -1202,7 +1122,127 @@
 				]
 			}
 		},
-		"/shipping/{datasourceId}": {
+		"/magento/catalog/sync/{datasourceId}": {
+			"get": {
+				"operationId": "SyncCatalog",
+				"responses": {
+					"200": {
+						"description": "Created",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/DGLResponse_WoocommerceProduct-Array_"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Magento"
+				],
+				"security": [],
+				"parameters": [
+					{
+						"in": "header",
+						"name": "api-key",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"in": "path",
+						"name": "datasourceId",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					}
+				]
+			}
+		},
+		"/woocommerce/catalog/{datasourceId}": {
+			"get": {
+				"operationId": "GetCatalog",
+				"responses": {
+					"200": {
+						"description": "Created",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/DGLResponse_WoocommerceProduct-Array_"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Woocommerce"
+				],
+				"security": [],
+				"parameters": [
+					{
+						"in": "header",
+						"name": "api-key",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"in": "path",
+						"name": "datasourceId",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					}
+				]
+			}
+		},
+		"/woocommerce/catalog/sync/{datasourceId}": {
+			"get": {
+				"operationId": "SyncCatalog",
+				"responses": {
+					"200": {
+						"description": "Created",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/DGLResponse_any_"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Woocommerce"
+				],
+				"security": [],
+				"parameters": [
+					{
+						"in": "header",
+						"name": "api-key",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"in": "path",
+						"name": "datasourceId",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					}
+				]
+			}
+		},
+		"/woocommerce/shipping/{datasourceId}": {
 			"get": {
 				"operationId": "GetShippings",
 				"responses": {
@@ -1218,7 +1258,7 @@
 					}
 				},
 				"tags": [
-					"Shipping"
+					"Woocommerce"
 				],
 				"security": [],
 				"parameters": [

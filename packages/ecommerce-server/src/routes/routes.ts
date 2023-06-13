@@ -3,18 +3,30 @@
 // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 import { Controller, ValidationService, FieldErrors, ValidateError, TsoaRoute, HttpStatusCodeLiteral, TsoaResponse, fetchMiddlewares } from '@tsoa/runtime';
 // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-import { ProductsController } from './../controllers/catalogController.js';
-// WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 import { DashboardController } from './../controllers/dashboardController.js';
 // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 import { MagentoController } from './../controllers/magentoController.js';
 // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-import { ShippingController } from './../controllers/shippingController.js';
+import { WoocommerceController } from './../controllers/woocommerceController.js';
 import type { RequestHandler, Router } from 'express';
 
 // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 
 const models: TsoaRoute.Models = {
+    "User": {
+        "dataType": "refObject",
+        "properties": {
+            "id": {"dataType":"string","required":true},
+            "username": {"dataType":"string","required":true},
+            "apiKey": {"dataType":"string","required":true},
+            "datasource": {"dataType":"array","array":{"dataType":"refObject","ref":"Datasource"},"required":true},
+            "isActive": {"dataType":"boolean","required":true},
+            "createdAt": {"dataType":"datetime","required":true},
+            "updatedAt": {"dataType":"datetime","required":true},
+        },
+        "additionalProperties": false,
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
     "Datasource": {
         "dataType": "refObject",
         "properties": {
@@ -29,20 +41,6 @@ const models: TsoaRoute.Models = {
             "accessToken": {"dataType":"string","required":true},
             "accessTokenSecret": {"dataType":"string","required":true},
             "webhookSecret": {"dataType":"string","required":true},
-            "isActive": {"dataType":"boolean","required":true},
-            "createdAt": {"dataType":"datetime","required":true},
-            "updatedAt": {"dataType":"datetime","required":true},
-        },
-        "additionalProperties": false,
-    },
-    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-    "User": {
-        "dataType": "refObject",
-        "properties": {
-            "id": {"dataType":"string","required":true},
-            "username": {"dataType":"string","required":true},
-            "apiKey": {"dataType":"string","required":true},
-            "datasource": {"dataType":"array","array":{"dataType":"refObject","ref":"Datasource"},"required":true},
             "isActive": {"dataType":"boolean","required":true},
             "createdAt": {"dataType":"datetime","required":true},
             "updatedAt": {"dataType":"datetime","required":true},
@@ -207,26 +205,6 @@ const models: TsoaRoute.Models = {
         "additionalProperties": false,
     },
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-    "DGLResponse_WoocommerceProduct-Array_": {
-        "dataType": "refObject",
-        "properties": {
-            "data": {"dataType":"array","array":{"dataType":"refObject","ref":"WoocommerceProduct"},"required":true},
-            "status": {"dataType":"double","required":true},
-            "message": {"dataType":"string","required":true},
-        },
-        "additionalProperties": false,
-    },
-    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-    "DGLResponse_any_": {
-        "dataType": "refObject",
-        "properties": {
-            "data": {"dataType":"any","required":true},
-            "status": {"dataType":"double","required":true},
-            "message": {"dataType":"string","required":true},
-        },
-        "additionalProperties": false,
-    },
-    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
     "DGLResponse_User_": {
         "dataType": "refObject",
         "properties": {
@@ -275,6 +253,26 @@ const models: TsoaRoute.Models = {
         "dataType": "refObject",
         "properties": {
             "data": {"dataType":"array","array":{"dataType":"refObject","ref":"Datasource"},"required":true},
+            "status": {"dataType":"double","required":true},
+            "message": {"dataType":"string","required":true},
+        },
+        "additionalProperties": false,
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "DGLResponse_WoocommerceProduct-Array_": {
+        "dataType": "refObject",
+        "properties": {
+            "data": {"dataType":"array","array":{"dataType":"refObject","ref":"WoocommerceProduct"},"required":true},
+            "status": {"dataType":"double","required":true},
+            "message": {"dataType":"string","required":true},
+        },
+        "additionalProperties": false,
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "DGLResponse_any_": {
+        "dataType": "refObject",
+        "properties": {
+            "data": {"dataType":"any","required":true},
             "status": {"dataType":"double","required":true},
             "message": {"dataType":"string","required":true},
         },
@@ -346,58 +344,6 @@ export function RegisterRoutes(app: Router) {
     //  NOTE: If you do not see routes for all of your controllers in this file, then you might not have informed tsoa of where to look
     //      Please look into the "controllerPathGlobs" config option described in the readme: https://github.com/lukeautry/tsoa
     // ###########################################################################################################
-        app.get('/v1/catalog/:datasourceId',
-            ...(fetchMiddlewares<RequestHandler>(ProductsController)),
-            ...(fetchMiddlewares<RequestHandler>(ProductsController.prototype.getCatalog)),
-
-            function ProductsController_getCatalog(request: any, response: any, next: any) {
-            const args = {
-                    apiKey: {"in":"header","name":"api-key","required":true,"dataType":"string"},
-                    datasourceId: {"in":"path","name":"datasourceId","required":true,"dataType":"double"},
-            };
-
-            // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-
-            let validatedArgs: any[] = [];
-            try {
-                validatedArgs = getValidatedArgs(args, request, response);
-
-                const controller = new ProductsController();
-
-
-              const promise = controller.getCatalog.apply(controller, validatedArgs as any);
-              promiseHandler(controller, promise, response, 200, next);
-            } catch (err) {
-                return next(err);
-            }
-        });
-        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-        app.get('/v1/catalog/sync/:datasourceId',
-            ...(fetchMiddlewares<RequestHandler>(ProductsController)),
-            ...(fetchMiddlewares<RequestHandler>(ProductsController.prototype.syncCatalog)),
-
-            function ProductsController_syncCatalog(request: any, response: any, next: any) {
-            const args = {
-                    apiKey: {"in":"header","name":"api-key","required":true,"dataType":"string"},
-                    datasourceId: {"in":"path","name":"datasourceId","required":true,"dataType":"double"},
-            };
-
-            // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-
-            let validatedArgs: any[] = [];
-            try {
-                validatedArgs = getValidatedArgs(args, request, response);
-
-                const controller = new ProductsController();
-
-
-              const promise = controller.syncCatalog.apply(controller, validatedArgs as any);
-              promiseHandler(controller, promise, response, 200, next);
-            } catch (err) {
-                return next(err);
-            }
-        });
-        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
         app.post('/v1/dashboard/user',
             ...(fetchMiddlewares<RequestHandler>(DashboardController)),
             ...(fetchMiddlewares<RequestHandler>(DashboardController.prototype.createUser)),
@@ -526,11 +472,11 @@ export function RegisterRoutes(app: Router) {
             }
         });
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-        app.get('/v1/shipping/:datasourceId',
-            ...(fetchMiddlewares<RequestHandler>(ShippingController)),
-            ...(fetchMiddlewares<RequestHandler>(ShippingController.prototype.getShippings)),
+        app.get('/v1/magento/catalog/sync/:datasourceId',
+            ...(fetchMiddlewares<RequestHandler>(MagentoController)),
+            ...(fetchMiddlewares<RequestHandler>(MagentoController.prototype.syncCatalog)),
 
-            function ShippingController_getShippings(request: any, response: any, next: any) {
+            function MagentoController_syncCatalog(request: any, response: any, next: any) {
             const args = {
                     apiKey: {"in":"header","name":"api-key","required":true,"dataType":"string"},
                     datasourceId: {"in":"path","name":"datasourceId","required":true,"dataType":"double"},
@@ -542,7 +488,85 @@ export function RegisterRoutes(app: Router) {
             try {
                 validatedArgs = getValidatedArgs(args, request, response);
 
-                const controller = new ShippingController();
+                const controller = new MagentoController();
+
+
+              const promise = controller.syncCatalog.apply(controller, validatedArgs as any);
+              promiseHandler(controller, promise, response, 200, next);
+            } catch (err) {
+                return next(err);
+            }
+        });
+        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+        app.get('/v1/woocommerce/catalog/:datasourceId',
+            ...(fetchMiddlewares<RequestHandler>(WoocommerceController)),
+            ...(fetchMiddlewares<RequestHandler>(WoocommerceController.prototype.getCatalog)),
+
+            function WoocommerceController_getCatalog(request: any, response: any, next: any) {
+            const args = {
+                    apiKey: {"in":"header","name":"api-key","required":true,"dataType":"string"},
+                    datasourceId: {"in":"path","name":"datasourceId","required":true,"dataType":"double"},
+            };
+
+            // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+            let validatedArgs: any[] = [];
+            try {
+                validatedArgs = getValidatedArgs(args, request, response);
+
+                const controller = new WoocommerceController();
+
+
+              const promise = controller.getCatalog.apply(controller, validatedArgs as any);
+              promiseHandler(controller, promise, response, 200, next);
+            } catch (err) {
+                return next(err);
+            }
+        });
+        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+        app.get('/v1/woocommerce/catalog/sync/:datasourceId',
+            ...(fetchMiddlewares<RequestHandler>(WoocommerceController)),
+            ...(fetchMiddlewares<RequestHandler>(WoocommerceController.prototype.syncCatalog)),
+
+            function WoocommerceController_syncCatalog(request: any, response: any, next: any) {
+            const args = {
+                    apiKey: {"in":"header","name":"api-key","required":true,"dataType":"string"},
+                    datasourceId: {"in":"path","name":"datasourceId","required":true,"dataType":"double"},
+            };
+
+            // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+            let validatedArgs: any[] = [];
+            try {
+                validatedArgs = getValidatedArgs(args, request, response);
+
+                const controller = new WoocommerceController();
+
+
+              const promise = controller.syncCatalog.apply(controller, validatedArgs as any);
+              promiseHandler(controller, promise, response, 200, next);
+            } catch (err) {
+                return next(err);
+            }
+        });
+        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+        app.get('/v1/woocommerce/shipping/:datasourceId',
+            ...(fetchMiddlewares<RequestHandler>(WoocommerceController)),
+            ...(fetchMiddlewares<RequestHandler>(WoocommerceController.prototype.getShippings)),
+
+            function WoocommerceController_getShippings(request: any, response: any, next: any) {
+            const args = {
+                    apiKey: {"in":"header","name":"api-key","required":true,"dataType":"string"},
+                    datasourceId: {"in":"path","name":"datasourceId","required":true,"dataType":"double"},
+            };
+
+            // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+            let validatedArgs: any[] = [];
+            try {
+                validatedArgs = getValidatedArgs(args, request, response);
+
+                const controller = new WoocommerceController();
 
 
               const promise = controller.getShippings.apply(controller, validatedArgs as any);
