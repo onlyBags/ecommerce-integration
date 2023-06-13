@@ -38,5 +38,8 @@ testem.log
 .DS_Store
 Thumbs.db
 
+# Custom
 .env
 .env.prod
+packages/ecommerce-server/public/swagger.json
+packages/ecommerce-server/src/routes/routes.ts
