@@ -6,5 +6,9 @@
   "scripts": {
     "build": "tsc -p tsconfig.json",
     "watch": "tsc -p tsconfig.json --watch"
+  },
+  "dependencies": {
+    "@dg-live/ecommerce-config": "*",
+    "@dg-live/ecommerce-db": "*"
   }
 }

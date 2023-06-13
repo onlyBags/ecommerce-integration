@@ -7,6 +7,8 @@ import { ProductsController } from './../controllers/catalogController.js';
 // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 import { DashboardController } from './../controllers/dashboardController.js';
 // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+import { MagentoController } from './../controllers/magentoController.js';
+// WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 import { ShippingController } from './../controllers/shippingController.js';
 import type { RequestHandler, Router } from 'express';
 
@@ -20,10 +22,12 @@ const models: TsoaRoute.Models = {
             "name": {"dataType":"string","required":true},
             "user": {"ref":"User","required":true},
             "woocommerceProduct": {"dataType":"array","array":{"dataType":"refObject","ref":"WoocommerceProduct"},"required":true},
-            "platform": {"dataType":"union","subSchemas":[{"dataType":"enum","enums":["Woocommerce"]},{"dataType":"enum","enums":["Magento"]}],"required":true},
+            "platform": {"dataType":"union","subSchemas":[{"dataType":"enum","enums":["woocommerce"]},{"dataType":"enum","enums":["magento"]}],"required":true},
             "baseUrl": {"dataType":"string","required":true},
             "consumerKey": {"dataType":"string","required":true},
             "consumerSecret": {"dataType":"string","required":true},
+            "accessToken": {"dataType":"string","required":true},
+            "accessTokenSecret": {"dataType":"string","required":true},
             "webhookSecret": {"dataType":"string","required":true},
             "isActive": {"dataType":"boolean","required":true},
             "createdAt": {"dataType":"datetime","required":true},
@@ -257,9 +261,11 @@ const models: TsoaRoute.Models = {
         "dataType": "refObject",
         "properties": {
             "name": {"dataType":"string","required":true},
-            "platform": {"dataType":"union","subSchemas":[{"dataType":"enum","enums":["Woocommerce"]},{"dataType":"enum","enums":["Magento"]}],"required":true},
+            "platform": {"dataType":"union","subSchemas":[{"dataType":"enum","enums":["woocommerce"]},{"dataType":"enum","enums":["magento"]}],"required":true},
             "consumerKey": {"dataType":"string","required":true},
             "consumerSecret": {"dataType":"string","required":true},
+            "accessToken": {"dataType":"string"},
+            "accessTokenSecret": {"dataType":"string"},
             "baseUrl": {"dataType":"string","required":true},
         },
         "additionalProperties": false,
@@ -488,6 +494,32 @@ export function RegisterRoutes(app: Router) {
 
 
               const promise = controller.getUserDatasource.apply(controller, validatedArgs as any);
+              promiseHandler(controller, promise, response, 200, next);
+            } catch (err) {
+                return next(err);
+            }
+        });
+        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+        app.get('/v1/magento/catalog/:datasourceId',
+            ...(fetchMiddlewares<RequestHandler>(MagentoController)),
+            ...(fetchMiddlewares<RequestHandler>(MagentoController.prototype.getCatalog)),
+
+            function MagentoController_getCatalog(request: any, response: any, next: any) {
+            const args = {
+                    apiKey: {"in":"header","name":"api-key","required":true,"dataType":"string"},
+                    datasourceId: {"in":"path","name":"datasourceId","required":true,"dataType":"double"},
+            };
+
+            // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+            let validatedArgs: any[] = [];
+            try {
+                validatedArgs = getValidatedArgs(args, request, response);
+
+                const controller = new MagentoController();
+
+
+              const promise = controller.getCatalog.apply(controller, validatedArgs as any);
               promiseHandler(controller, promise, response, 200, next);
             } catch (err) {
                 return next(err);

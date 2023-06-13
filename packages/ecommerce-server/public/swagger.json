@@ -27,8 +27,8 @@
 					"platform": {
 						"type": "string",
 						"enum": [
-							"Woocommerce",
-							"Magento"
+							"woocommerce",
+							"magento"
 						]
 					},
 					"baseUrl": {
@@ -38,6 +38,12 @@
 						"type": "string"
 					},
 					"consumerSecret": {
+						"type": "string"
+					},
+					"accessToken": {
+						"type": "string"
+					},
+					"accessTokenSecret": {
 						"type": "string"
 					},
 					"webhookSecret": {
@@ -64,6 +70,8 @@
 					"baseUrl",
 					"consumerKey",
 					"consumerSecret",
+					"accessToken",
+					"accessTokenSecret",
 					"webhookSecret",
 					"isActive",
 					"createdAt",
@@ -753,14 +761,20 @@
 					"platform": {
 						"type": "string",
 						"enum": [
-							"Woocommerce",
-							"Magento"
+							"woocommerce",
+							"magento"
 						]
 					},
 					"consumerKey": {
 						"type": "string"
 					},
 					"consumerSecret": {
+						"type": "string"
+					},
+					"accessToken": {
+						"type": "string"
+					},
+					"accessTokenSecret": {
 						"type": "string"
 					},
 					"baseUrl": {
@@ -1125,6 +1139,46 @@
 				},
 				"tags": [
 					"User"
+				],
+				"security": [],
+				"parameters": [
+					{
+						"in": "header",
+						"name": "api-key",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"in": "path",
+						"name": "datasourceId",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					}
+				]
+			}
+		},
+		"/magento/catalog/{datasourceId}": {
+			"get": {
+				"operationId": "GetCatalog",
+				"responses": {
+					"200": {
+						"description": "Created",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/DGLResponse_WoocommerceProduct-Array_"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Magento"
 				],
 				"security": [],
 				"parameters": [

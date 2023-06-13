@@ -18,12 +18,14 @@ export const stringToBool: ValueTransformer = {
 
 export const encrypt: ValueTransformer = {
   to: (dbValue) => {
+    if (!dbValue) return dbValue;
     const cipher = createCipheriv(algorithm, key, iv);
     let encrypted = cipher.update(dbValue, 'utf8', 'hex');
     encrypted += cipher.final('hex');
     return encrypted;
   },
   from: (entityValue) => {
+    if (!entityValue) return entityValue;
     const decipheriv = createDecipheriv(algorithm, key, iv);
     let decrypted = decipheriv.update(entityValue, 'hex', 'utf8');
     decrypted += decipheriv.final('utf8');

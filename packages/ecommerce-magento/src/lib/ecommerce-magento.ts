@@ -1,3 +1,1 @@
-export const testLib = () => {
-  return 'test-lib';
-};
+export * from '../services/index.js';

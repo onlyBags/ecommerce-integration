@@ -16,6 +16,7 @@ import { AppDataSource } from '@dg-live/ecommerce-db';
 import { envConfig } from '@dg-live/ecommerce-config';
 import { RegisterRoutes } from '../routes/routes.js';
 import { handleWebhook } from '@dg-live/ecommerce-webhooks';
+
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 

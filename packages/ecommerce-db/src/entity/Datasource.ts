@@ -45,6 +45,18 @@ export class Datasource {
   consumerSecret: string;
 
   @Column({
+    nullable: true,
+    transformer: encrypt,
+  })
+  accessToken: string;
+
+  @Column({
+    nullable: true,
+    transformer: encrypt,
+  })
+  accessTokenSecret: string;
+
+  @Column({
     transformer: encrypt,
   })
   webhookSecret: string;
