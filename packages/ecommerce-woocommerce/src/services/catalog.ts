@@ -22,8 +22,20 @@ export const getAllProducts = async ({
   try {
     const foundUser = await userRepository.findOne({
       where: { apiKey, datasource: { id: datasourceId } },
+      relations: {
+        datasource: {
+          woocommerceProduct: {
+            images: true,
+          },
+        },
+      },
     });
-    if (!foundUser || !!foundUser.datasource.length) return [];
+    if (
+      !foundUser ||
+      !foundUser.datasource.length ||
+      !foundUser.datasource[0].woocommerceProduct.length
+    )
+      return [];
     return foundUser.datasource[0].woocommerceProduct;
   } catch (err) {
     throw err;

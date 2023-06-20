@@ -66,7 +66,6 @@ export const parseProductResponse = async (
     await AppDataSource.manager.transaction(
       async (transactionalEntityManager) => {
         const productData = woocommerceProduct;
-        debugger;
         const foundUserProduct = await userRepository.findOne({
           relations: {
             datasource: {
@@ -131,12 +130,17 @@ export const parseProductResponse = async (
 
         let dimensionToSave: Dimensions;
         const dimension = new Dimensions();
-        const foundDimension = await findDimension(apiKey, datasourceId, {
-          width: productData.dimensions.width,
-          height: productData.dimensions.height,
-          length: productData.dimensions.length,
-        });
-
+        const foundDimension = await findDimension(
+          apiKey,
+          datasourceId,
+          foundProduct.id || null,
+          {
+            width: productData.dimensions.width || '0',
+            height: productData.dimensions.height || '0',
+            length: productData.dimensions.length || '0',
+          }
+        );
+        debugger;
         if (foundDimension) dimensionToSave = foundDimension;
         else {
           dimension.length = productData.dimensions.length || '0';
@@ -319,6 +323,7 @@ export const parseProductResponse = async (
 const findDimension = async (
   apiKey: string,
   datasourceId: number,
+  productId: number | null,
   dimensions: {
     width: string;
     height: string;
@@ -338,6 +343,7 @@ const findDimension = async (
       datasource: {
         id: datasourceId,
         woocommerceProduct: {
+          id: productId ? productId : In([0]),
           dimensions: {
             width: dimensions.width,
             height: dimensions.height,

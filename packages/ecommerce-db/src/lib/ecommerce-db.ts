@@ -29,7 +29,6 @@ export const AppDataSource = new typeorm.DataSource({
   database: dbDatabase,
   synchronize: true,
   logging: true,
-  debug: true,
   entities: [
     User,
     Datasource,
