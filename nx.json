@@ -6,6 +6,9 @@
   },
   "targetDefaults": {
     "build": {
+      "dependsOn": ["^build"]
+    },
+    "buildAll": {
       "dependsOn": ["^build", "prebuild"]
     },
     "test": {

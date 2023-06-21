@@ -13,6 +13,18 @@
       }
     },
     {
+      "label": "BuildServer",
+      "type": "shell",
+      "command": "npm run build:server",
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "presentation": {
+        "reveal": "always"
+      }
+    },
+    {
       "label": "Build",
       "dependsOn": ["BuildAll"]
     }

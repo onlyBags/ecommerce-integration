@@ -57,7 +57,12 @@ export const createMagentoOauthInstance = async ({
       },
     });
     if (res.data) return res.data;
-  } catch (error) {
-    throw new Error('');
+  } catch (err) {
+    console.log(err);
+    throw err;
   }
 };
+// 0o2fy5fznnlijdr4ii1zx9mvrmva2y85
+// 9qu2jdrp4w2ctgvpcg35j6oidd0oza9c
+// 58pmkyu7ebkiof1uznufhx0awnoxogzr
+// kzeejctuncpsy2g46ehzdj6bb9w5gsvp

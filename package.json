@@ -3,7 +3,8 @@
   "version": "0.0.1",
   "license": "MIT",
   "scripts": {
-    "build:all": "nx run-many -t build",
+    "build:server": "nx run-many -t build",
+    "build:all": "nx run-many -t buildAll",
     "watch:all": "nx run-many -t watch",
     "dev": "cd packages/ecommerce-server && npm run dev",
     "affected:graph": "nx affected:graph"
