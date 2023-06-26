@@ -21,7 +21,7 @@ const { dbType, dbHost, dbPort, dbUsername, dbPassword, dbDatabase } =
   envConfig;
 
 export const AppDataSource = new typeorm.DataSource({
-  type: dbType as 'mysql',
+  type: 'mysql', // dbType as 'mysql',
   host: dbHost,
   port: dbPort,
   username: dbUsername,
