@@ -3,6 +3,7 @@
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "packages/ecommerce-server/src",
   "projectType": "library",
+  "implicitDependencies": ["@dg-live/ecommerce-db"],
   "targets": {
     "lint": {
       "executor": "@nx/linter:eslint",

@@ -7,6 +7,11 @@
     "build": "tsc -p tsconfig.json",
     "watch": "tsc -p tsconfig.json --watch"
   },
+  "nx": {
+    "implicitDependencies": [
+      "@dg-live/ecommerce-woocommerce"
+    ]
+  },
   "dependencies": {
     "@dg-live/ecommerce-config": "*",
     "@dg-live/ecommerce-db": "*",

@@ -1,0 +1,7 @@
+{
+  "watch": ["packages/ecommerce-server"],
+  "ext": ["js", "mjs", "json"],
+  "restart": true,
+  "ignore": ["node_modules/**/*"],
+  "exec": "npm run start"
+}

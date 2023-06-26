@@ -3,7 +3,10 @@
   "version": "0.0.1",
   "license": "MIT",
   "scripts": {
+    "start": "docker-compose -f docker-compose.yml up --build",
+    "start:dev": "docker-compose -f docker-compose.dev.yml up --build",
     "build:server": "nx run-many -t build",
+    "build": "nx run-many -t build",
     "build:all": "nx run-many -t buildAll",
     "watch:all": "nx run-many -t watch",
     "dev": "cd packages/ecommerce-server && npm run dev",
@@ -50,6 +53,7 @@
     "dotenv": "^16.0.3",
     "express": "^4.18.2",
     "mysql2": "^3.3.1",
+    "nodemon": "^2.0.22",
     "oauth-1.0a": "^2.2.6",
     "reflect-metadata": "^0.1.13",
     "tslib": "^2.3.0",

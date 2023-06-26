@@ -28,7 +28,11 @@ export const AppDataSource = new typeorm.DataSource({
   password: dbPassword,
   database: dbDatabase,
   synchronize: true,
+  // poolSize: 10,
   logging: true,
+  // debug: true,
+  // trace: true,
+  insecureAuth: true,
   entities: [
     User,
     Datasource,

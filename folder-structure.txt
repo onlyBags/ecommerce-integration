@@ -1,0 +1,19 @@
+package.json
+nx.json
+Dockerfile
+docker-compose.dev.yml
+packages/
+  ecommerce-config
+  ecommerce-db
+  ecommerce-woocommerce
+  ecommerce-magento
+  ecommerce-server
+
+inside ecommerce-server/
+package.json
+tsconfig.json
+
+i want to hotreload only ecommerce-server
+
+do you need again the docker-compose-dev.yml file? or Dockerfile? or nx.json? or package.json? or tsconfig.json? or all of them?
+do you need more info?

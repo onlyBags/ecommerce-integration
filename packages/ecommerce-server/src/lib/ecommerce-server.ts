@@ -23,10 +23,9 @@ const __dirname = dirname(__filename);
 let swaggerDocument: any;
 
 if (process.env.NODE_ENV !== 'test') {
-  console.log('__dirname: ', `${__dirname}/../../public/swagger.json`);
   readFile(`${__dirname}/../../public/swagger.json`, 'utf8').then((data) => {
     swaggerDocument = JSON.parse(data);
-    // console.log(data);
+    console.log('12');
   });
 }
 
@@ -80,8 +79,9 @@ const server = app.listen(port, async () => {
   try {
     await AppDataSource.initialize();
   } catch (error) {
-    console.log('Error connecting to database', error);
-    process.exit(1);
+    console.log('Error connecting to database');
+    console.log(error);
+    // process.exit(1);
   }
   console.log(
     `⚡️[server]: Server is running at http://localhost:${port}/docs`
