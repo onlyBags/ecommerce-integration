@@ -3,10 +3,12 @@ import {
   PrimaryGeneratedColumn,
   Column,
   Unique,
-  ManyToOne,
   ManyToMany,
+  OneToMany,
+  ManyToOne,
 } from 'typeorm';
 import { WoocommerceProduct } from './WoocommerceProduct.js';
+import { AttributeOption } from './AttributeOption.js';
 
 @Entity({
   name: 'wc_attribute',
@@ -19,7 +21,7 @@ export class Attribute {
   attributeId: number;
 
   @Column({ type: 'varchar' })
-  @Unique('UQ_ATTRIBUTE_NAME', ['name'])
+  // @Unique('UQ_ATTRIBUTE_NAME', ['name'])
   name: string;
 
   @Column({ type: 'int', nullable: true })
@@ -31,8 +33,8 @@ export class Attribute {
   @Column({ type: 'boolean', nullable: true })
   variation: boolean;
 
-  @Column({ type: 'varchar', nullable: true })
-  options: string;
+  @OneToMany(() => AttributeOption, (option) => option.attribute)
+  options: AttributeOption[];
 
   @ManyToMany(
     () => WoocommerceProduct,

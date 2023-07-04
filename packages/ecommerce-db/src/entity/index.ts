@@ -5,6 +5,7 @@ export * from './Category.js';
 export * from './Tag.js';
 export * from './Image.js';
 export * from './Attribute.js';
+export * from './AttributeOption.js';
 export * from './MetaData.js';
 export * from './Self.js';
 export * from './Collection.js';

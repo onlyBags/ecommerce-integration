@@ -6,13 +6,14 @@ if (process.env.NODE_ENV === 'development') {
     '*********************************using dev env + process.env.MYSQL_ROOT_PASSWORD' +
       process.env.MYSQL_ROOT_PASSWORD
   );
-  config({ path: process.cwd() + '/../../.env.dev' });
+  config({ path: '.env.dev' });
 } else {
   console.log('*********************************using prod env');
-  config({ path: process.cwd() + '/../../.env.prod' });
+  console.log('path:' + '.env.prod');
+  config({ path: '.env.prod' });
 }
 console.log(
-  '*********************************process.env.DB_TYPE' +
+  '*********************************process.env.DB_TYPE ' +
     process.env.MYSQL_ROOT_PASSWORD
 );
 export const envConfig = Object.freeze({

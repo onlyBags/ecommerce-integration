@@ -228,14 +228,14 @@ export class WoocommerceProduct {
   @OneToMany(() => Image, (image) => image.woocommerceProduct)
   images: Image[];
 
-  @ManyToMany(() => Category, (category) => category.woocommerceProduct)
-  @JoinTable({ name: 'wc_product_x_category' })
+  @OneToMany(() => Category, (category) => category.woocommerceProduct)
+  // @JoinTable({ name: 'wc_product_x_category' })
   categories: Category[];
 
-  @ManyToMany(() => Tag, (tag) => tag.woocommerceProduct)
-  @JoinTable({
-    name: 'wc_product_x_tag',
-  })
+  @OneToMany(() => Tag, (tag) => tag.woocommerceProduct)
+  // @JoinTable({
+  //   name: 'wc_product_x_tag',
+  // })
   tags: Tag[];
 
   @ManyToMany(() => Attribute, (attribute) => attribute.woocommerceProduct)
@@ -244,10 +244,10 @@ export class WoocommerceProduct {
   })
   attributes: Attribute[];
 
-  @ManyToMany(() => MetaData, (metaData) => metaData.woocommerceProduct)
-  @JoinTable({
-    name: 'wc_product_x_meta_data',
-  })
+  @OneToMany(() => MetaData, (metaData) => metaData.woocommerceProduct)
+  // @JoinTable({
+  //   name: 'wc_product_x_meta_data',
+  // })
   metaData: MetaData[];
 
   // @ManyToOne((type) => Links, (links) => links.id, {

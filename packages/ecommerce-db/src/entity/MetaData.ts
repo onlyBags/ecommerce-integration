@@ -24,7 +24,7 @@ export class MetaData {
   @Column({ type: 'text', nullable: true })
   value: string;
 
-  @ManyToMany(
+  @ManyToOne(
     () => WoocommerceProduct,
     (woocommerceProduct) => woocommerceProduct.metaData
   )

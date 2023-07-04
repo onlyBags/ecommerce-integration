@@ -26,6 +26,10 @@ export const getAllProducts = async ({
         datasource: {
           woocommerceProduct: {
             images: true,
+            categories: true,
+            attributes: {
+              options: true,
+            },
           },
         },
       },
@@ -121,9 +125,11 @@ export const updateProduct = async ({
             categories: true,
             tags: true,
             images: true,
-            attributes: true,
+            attributes: {
+              options: true,
+            },
             dimensions: true,
-            metaData: true,
+            metaData: false,
           },
         },
       },
@@ -182,14 +188,12 @@ const upsertProduct = async (woocommerceProduct: WoocommerceProduct) => {
   let savedProduct: WoocommerceProduct;
   let updatedProduct: WoocommerceProduct;
   try {
-    debugger;
     const foundProduct = await woocommerceProductRepository.findOne({
       where: {
         productId: woocommerceProduct.productId,
         datasourceId: woocommerceProduct.datasourceId,
       },
     });
-    debugger;
     if (foundProduct) {
       debugger;
       updatedProduct = await woocommerceProductRepository.save({
@@ -197,12 +201,10 @@ const upsertProduct = async (woocommerceProduct: WoocommerceProduct) => {
         ...woocommerceProduct,
       });
     } else {
-      debugger;
       savedProduct = await woocommerceProductRepository.save(
         woocommerceProduct
       );
     }
-    debugger;
     return {
       savedProduct,
       updatedProduct,

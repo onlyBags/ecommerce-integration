@@ -1,4 +1,4 @@
-import { In } from 'typeorm';
+import { Equal, In, Like } from 'typeorm';
 import { createHash } from 'crypto';
 import {
   AppDataSource,
@@ -8,6 +8,7 @@ import {
   Tag,
   Image,
   Attribute,
+  AttributeOption,
   Dimensions,
   MetaData,
 } from '@dg-live/ecommerce-db';
@@ -133,14 +134,13 @@ export const parseProductResponse = async (
         const foundDimension = await findDimension(
           apiKey,
           datasourceId,
-          foundProduct.id || null,
+          foundProduct?.id || null,
           {
             width: productData.dimensions.width || '0',
             height: productData.dimensions.height || '0',
             length: productData.dimensions.length || '0',
           }
         );
-        debugger;
         if (foundDimension) dimensionToSave = foundDimension;
         else {
           dimension.length = productData.dimensions.length || '0';
@@ -224,8 +224,77 @@ export const parseProductResponse = async (
         if (imagesToSave.length) product.images = imagesToSave;
 
         let attributesToSave: Attribute[] = [];
+
+        // Existing attributes
+        let foundAttributes = await findAttributes(
+          apiKey,
+          datasourceId,
+          product.productId
+        );
+
+        // Attributes to be added and updated
+        let attributesToAddOrUpdate: AttributeRes[] = productData.attributes;
+        debugger;
+        // Iterate over each attribute to add or update
+        for (const attributeToAddOrUpdate of attributesToAddOrUpdate) {
+          // Check if this attribute exists already
+          let existingAttribute = foundAttributes.find(
+            (attr) => attr.attributeId === attributeToAddOrUpdate.id
+          );
+
+          // If the attribute doesn't exist, create a new one
+          if (!existingAttribute) {
+            existingAttribute = new Attribute();
+            existingAttribute.attributeId = attributeToAddOrUpdate.id;
+            existingAttribute.name = attributeToAddOrUpdate.name;
+            existingAttribute.position = attributeToAddOrUpdate.position;
+            existingAttribute.visible = attributeToAddOrUpdate.visible;
+            existingAttribute.variation = attributeToAddOrUpdate.variation;
+
+            // Save the attribute
+            existingAttribute = await transactionalEntityManager.save(
+              existingAttribute
+            );
+          }
+
+          // Now, for each option, check if it exists for this attribute, if not, add it
+          for (const optionToAdd of attributeToAddOrUpdate.options) {
+            let existingOption = await transactionalEntityManager.findOne(
+              AttributeOption,
+              {
+                where: {
+                  value: Like(`%${optionToAdd}%`), // updated to use Like operator
+                  attribute: Equal(existingAttribute.id), // here we use the ID of the saved attribute
+                },
+              }
+            );
+            debugger;
+            // If this option doesn't exist, create a new one
+            if (!existingOption) {
+              existingOption = new AttributeOption();
+              existingOption.value = [optionToAdd];
+              existingOption.attribute = existingAttribute;
+
+              existingOption = await transactionalEntityManager.save(
+                existingOption
+              );
+            }
+          }
+
+          // Add the attribute to the list to be saved to the product
+          attributesToSave.push(existingAttribute);
+        }
+
+        // Update the product's attributes
+        if (attributesToSave.length) {
+          product.attributes = attributesToSave;
+        }
+        /*
+        let attributesToSave: Attribute[] = [];
         let attributesToAdd: AttributeRes[] = [];
+        let attributesToUpdate: AttributeRes[] = [];
         const foundAttributes = await findAttributes(apiKey, datasourceId);
+
         if (!foundAttributes.length) {
           attributesToAdd = productData.attributes;
         } else {
@@ -233,54 +302,122 @@ export const parseProductResponse = async (
             attributesToAdd = productData.attributes.filter(
               (x) => !foundAttributes.find((y) => y.attributeId === x.id)
             );
-          } catch (err) {
-            console.log(err);
-            debugger;
-          }
-        }
-        for (const attrubuteToAdd of attributesToAdd) {
-          const attribute = new Attribute();
-          attribute.attributeId = attrubuteToAdd.id;
-          attribute.name = attrubuteToAdd.name;
-          attribute.position = attrubuteToAdd.position;
-          attribute.visible = attrubuteToAdd.visible;
-          attribute.variation = attrubuteToAdd.variation;
-          attribute.options = JSON.stringify(attrubuteToAdd.options); // Storing array as string
-          const savedAttribute = await transactionalEntityManager.save(
-            attribute
-          );
-          attributesToSave.push(savedAttribute);
-        }
-
-        if (attributesToSave.length) product.attributes = attributesToSave;
-
-        const metaDataToSave: MetaData[] = [];
-        let metaDataToAdd: MetaDataRes[] = [];
-
-        const foundMetaData = await findMetaData(apiKey, datasourceId);
-        if (!foundMetaData.length) {
-          metaDataToAdd = productData.meta_data;
-        } else {
-          try {
-            metaDataToAdd = productData.meta_data.filter(
-              (x) => !foundMetaData.find((y) => y.metaDataId === x.id)
+            attributesToUpdate = productData.attributes.filter((x) =>
+              foundAttributes.find((y) => y.attributeId === x.id)
             );
           } catch (err) {
             console.log(err);
             debugger;
           }
         }
+        for (const attributeToAdd of attributesToAdd) {
+          // Check if the attribute already exists
+          let attribute = await transactionalEntityManager.findOne(Attribute, {
+            where: {
+              attributeId: attributeToAdd.id,
+            },
+          });
 
-        for (const meta of metaDataToAdd) {
-          const metaData = new MetaData();
-          metaData.metaDataId = meta.id;
-          metaData.key = meta.key;
-          metaData.value = isJson(meta.value)
-            ? JSON.stringify(meta.value)
-            : meta.value;
-          const savedMetaData = await transactionalEntityManager.save(metaData);
-          metaDataToSave.push(savedMetaData);
+          // If not, create a new one
+          if (!attribute) {
+            attribute = new Attribute();
+            attribute.attributeId = attributeToAdd.id;
+            attribute.name = attributeToAdd.name;
+            attribute.position = attributeToAdd.position;
+            attribute.visible = attributeToAdd.visible;
+            attribute.variation = attributeToAdd.variation;
+
+            attribute = await transactionalEntityManager.save(attribute);
+          }
+
+          // For each option to add, check if it already exists for this attribute
+          for (const optionToAdd of attributeToAdd.options) {
+            const optionValue = JSON.stringify(optionToAdd);
+            let option = await transactionalEntityManager.findOne(
+              AttributeOption,
+              {
+                where: {
+                  value: optionValue,
+                  attribute: attribute,
+                },
+              }
+            );
+
+            // If not, create a new one
+            if (!option) {
+              option = new AttributeOption();
+              option.value = optionValue;
+              option.attribute = attribute;
+
+              await transactionalEntityManager.save(option);
+            }
+          }
+
+          attributesToSave.push(attribute);
         }
+
+        for (const attributeToUpdate of attributesToUpdate) {
+          let attribute = await transactionalEntityManager.findOne(Attribute, {
+            where: {
+              attributeId: attributeToUpdate.id,
+            },
+          });
+          if (attribute) {
+            for (const optionToAdd of attributeToUpdate.options) {
+              const optionValue = JSON.stringify(optionToAdd);
+              let option = await transactionalEntityManager.findOne(
+                AttributeOption,
+                {
+                  where: {
+                    value: optionValue,
+                    attribute: attribute,
+                  },
+                }
+              );
+
+              // If not, create a new one
+              if (!option) {
+                option = new AttributeOption();
+                option.value = optionValue;
+                option.attribute = attribute;
+
+                await transactionalEntityManager.save(option);
+              }
+            }
+            attributesToSave.push(attribute); // Add updated attribute to attributesToSave
+          } else {
+            throw new Error("Attribute doesn't exist, impossible to update");
+          }
+        }
+        if (attributesToSave.length) product.attributes = attributesToSave;*/
+
+        const metaDataToSave: MetaData[] = [];
+        let metaDataToAdd: MetaDataRes[] = [];
+
+        // const foundMetaData = await findMetaData(apiKey, datasourceId);
+        // if (!foundMetaData.length) {
+        //   metaDataToAdd = productData.meta_data;
+        // } else {
+        //   try {
+        //     metaDataToAdd = productData.meta_data.filter(
+        //       (x) => !foundMetaData.find((y) => y.metaDataId === x.id)
+        //     );
+        //   } catch (err) {
+        //     console.log(err);
+        //     debugger;
+        //   }
+        // }
+
+        // for (const meta of metaDataToAdd) {
+        //   const metaData = new MetaData();
+        //   metaData.metaDataId = meta.id;
+        //   metaData.key = meta.key;
+        //   metaData.value = isJson(meta.value)
+        //     ? JSON.stringify(meta.value)
+        //     : meta.value;
+        //   const savedMetaData = await transactionalEntityManager.save(metaData);
+        //   metaDataToSave.push(savedMetaData);
+        // }
 
         if (metaDataToSave.length) product.metaData = metaDataToSave;
 
@@ -317,6 +454,7 @@ export const parseProductResponse = async (
     );
   }
   debugger;
+
   return data;
 };
 
@@ -427,7 +565,11 @@ const findImages = async (apiKey: string, datasourceId: number) => {
   return found;
 };
 
-const findAttributes = async (apiKey: string, datasourceId: number) => {
+const findAttributes = async (
+  apiKey: string,
+  datasourceId: number,
+  productId: number
+) => {
   const attributes = await attributeRepository.find({
     relations: {
       woocommerceProduct: {
@@ -438,6 +580,7 @@ const findAttributes = async (apiKey: string, datasourceId: number) => {
     },
     where: {
       woocommerceProduct: {
+        productId,
         datasource: {
           id: datasourceId,
           user: {

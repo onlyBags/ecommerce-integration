@@ -25,7 +25,7 @@ export class Category {
   @Column({ type: 'varchar', nullable: true })
   slug: string;
 
-  @ManyToMany(
+  @ManyToOne(
     () => WoocommerceProduct,
     (woocommerceProduct) => woocommerceProduct.categories
   )

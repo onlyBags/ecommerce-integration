@@ -7,18 +7,21 @@
     {
       "type": "node",
       "request": "launch",
-      "name": "Build Server",
+      "name": "DEBUG Build Server",
       "skipFiles": ["<node_internals>/**"],
       "program": "${workspaceFolder}\\packages\\ecommerce-server\\src\\index.ts",
       "outFiles": ["${workspaceFolder}/**/*.js"],
-      "preLaunchTask": "BuildServer"
+      "preLaunchTask": "BuildServer",
+      "env": {
+        "NODE_ENV": "development"
+      }
     },
     {
       "type": "node",
       "request": "launch",
       "name": "Build Server & Routes",
       "skipFiles": ["<node_internals>/**"],
-      "program": "${workspaceFolder}\\packages\\ecommerce-server\\src\\index.ts",
+      "program": "NODE_ENV=development ${workspaceFolder}\\packages\\ecommerce-server\\src\\index.ts",
       "outFiles": ["${workspaceFolder}/**/*.js"],
       "preLaunchTask": "BuildAll"
     }
