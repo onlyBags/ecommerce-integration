@@ -10,4 +10,3 @@ RUN npm i
 RUN npm i -g nodemon
 # Building all the packages
 RUN npm run build
-

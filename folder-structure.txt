@@ -2,18 +2,305 @@ package.json
 nx.json
 Dockerfile
 docker-compose.dev.yml
+docker-compose.yml
+package.json
+nx.json
+.env
+.env.prod
 packages/
   ecommerce-config
+    package.json
+    tsconfig.json
   ecommerce-db
+    package.json
+    tsconfig.json
   ecommerce-woocommerce
+    package.json
+    tsconfig.json
   ecommerce-magento
+    package.json
+    tsconfig.json
+  ecommerce-webhooks
+    package.json
+    tsconfig.json
   ecommerce-server
+    package.json
+    tsconfig.json
+    nodemon.json
+    project.json
+    src/* 
 
-inside ecommerce-server/
-package.json
-tsconfig.json
 
 i want to hotreload only ecommerce-server
 
 do you need again the docker-compose-dev.yml file? or Dockerfile? or nx.json? or package.json? or tsconfig.json? or all of them?
 do you need more info?
+
+
+BARD:
+im trying to setup docker with nx monorepo, so far i have 6 packages, the main package is ecommerce-server. All other packages are dependencies, with them or with ecommerce-server.
+so now, im trying to setup docker with 2 configs, one dev, that should reuild the affected packages, like hot reload and serve again ecommerce server. and the other config should be prod. where no hot reload is needed, just build. get the env vars and run the docker container.
+So based on what i just wrote you. what info do you need?
+folder stucture? .env and .env.prod? docker-compose.yml and docker-compose.dev.yml? docker file? nodemon.json? all the packages, just let me know what you need in order to make my monorepo work with docker, i will provide any info you need, including file content
+
+
+
+Dockerfile its a global docker file, its in the root of the monorepo. not inside packages/ecommerce-server:
+```/Dockerfile
+FROM node:18
+
+WORKDIR /usr/ecommerce-monorepo
+COPY package*.json ./
+COPY nx.json ./
+COPY packages ./packages
+COPY wait-for-it.sh ./wait-for-it.sh
+
+RUN npm i
+RUN npm i -g nodemon
+# Building all the packages
+RUN npm run build
+```
+
+```/docker-compose.yml
+version: '3.8'
+
+services:
+  mysqldb:
+    image: mysql:8.0.33
+    restart: unless-stopped
+    env_file: ./.env.prod
+    environment:
+      - MYSQL_DATABASE=${DB_DATABASE}
+      - MYSQL_ALLOW_PUBLIC_KEY_RETRIEVAL=true
+    ports:
+      - '3306:3306'
+    volumes:
+      - db:/var/lib/mysql
+  app:
+    command: ['./wait-for-it.sh', 'mysqldb:3306', '--', 'npm', 'run', 'dev']
+    depends_on:
+      - mysqldb
+    build: .
+    restart: unless-stopped
+    env_file: ./.env.prod
+    ports:
+      - $PORT:$PORT
+    environment:
+      - DB_HOST=mysqldb
+      - DB_USERNAME=root
+      - DB_PASSWORD=${DB_PASSWORD}
+      - DB_DATABASE=${DB_DATABASE}
+      - DB_PORT=3306
+    stdin_open: true
+    tty: true
+
+volumes:
+  db:
+
+```
+```/docker-compose.dev.yml
+version: '3.8'
+
+services:
+  mysqldb:
+    image: mysql:8.0.33
+    restart: unless-stopped
+    env_file: ./.env.dev
+    environment:
+      - MYSQL_ALLOW_PUBLIC_KEY_RETRIEVAL=true
+      - MYSQL_ALLOW_EMPTY_PASSWORD=true
+    ports:
+      - '3306:3306'
+    volumes:
+      - db:/var/lib/mysql
+    networks:
+      - ecommerce-network
+  app:
+    # command: ['./wait-for-it.sh', 'mysqldb:3306', '--', 'npm', 'run', 'dev']
+    command:
+      [
+        './wait-for-it.sh',
+        'mysqldb:3306',
+        '--',
+        'nodemon',
+        '--watch',
+        'packages/ecommerce-server',
+        '--exec',
+        'npm',
+        'run',
+        'dev',
+      ]
+    depends_on:
+      mysqldb:
+        condition: service_started
+    build: .
+    restart: unless-stopped
+    env_file: ./.env.dev
+    ports:
+      - 8080:8080
+    volumes:
+      - ./packages/ecommerce-server:/usr/ecommerce-monorepo/packages/ecommerce-server
+    # volumes:
+    #   - .:/usr/ecommerce-monorepo # map your local code into the Docker container
+    stdin_open: true
+    tty: true
+    networks:
+      - ecommerce-network
+    # command: ['npm', 'run', 'dev']
+
+volumes:
+  db:
+
+networks:
+  ecommerce-network:
+    driver: bridge
+```
+
+```/.env
+PORT=8080
+CYPHER_KEY=62b9847d41811a1e221f67a464ba98ce988f193f77bd4e683f4317c1718a902f
+CYPHER_IV=f522a0311bdf8400fc55b48fa4995dbe
+CYPHER_ALGORITHM=aes-256-cbc
+DB_TYPE=mysql
+DB_HOST=mysqldb
+DB_PORT=3306
+DB_USERNAME=root
+MYSQL_ROOT_PASSWORD=
+MYSQL_DATABASE=ecommerce
+MASTER_KEY='uDJk<qnZV=S;H8fz:Jdt_k}WkAj:v?*a'
+WEBHOOK_KEY='H5$4G@AM*X=nz8yTSNw^RsGFvp7QXZ4t'
+MAGENTO_TEST_CONSUMER_KEY=0o2fy5fznnlijdr4ii1zx9mvrmva2y85
+MAGENTO_TEST_CONSUMER_SECRET=9qu2jdrp4w2ctgvpcg35j6oidd0oza9c
+MAGENTO_TEST_ACCESS_TOKEN=58pmkyu7ebkiof1uznufhx0awnoxogzr
+MAGENTO_TEST_ACCESS_TOKEN_SECRET=kzeejctuncpsy2g46ehzdj6bb9w5gsvp
+MAGENTO_TEST_BASE_URL=https://magento2.dglive.org
+WEBHOOK_SECRET='H5$4G@AM*X=nz8yTSNw^RsGFvp7QXZ4t'
+WOOCOMMERCE_TEST_CONSUMER_KEY=ck_24f2b606b779cc8ed2eeee3379dc1f8d3b755243
+WOOCOMMERCE_TEST_CONSUMER_SECRET=cs_c14b46645f6a01488f709880dcff9573df569a8c
+WOOCOMMERCE_TEST_BASE_URL=https://tonicabsas.ar/
+
+```
+```/.env.prod
+PORT=8080
+CYPHER_KEY=62b9847d41811a1e221f67a464ba98ce988f193f77bd4e683f4317c1718a902f
+CYPHER_IV=f522a0311bdf8400fc55b48fa4995dbe
+CYPHER_ALGORITHM=aes-256-cbc
+DB_TYPE=mysql
+DB_HOST=localhost
+DB_PORT=3306
+DB_USERNAME=root
+MYSQL_ROOT_PASSWORD=
+MYSQL_DATABASE=ecommerce
+MASTER_KEY='uDJk<qnZV=S;H8fz:Jdt_k}WkAj:v?*a'
+WEBHOOK_KEY='H5$4G@AM*X=nz8yTSNw^RsGFvp7QXZ4t'
+MAGENTO_TEST_CONSUMER_KEY=0o2fy5fznnlijdr4ii1zx9mvrmva2y85
+MAGENTO_TEST_CONSUMER_SECRET=9qu2jdrp4w2ctgvpcg35j6oidd0oza9c
+MAGENTO_TEST_ACCESS_TOKEN=58pmkyu7ebkiof1uznufhx0awnoxogzr
+MAGENTO_TEST_ACCESS_TOKEN_SECRET=kzeejctuncpsy2g46ehzdj6bb9w5gsvp
+MAGENTO_TEST_BASE_URL=https://magento2.dglive.org
+WEBHOOK_SECRET='H5$4G@AM*X=nz8yTSNw^RsGFvp7QXZ4t'
+WOOCOMMERCE_TEST_CONSUMER_KEY=ck_24f2b606b779cc8ed2eeee3379dc1f8d3b755243
+WOOCOMMERCE_TEST_CONSUMER_SECRET=cs_c14b46645f6a01488f709880dcff9573df569a8c
+WOOCOMMERCE_TEST_BASE_URL=https://tonicabsas.ar/
+```
+
+```/package.json
+  "scripts": {
+    "start": "docker-compose -f docker-compose.yml up --build",
+    "start:dev": "docker-compose -f docker-compose.dev.yml up --build",
+    "build:server": "nx run-many -t build",
+    "build": "nx run-many -t build",
+    "build:all": "nx run-many -t buildAll",
+    "watch:all": "nx run-many -t watch",
+    "dev": "cd packages/ecommerce-server && npm run dev",
+    "affected:graph": "nx affected:graph"
+  },
+  "workspaces": [
+    "packages/*"
+  ],
+```
+```nx.json
+{
+  "extends": "nx/presets/npm.json",
+  "$schema": "./node_modules/nx/schemas/nx-schema.json",
+  "affected": {
+    "defaultBase": "main"
+  },
+  "targetDefaults": {
+    "build": {
+      "dependsOn": ["^prebuild", "^build"]
+    },
+    "buildAll": {
+      "dependsOn": ["^build", "prebuild"]
+    },
+    "test": {
+      "inputs": ["default", "^default", "{workspaceRoot}/jest.preset.js"]
+    }
+  },
+  "tasksRunnerOptions": {
+    "default": {
+      "runner": "nx/tasks-runners/default",
+      "options": {
+        "cacheableOperations": ["build", "lint", "test", "e2e", "watch"],
+        "parallel": 5
+      }
+    }
+  }
+}
+```
+```packages/ecommerce-server/nodemon.json
+{
+  "watch": ["packages/ecommerce-server"],
+  "ext": ["js", "mjs", "json"],
+  "restart": true,
+  "ignore": ["node_modules/**/*"],
+  "exec": "npm run start"
+}
+```
+```packages/ecommerce-server/package.json
+  "scripts": {
+    "postbuild": "echo I run before the build script",
+    "prebuild": "npm run swagger",
+    "build": "tsc -p tsconfig.json",
+    "dev1": "cross-env NODE_ENV=development tsc-watch -p tsconfig.json --onSuccess \"node ./dist/src/index.js\"",
+    "dev": "nodemon --watch packages/ecommerce-server --exec npm run start",
+    "swagger": "tsoa spec-and-routes",
+    "start": "node ./dist/src/index.js"
+  },
+  "dependencies": {
+    "@dg-live/ecommerce-db": "*",
+    "@dg-live/ecommerce-config": "*",
+    "@dg-live/ecommerce-magento": "*",
+    "@dg-live/ecommerce-woocommerce": "*",
+    "@dg-live/ecommerce-webhooks": "*"
+  }
+```
+
+there is one tsconfig.json per package, this is the one for ecommerce-server. there is no root tsconfig.json
+```packages/ecommerce-server/tsconfig.json
+{
+  "compilerOptions": {
+    "target": "es2015",
+    "module": "esnext",
+    "outDir": "dist",
+    "declaration": true,
+    "types": ["node"],
+    "moduleResolution": "node",
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "baseUrl": ".",
+    "sourceMap": true,
+    "skipLibCheck": true,
+    "skipDefaultLibCheck": true,
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
+    "resolveJsonModule": true
+  },
+  "exclude": ["jest.config.ts", "src/**/*.spec.ts", "src/**/*.test.ts"],
+  "include": [
+    "src/**/*.ts",
+    "public/swagger.json",
+    "packages/ecommerce-server/**/*.ts"
+  ]
+}
+```

@@ -32,7 +32,9 @@ services:
     depends_on:
       mysqldb:
         condition: service_started
-    build: .
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
     restart: unless-stopped
     env_file: ./.env.dev
     ports:

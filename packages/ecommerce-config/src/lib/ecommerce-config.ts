@@ -13,8 +13,7 @@ if (process.env.NODE_ENV === 'development') {
   config({ path: '.env.prod' });
 }
 console.log(
-  '*********************************process.env.DB_TYPE ' +
-    process.env.MYSQL_ROOT_PASSWORD
+  '*********************************process.env.DB_TYPE ' + process.env.DB_TYPE
 );
 export const envConfig = Object.freeze({
   port: parseInt(process.env.PORT || '8080'),

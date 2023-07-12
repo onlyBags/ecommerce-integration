@@ -1,0 +1,28 @@
+FROM node:18
+
+WORKDIR /usr/ecommerce-monorepo
+
+# Copy package.json and package-lock.json
+COPY package*.json ./
+
+# Copy nx.json file
+COPY nx.json ./
+
+# Copy the packages directory
+COPY packages ./packages
+
+# Copy the wait-for-it.sh script
+COPY wait-for-it.sh ./wait-for-it.sh
+
+# Install development dependencies
+RUN npm install --development
+
+# Install nodemon and ts-node globally
+RUN npm install -g nodemon ts-node typescript
+RUN npm install -g ts-node-dev
+
+# Building all the packages
+RUN npm run build
+
+# Change working directory to ecommerce-server
+# WORKDIR /usr/ecommerce-monorepo/packages/ecommerce-server

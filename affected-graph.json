@@ -1,0 +1,780 @@
+{
+  "graph": {
+    "nodes": {
+      "@dg-live/ecommerce-woocommerce": {
+        "name": "@dg-live/ecommerce-woocommerce",
+        "type": "lib",
+        "data": {
+          "root": "packages/ecommerce-woocommerce",
+          "sourceRoot": "packages/ecommerce-woocommerce",
+          "projectType": "library",
+          "targets": {
+            "build": {
+              "dependsOn": [
+                "^prebuild",
+                "^build"
+              ],
+              "executor": "nx:run-script",
+              "options": {
+                "script": "build"
+              },
+              "configurations": {}
+            },
+            "watch": {
+              "executor": "nx:run-script",
+              "options": {
+                "script": "watch"
+              }
+            }
+          },
+          "implicitDependencies": [
+            "@dg-live/ecommerce-db"
+          ],
+          "tags": [],
+          "files": [
+            {
+              "file": "packages/ecommerce-woocommerce/.eslintrc.json",
+              "hash": "13800677001662881425"
+            },
+            {
+              "file": "packages/ecommerce-woocommerce/jest.config.ts",
+              "hash": "6881711651751674348"
+            },
+            {
+              "file": "packages/ecommerce-woocommerce/package.json",
+              "hash": "12838294012212334964",
+              "dependencies": [
+                {
+                  "source": "@dg-live/ecommerce-woocommerce",
+                  "target": "@dg-live/ecommerce-config",
+                  "type": "static"
+                },
+                {
+                  "source": "@dg-live/ecommerce-woocommerce",
+                  "target": "@dg-live/ecommerce-db",
+                  "type": "static"
+                }
+              ]
+            },
+            {
+              "file": "packages/ecommerce-woocommerce/README.md",
+              "hash": "5415612980423158051"
+            },
+            {
+              "file": "packages/ecommerce-woocommerce/src/index.ts",
+              "hash": "639254986149517476"
+            },
+            {
+              "file": "packages/ecommerce-woocommerce/src/interfaces/common.ts",
+              "hash": "14805684589019477264"
+            },
+            {
+              "file": "packages/ecommerce-woocommerce/src/interfaces/index.ts",
+              "hash": "1340827147857410785"
+            },
+            {
+              "file": "packages/ecommerce-woocommerce/src/interfaces/woocommerce.ts",
+              "hash": "13940495882328156195"
+            },
+            {
+              "file": "packages/ecommerce-woocommerce/src/lib/ecommerce-woocommerce.ts",
+              "hash": "16755131407558593831"
+            },
+            {
+              "file": "packages/ecommerce-woocommerce/src/services/catalog.ts",
+              "hash": "1153280389007130270"
+            },
+            {
+              "file": "packages/ecommerce-woocommerce/src/services/index.ts",
+              "hash": "7441820377456454318"
+            },
+            {
+              "file": "packages/ecommerce-woocommerce/src/services/mydata.ts",
+              "hash": "769752401492501558"
+            },
+            {
+              "file": "packages/ecommerce-woocommerce/src/services/shipping.ts",
+              "hash": "10175819085232761746"
+            },
+            {
+              "file": "packages/ecommerce-woocommerce/src/services/webhooks.ts",
+              "hash": "12914998684023377794"
+            },
+            {
+              "file": "packages/ecommerce-woocommerce/src/util/index.ts",
+              "hash": "8584264897756552822"
+            },
+            {
+              "file": "packages/ecommerce-woocommerce/tsconfig.common",
+              "hash": "14098387068902027353"
+            },
+            {
+              "file": "packages/ecommerce-woocommerce/tsconfig.json",
+              "hash": "15634616264658675078"
+            },
+            {
+              "file": "packages/ecommerce-woocommerce/tsconfig.spec.json",
+              "hash": "11550347367511341917"
+            }
+          ]
+        }
+      },
+      "@dg-live/ecommerce-webhooks": {
+        "name": "@dg-live/ecommerce-webhooks",
+        "type": "lib",
+        "data": {
+          "root": "packages/ecommerce-webhooks",
+          "sourceRoot": "packages/ecommerce-webhooks",
+          "projectType": "library",
+          "targets": {
+            "build": {
+              "dependsOn": [
+                "^prebuild",
+                "^build"
+              ],
+              "executor": "nx:run-script",
+              "options": {
+                "script": "build"
+              },
+              "configurations": {}
+            },
+            "watch": {
+              "executor": "nx:run-script",
+              "options": {
+                "script": "watch"
+              }
+            }
+          },
+          "implicitDependencies": [
+            "@dg-live/ecommerce-woocommerce"
+          ],
+          "tags": [],
+          "files": [
+            {
+              "file": "packages/ecommerce-webhooks/package.json",
+              "hash": "14636849077454080595",
+              "dependencies": [
+                {
+                  "source": "@dg-live/ecommerce-webhooks",
+                  "target": "@dg-live/ecommerce-config",
+                  "type": "static"
+                },
+                {
+                  "source": "@dg-live/ecommerce-webhooks",
+                  "target": "@dg-live/ecommerce-db",
+                  "type": "static"
+                },
+                {
+                  "source": "@dg-live/ecommerce-webhooks",
+                  "target": "@dg-live/ecommerce-woocommerce",
+                  "type": "static"
+                }
+              ]
+            },
+            {
+              "file": "packages/ecommerce-webhooks/src/index.ts",
+              "hash": "2485153240966616322"
+            },
+            {
+              "file": "packages/ecommerce-webhooks/src/lib/ecommerce-webhooks.ts",
+              "hash": "2487225981961898793"
+            },
+            {
+              "file": "packages/ecommerce-webhooks/src/utils/index.ts",
+              "hash": "8358221975000930887"
+            },
+            {
+              "file": "packages/ecommerce-webhooks/tsconfig.common",
+              "hash": "3035502474815712996"
+            },
+            {
+              "file": "packages/ecommerce-webhooks/tsconfig.json",
+              "hash": "11835514864740754903"
+            }
+          ]
+        }
+      },
+      "@dg-live/ecommerce-magento": {
+        "name": "@dg-live/ecommerce-magento",
+        "type": "lib",
+        "data": {
+          "root": "packages/ecommerce-magento",
+          "sourceRoot": "packages/ecommerce-magento",
+          "projectType": "library",
+          "targets": {
+            "build": {
+              "dependsOn": [
+                "^prebuild",
+                "^build"
+              ],
+              "executor": "nx:run-script",
+              "options": {
+                "script": "build"
+              },
+              "configurations": {}
+            },
+            "watch": {
+              "executor": "nx:run-script",
+              "options": {
+                "script": "watch"
+              }
+            }
+          },
+          "implicitDependencies": [
+            "@dg-live/ecommerce-db"
+          ],
+          "tags": [],
+          "files": [
+            {
+              "file": "packages/ecommerce-magento/package.json",
+              "hash": "11991150205025841562",
+              "dependencies": [
+                {
+                  "source": "@dg-live/ecommerce-magento",
+                  "target": "@dg-live/ecommerce-config",
+                  "type": "static"
+                },
+                {
+                  "source": "@dg-live/ecommerce-magento",
+                  "target": "@dg-live/ecommerce-db",
+                  "type": "static"
+                }
+              ]
+            },
+            {
+              "file": "packages/ecommerce-magento/src/index.ts",
+              "hash": "14371154027899529351"
+            },
+            {
+              "file": "packages/ecommerce-magento/src/lib/ecommerce-magento.ts",
+              "hash": "16292672620614018489"
+            },
+            {
+              "file": "packages/ecommerce-magento/src/services/catalog.ts",
+              "hash": "11629113747131737567"
+            },
+            {
+              "file": "packages/ecommerce-magento/src/services/index.ts",
+              "hash": "16044190906988687475"
+            },
+            {
+              "file": "packages/ecommerce-magento/src/utils/index.ts",
+              "hash": "10314945479996522894"
+            },
+            {
+              "file": "packages/ecommerce-magento/tsconfig.json",
+              "hash": "11835514864740754903"
+            }
+          ]
+        }
+      },
+      "@dg-live/ecommerce-config": {
+        "name": "@dg-live/ecommerce-config",
+        "type": "lib",
+        "data": {
+          "root": "packages/ecommerce-config",
+          "sourceRoot": "packages/ecommerce-config",
+          "projectType": "library",
+          "targets": {
+            "build": {
+              "dependsOn": [
+                "^prebuild",
+                "^build"
+              ],
+              "executor": "nx:run-script",
+              "options": {
+                "script": "build"
+              },
+              "configurations": {}
+            },
+            "watch": {
+              "executor": "nx:run-script",
+              "options": {
+                "script": "watch"
+              }
+            }
+          },
+          "implicitDependencies": [],
+          "tags": [],
+          "files": [
+            {
+              "file": "packages/ecommerce-config/package.json",
+              "hash": "5258158730134896342"
+            },
+            {
+              "file": "packages/ecommerce-config/src/index.ts",
+              "hash": "16752932773012360735"
+            },
+            {
+              "file": "packages/ecommerce-config/src/lib/ecommerce-config.ts",
+              "hash": "4139343117841876882"
+            },
+            {
+              "file": "packages/ecommerce-config/tsconfig.common",
+              "hash": "3035502474815712996"
+            },
+            {
+              "file": "packages/ecommerce-config/tsconfig.json",
+              "hash": "11835514864740754903"
+            }
+          ]
+        }
+      },
+      "@dg-live/ecommerce-server": {
+        "name": "@dg-live/ecommerce-server",
+        "type": "lib",
+        "data": {
+          "name": "@dg-live/ecommerce-server",
+          "$schema": "../../node_modules/nx/schemas/project-schema.json",
+          "sourceRoot": "packages/ecommerce-server/src",
+          "projectType": "library",
+          "implicitDependencies": [
+            "@dg-live/ecommerce-db"
+          ],
+          "targets": {
+            "postbuild": {
+              "executor": "nx:run-script",
+              "options": {
+                "script": "postbuild"
+              }
+            },
+            "prebuild": {
+              "executor": "nx:run-script",
+              "options": {
+                "script": "prebuild"
+              }
+            },
+            "build": {
+              "dependsOn": [
+                "^prebuild",
+                "^build"
+              ],
+              "executor": "nx:run-script",
+              "options": {
+                "script": "build"
+              },
+              "configurations": {}
+            },
+            "dev1": {
+              "executor": "nx:run-script",
+              "options": {
+                "script": "dev1"
+              }
+            },
+            "dev": {
+              "executor": "nx:run-script",
+              "options": {
+                "script": "dev"
+              }
+            },
+            "swagger": {
+              "executor": "nx:run-script",
+              "options": {
+                "script": "swagger"
+              }
+            },
+            "start": {
+              "executor": "nx:run-script",
+              "options": {
+                "script": "start"
+              }
+            },
+            "lint": {
+              "executor": "@nx/linter:eslint",
+              "outputs": [
+                "{options.outputFile}"
+              ],
+              "options": {
+                "lintFilePatterns": [
+                  "packages/ecommerce-server/**/*.ts"
+                ]
+              }
+            },
+            "test": {
+              "inputs": [
+                "default",
+                "^default",
+                "{workspaceRoot}/jest.preset.js"
+              ],
+              "executor": "@nx/jest:jest",
+              "outputs": [
+                "{workspaceRoot}/coverage/{projectRoot}"
+              ],
+              "options": {
+                "jestConfig": "packages/ecommerce-server/jest.config.ts",
+                "passWithNoTests": true
+              },
+              "configurations": {
+                "ci": {
+                  "ci": true,
+                  "codeCoverage": true
+                }
+              }
+            }
+          },
+          "tags": [],
+          "root": "packages/ecommerce-server",
+          "files": [
+            {
+              "file": "packages/ecommerce-server/.eslintrc.json",
+              "hash": "14921153827776288937"
+            },
+            {
+              "file": "packages/ecommerce-server/jest.config.ts",
+              "hash": "1171387344933721841"
+            },
+            {
+              "file": "packages/ecommerce-server/nodemon.json",
+              "hash": "14767043666667157655"
+            },
+            {
+              "file": "packages/ecommerce-server/package.json",
+              "hash": "16034705092749406848",
+              "dependencies": [
+                {
+                  "source": "@dg-live/ecommerce-server",
+                  "target": "@dg-live/ecommerce-db",
+                  "type": "static"
+                },
+                {
+                  "source": "@dg-live/ecommerce-server",
+                  "target": "@dg-live/ecommerce-config",
+                  "type": "static"
+                },
+                {
+                  "source": "@dg-live/ecommerce-server",
+                  "target": "@dg-live/ecommerce-magento",
+                  "type": "static"
+                },
+                {
+                  "source": "@dg-live/ecommerce-server",
+                  "target": "@dg-live/ecommerce-woocommerce",
+                  "type": "static"
+                },
+                {
+                  "source": "@dg-live/ecommerce-server",
+                  "target": "@dg-live/ecommerce-webhooks",
+                  "type": "static"
+                }
+              ]
+            },
+            {
+              "file": "packages/ecommerce-server/project.json",
+              "hash": "905121382378892724"
+            },
+            {
+              "file": "packages/ecommerce-server/README.md",
+              "hash": "10966184845890672971"
+            },
+            {
+              "file": "packages/ecommerce-server/src/controllers/dashboardController.ts",
+              "hash": "5609620882254404095"
+            },
+            {
+              "file": "packages/ecommerce-server/src/controllers/magentoController.ts",
+              "hash": "4358504532383875566"
+            },
+            {
+              "file": "packages/ecommerce-server/src/controllers/woocommerceController.ts",
+              "hash": "5170063864917550355"
+            },
+            {
+              "file": "packages/ecommerce-server/src/index.ts",
+              "hash": "4583206487176341331"
+            },
+            {
+              "file": "packages/ecommerce-server/src/interfaces/dashboard.ts",
+              "hash": "6373189239798517061"
+            },
+            {
+              "file": "packages/ecommerce-server/src/interfaces/index.ts",
+              "hash": "12907350215298172445"
+            },
+            {
+              "file": "packages/ecommerce-server/src/lib/ecommerce-server.spec.ts",
+              "hash": "12999426582331822747"
+            },
+            {
+              "file": "packages/ecommerce-server/src/lib/ecommerce-server.ts",
+              "hash": "594653995490593301"
+            },
+            {
+              "file": "packages/ecommerce-server/src/routes/.gitkeep",
+              "hash": "3244421341483603138"
+            },
+            {
+              "file": "packages/ecommerce-server/src/services/dashboard/index.ts",
+              "hash": "2902318226579692219"
+            },
+            {
+              "file": "packages/ecommerce-server/src/util/index.ts",
+              "hash": "16010042645385960885"
+            },
+            {
+              "file": "packages/ecommerce-server/tsconfig.common",
+              "hash": "7523587282235752538"
+            },
+            {
+              "file": "packages/ecommerce-server/tsconfig.json",
+              "hash": "16801078731471304040"
+            },
+            {
+              "file": "packages/ecommerce-server/tsconfig.spec.json",
+              "hash": "1460064635699240518"
+            },
+            {
+              "file": "packages/ecommerce-server/tsoa.json",
+              "hash": "8508476373901827914"
+            }
+          ]
+        }
+      },
+      "@dg-live/ecommerce-db": {
+        "name": "@dg-live/ecommerce-db",
+        "type": "lib",
+        "data": {
+          "root": "packages/ecommerce-db",
+          "sourceRoot": "packages/ecommerce-db",
+          "projectType": "library",
+          "targets": {
+            "build": {
+              "dependsOn": [
+                "^prebuild",
+                "^build"
+              ],
+              "executor": "nx:run-script",
+              "options": {
+                "script": "build"
+              },
+              "configurations": {}
+            },
+            "watch": {
+              "executor": "nx:run-script",
+              "options": {
+                "script": "watch"
+              }
+            }
+          },
+          "implicitDependencies": [
+            "@dg-live/ecommerce-config"
+          ],
+          "tags": [],
+          "files": [
+            {
+              "file": "packages/ecommerce-db/.eslintrc.json",
+              "hash": "13800677001662881425"
+            },
+            {
+              "file": "packages/ecommerce-db/jest.config.ts",
+              "hash": "11604446279226971888"
+            },
+            {
+              "file": "packages/ecommerce-db/package.json",
+              "hash": "17506474423464890754",
+              "dependencies": [
+                {
+                  "source": "@dg-live/ecommerce-db",
+                  "target": "@dg-live/ecommerce-config",
+                  "type": "static"
+                }
+              ]
+            },
+            {
+              "file": "packages/ecommerce-db/README.md",
+              "hash": "325870463180351048"
+            },
+            {
+              "file": "packages/ecommerce-db/src/entity/Attribute.ts",
+              "hash": "2775369675060692950"
+            },
+            {
+              "file": "packages/ecommerce-db/src/entity/AttributeOption.ts",
+              "hash": "11868852263682334583"
+            },
+            {
+              "file": "packages/ecommerce-db/src/entity/Category.ts",
+              "hash": "9685755587500658570"
+            },
+            {
+              "file": "packages/ecommerce-db/src/entity/Collection.ts",
+              "hash": "16927559932488565435"
+            },
+            {
+              "file": "packages/ecommerce-db/src/entity/Datasource.ts",
+              "hash": "12750296668674473123"
+            },
+            {
+              "file": "packages/ecommerce-db/src/entity/Dimensions.ts",
+              "hash": "8491144791550204005"
+            },
+            {
+              "file": "packages/ecommerce-db/src/entity/Image.ts",
+              "hash": "14830711031546128593"
+            },
+            {
+              "file": "packages/ecommerce-db/src/entity/index.ts",
+              "hash": "10098992878397797308"
+            },
+            {
+              "file": "packages/ecommerce-db/src/entity/Links.ts",
+              "hash": "8329789892384512072"
+            },
+            {
+              "file": "packages/ecommerce-db/src/entity/MetaData.ts",
+              "hash": "14873808577027817239"
+            },
+            {
+              "file": "packages/ecommerce-db/src/entity/Self.ts",
+              "hash": "6380376201932332734"
+            },
+            {
+              "file": "packages/ecommerce-db/src/entity/Tag.ts",
+              "hash": "5829854143820942753"
+            },
+            {
+              "file": "packages/ecommerce-db/src/entity/User.ts",
+              "hash": "16805047068057409689"
+            },
+            {
+              "file": "packages/ecommerce-db/src/entity/WoocommerceProduct.ts",
+              "hash": "8349491544808000082"
+            },
+            {
+              "file": "packages/ecommerce-db/src/index.ts",
+              "hash": "7552439459832678546"
+            },
+            {
+              "file": "packages/ecommerce-db/src/lib/ecommerce-db.spec.ts",
+              "hash": "8625113894080777073"
+            },
+            {
+              "file": "packages/ecommerce-db/src/lib/ecommerce-db.ts",
+              "hash": "6654673580476467185"
+            },
+            {
+              "file": "packages/ecommerce-db/src/utils/index.ts",
+              "hash": "9998505355772416352"
+            },
+            {
+              "file": "packages/ecommerce-db/tsconfig.common",
+              "hash": "14098387068902027353"
+            },
+            {
+              "file": "packages/ecommerce-db/tsconfig.json",
+              "hash": "11835514864740754903"
+            },
+            {
+              "file": "packages/ecommerce-db/tsconfig.spec.json",
+              "hash": "11550347367511341917"
+            }
+          ]
+        }
+      }
+    },
+    "dependencies": {
+      "@dg-live/ecommerce-woocommerce": [
+        {
+          "source": "@dg-live/ecommerce-woocommerce",
+          "target": "@dg-live/ecommerce-db",
+          "type": "implicit"
+        },
+        {
+          "source": "@dg-live/ecommerce-woocommerce",
+          "target": "@dg-live/ecommerce-config",
+          "type": "static"
+        },
+        {
+          "source": "@dg-live/ecommerce-woocommerce",
+          "target": "@dg-live/ecommerce-db",
+          "type": "static"
+        }
+      ],
+      "@dg-live/ecommerce-webhooks": [
+        {
+          "source": "@dg-live/ecommerce-webhooks",
+          "target": "@dg-live/ecommerce-woocommerce",
+          "type": "implicit"
+        },
+        {
+          "source": "@dg-live/ecommerce-webhooks",
+          "target": "@dg-live/ecommerce-config",
+          "type": "static"
+        },
+        {
+          "source": "@dg-live/ecommerce-webhooks",
+          "target": "@dg-live/ecommerce-db",
+          "type": "static"
+        },
+        {
+          "source": "@dg-live/ecommerce-webhooks",
+          "target": "@dg-live/ecommerce-woocommerce",
+          "type": "static"
+        }
+      ],
+      "@dg-live/ecommerce-magento": [
+        {
+          "source": "@dg-live/ecommerce-magento",
+          "target": "@dg-live/ecommerce-db",
+          "type": "implicit"
+        },
+        {
+          "source": "@dg-live/ecommerce-magento",
+          "target": "@dg-live/ecommerce-config",
+          "type": "static"
+        },
+        {
+          "source": "@dg-live/ecommerce-magento",
+          "target": "@dg-live/ecommerce-db",
+          "type": "static"
+        }
+      ],
+      "@dg-live/ecommerce-config": [],
+      "@dg-live/ecommerce-server": [
+        {
+          "source": "@dg-live/ecommerce-server",
+          "target": "@dg-live/ecommerce-db",
+          "type": "implicit"
+        },
+        {
+          "source": "@dg-live/ecommerce-server",
+          "target": "@dg-live/ecommerce-db",
+          "type": "static"
+        },
+        {
+          "source": "@dg-live/ecommerce-server",
+          "target": "@dg-live/ecommerce-config",
+          "type": "static"
+        },
+        {
+          "source": "@dg-live/ecommerce-server",
+          "target": "@dg-live/ecommerce-magento",
+          "type": "static"
+        },
+        {
+          "source": "@dg-live/ecommerce-server",
+          "target": "@dg-live/ecommerce-woocommerce",
+          "type": "static"
+        },
+        {
+          "source": "@dg-live/ecommerce-server",
+          "target": "@dg-live/ecommerce-webhooks",
+          "type": "static"
+        }
+      ],
+      "@dg-live/ecommerce-db": [
+        {
+          "source": "@dg-live/ecommerce-db",
+          "target": "@dg-live/ecommerce-config",
+          "type": "implicit"
+        },
+        {
+          "source": "@dg-live/ecommerce-db",
+          "target": "@dg-live/ecommerce-config",
+          "type": "static"
+        }
+      ]
+    }
+  },
+  "affectedProjects": [],
+  "criticalPath": []
+}
