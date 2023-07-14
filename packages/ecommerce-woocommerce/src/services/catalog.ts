@@ -58,12 +58,34 @@ export const syncCatalog = async ({
       apiKey,
       datasourceId,
     });
-    const products = await wc.get('products', {
-      on_sale: true,
-      status: 'publish',
+    // const products = await wc.get('products', {
+    //   // on_sale: true,
+    //   status: 'publish',
+    //   per_page: 100,
+    //   stock_status: 'instock',
+    // });
+    debugger;
+    const products = await wc.get(
+      'products/63?attribute=Color&attribute_term=Black',
+      {
+        per_page: 100,
+      }
+    );
+    const products2 = await wc.get('products/63', {
       per_page: 100,
-      stock_status: 'instock',
+      attribute: 'Color',
+      attribute_term: 'Black',
     });
+
+    const products3 = await wc.get('products/63/variations/85', {
+      per_page: 100,
+    });
+    console.log(products);
+    console.log(products2);
+    console.log(products3);
+    debugger;
+    const prdVariation = await wc.get('products/63/variations/80');
+    console.log(prdVariation);
     const syncedAt = new Date();
     if (products?.data?.length) {
       const woocommerceProducts = await parseProductResponse(
@@ -97,6 +119,7 @@ export const syncCatalog = async ({
     };
   } catch (err) {
     console.log(err);
+    debugger;
     throw err;
   }
 };

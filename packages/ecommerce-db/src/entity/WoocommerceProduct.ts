@@ -249,9 +249,4 @@ export class WoocommerceProduct {
   //   name: 'wc_product_x_meta_data',
   // })
   metaData: MetaData[];
-
-  // @ManyToOne((type) => Links, (links) => links.id, {
-  //   nullable: true,
-  // })
-  // _links: Links;
 }

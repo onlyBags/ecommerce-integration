@@ -6,7 +6,7 @@ services:
     restart: unless-stopped
     env_file: ./.env.prod
     environment:
-      - MYSQL_DATABASE=${MYSQL_DATABASE}
+      - MYSQL_DATABASE
       - MYSQL_ALLOW_PUBLIC_KEY_RETRIEVAL=true
       - MYSQL_ROOT_PASSWORD=h-fPesa_g4WXEjdt
     ports:
@@ -17,19 +17,13 @@ services:
     build:
       context: .
       dockerfile: Dockerfile.prod
-    command: ['./wait-for-it.sh', 'mysqldb:3306', '--', 'npm', 'run', 'dev']
+    command: ['./wait-for-it.sh', 'mysqldb:3306', '--', 'npm', 'run', 'prod']
     depends_on:
       - mysqldb
     restart: unless-stopped
     env_file: ./.env.prod
     ports:
       - $PORT:$PORT
-    # environment:
-    #   - DB_HOST=mysqldb
-    #   - DB_USERNAME=root
-    #   - MYSQL_ROOT_PASSWORD=h-fPesa_g4WXEjdt
-    #   - MYSQL_DATABASE=${MYSQL_DATABASE}
-    #   - DB_PORT=3306
     stdin_open: true
     tty: true
     volumes:

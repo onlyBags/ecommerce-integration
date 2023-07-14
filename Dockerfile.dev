@@ -13,16 +13,13 @@ COPY packages ./packages
 
 # Copy the wait-for-it.sh script
 COPY wait-for-it.sh ./wait-for-it.sh
+RUN chmod +x ./wait-for-it.sh
 
 # Install development dependencies
-RUN npm install --development
+RUN npm install
 
 # Install nodemon and ts-node globally
-RUN npm install -g nodemon ts-node typescript
-RUN npm install -g ts-node-dev
-
+RUN npm install -g nodemon typescript
 # Building all the packages
 RUN npm run build
 
-# Change working directory to ecommerce-server
-# WORKDIR /usr/ecommerce-monorepo/packages/ecommerce-server

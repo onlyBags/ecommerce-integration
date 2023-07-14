@@ -1,7 +1,7 @@
 {
-  "watch": ["packages/ecommerce-server"],
-  "ext": "js,mjs,json",
+  "watch": ["src"],
+  "ext": "ts",
   "restart": true,
   "ignore": ["node_modules/**/*"],
-  "exec": "npm run start"
+  "exec": "npx tsc -p tsconfig.json && node ./dist/src/index.js"
 }

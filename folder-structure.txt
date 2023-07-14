@@ -98,7 +98,7 @@ volumes:
   db:
 
 ```
-```/docker-compose.dev.yml
+```docker-compose.dev.yml
 version: '3.8'
 
 services:
@@ -109,6 +109,9 @@ services:
     environment:
       - MYSQL_ALLOW_PUBLIC_KEY_RETRIEVAL=true
       - MYSQL_ALLOW_EMPTY_PASSWORD=true
+      - MYSQL_DATABASE=ecommerce
+      - MYSQL_USER=ecommerce-user
+      - MYSQL_PASSWORD=ecommerce-user-pwd
     ports:
       - '3306:3306'
     volumes:
@@ -116,7 +119,6 @@ services:
     networks:
       - ecommerce-network
   app:
-    # command: ['./wait-for-it.sh', 'mysqldb:3306', '--', 'npm', 'run', 'dev']
     command:
       [
         './wait-for-it.sh',
@@ -133,20 +135,19 @@ services:
     depends_on:
       mysqldb:
         condition: service_started
-    build: .
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
     restart: unless-stopped
     env_file: ./.env.dev
     ports:
       - 8080:8080
     volumes:
       - ./packages/ecommerce-server:/usr/ecommerce-monorepo/packages/ecommerce-server
-    # volumes:
-    #   - .:/usr/ecommerce-monorepo # map your local code into the Docker container
     stdin_open: true
     tty: true
     networks:
       - ecommerce-network
-    # command: ['npm', 'run', 'dev']
 
 volumes:
   db:
@@ -154,6 +155,7 @@ volumes:
 networks:
   ecommerce-network:
     driver: bridge
+
 ```
 
 ```/.env
@@ -219,6 +221,8 @@ WOOCOMMERCE_TEST_BASE_URL=https://tonicabsas.ar/
     "packages/*"
   ],
 ```
+
+
 ```nx.json
 {
   "extends": "nx/presets/npm.json",
@@ -250,12 +254,13 @@ WOOCOMMERCE_TEST_BASE_URL=https://tonicabsas.ar/
 ```
 ```packages/ecommerce-server/nodemon.json
 {
-  "watch": ["packages/ecommerce-server"],
-  "ext": ["js", "mjs", "json"],
+  "watch": ["src"],
+  "ext": "ts",
   "restart": true,
   "ignore": ["node_modules/**/*"],
-  "exec": "npm run start"
+  "exec": "npx tsc -p tsconfig.json && node ./dist/src/index.js"
 }
+
 ```
 ```packages/ecommerce-server/package.json
   "scripts": {

@@ -8,6 +8,9 @@ services:
     environment:
       - MYSQL_ALLOW_PUBLIC_KEY_RETRIEVAL=true
       - MYSQL_ALLOW_EMPTY_PASSWORD=true
+      - MYSQL_DATABASE=ecommerce
+      - MYSQL_USER=ecommerce-user
+      - MYSQL_PASSWORD=ecommerce-user-pwd
     ports:
       - '3306:3306'
     volumes:
@@ -15,7 +18,6 @@ services:
     networks:
       - ecommerce-network
   app:
-    # command: ['./wait-for-it.sh', 'mysqldb:3306', '--', 'npm', 'run', 'dev']
     command:
       [
         './wait-for-it.sh',
@@ -41,13 +43,10 @@ services:
       - 8080:8080
     volumes:
       - ./packages/ecommerce-server:/usr/ecommerce-monorepo/packages/ecommerce-server
-    # volumes:
-    #   - .:/usr/ecommerce-monorepo # map your local code into the Docker container
     stdin_open: true
     tty: true
     networks:
       - ecommerce-network
-    # command: ['npm', 'run', 'dev']
 
 volumes:
   db:

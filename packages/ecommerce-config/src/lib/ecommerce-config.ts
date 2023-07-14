@@ -1,7 +1,13 @@
 import { config } from 'dotenv';
 import { DatabaseType } from 'typeorm';
 
-if (process.env.NODE_ENV === 'development') {
+if (process.env.NODE_ENV === 'local') {
+  console.log(
+    '*********************************using local env + process.env.MYSQL_ROOT_PASSWORD' +
+      process.env.MYSQL_ROOT_PASSWORD
+  );
+  config({ path: '.env' });
+} else if (process.env.NODE_ENV === 'development') {
   console.log(
     '*********************************using dev env + process.env.MYSQL_ROOT_PASSWORD' +
       process.env.MYSQL_ROOT_PASSWORD

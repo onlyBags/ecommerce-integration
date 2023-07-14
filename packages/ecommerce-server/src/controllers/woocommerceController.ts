@@ -19,6 +19,7 @@ import {
   getAllProducts,
   WoocomerceShippingZone,
   getShippingZones,
+  getProductVariation,
 } from '@dg-live/ecommerce-woocommerce';
 import { WoocommerceProduct } from '@dg-live/ecommerce-db';
 
@@ -128,6 +129,58 @@ export class WoocommerceController extends Controller {
         message: 'Shipping Zones fetched successfully',
         status: 200,
         data: wProducts,
+      };
+      return resp;
+    } catch (err) {
+      throw new ValidateError({}, err.message);
+    }
+  }
+  @Get('/variation/{datasourceId}/{productId}')
+  @SuccessResponse('200', 'Fetch Shipping Methods')
+  public async getProductVariation(
+    @Header('api-key') apiKey: string,
+    @Path() productId: number,
+    @Path() datasourceId: number,
+    @Query() attributes: string[],
+    @Query() values: string[]
+  ): Promise<DGLResponse<WoocomerceShippingZone[]>> {
+    const errorFields: FieldErrors = {};
+    debugger;
+    console.log('attributes', attributes);
+    console.log('values', values);
+    if (!apiKey) {
+      errorFields.apiKey = {
+        message: 'Invalid apiKey',
+        value: apiKey,
+      };
+    }
+    if (!productId) {
+      errorFields.id = {
+        message: 'Invalid product id',
+        value: productId,
+      };
+    }
+    if (!datasourceId) {
+      errorFields.datasourceId = {
+        message: 'Invalid datasourceId',
+        value: datasourceId,
+      };
+    }
+    if (Object.keys(errorFields).length > 0)
+      throw new ValidateError(errorFields, 'Error getting product variation');
+
+    try {
+      const productVariation = await getProductVariation({
+        apiKey,
+        datasourceId,
+        productId,
+        attributes,
+        values,
+      });
+      const resp = {
+        message: 'Shipping Zones fetched successfully',
+        status: 200,
+        data: productVariation,
       };
       return resp;
     } catch (err) {
