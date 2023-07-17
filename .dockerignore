@@ -2,3 +2,5 @@ packages/**/dist/
 dist/
 node_modules
 npm-debug.log
+packages/ecommerce-server/public/swagger.json
+packages/ecommerce-server/src/routes/routes.ts
