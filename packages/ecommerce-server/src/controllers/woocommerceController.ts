@@ -178,7 +178,7 @@ export class WoocommerceController extends Controller {
         values,
       });
       const resp = {
-        message: 'Shipping Zones fetched successfully',
+        message: 'Product variant fetched successfully',
         status: 200,
         data: productVariation,
       };
