@@ -1,0 +1,41 @@
+version: '3.8'
+
+services:
+  mysqldb:
+    image: mysql:8.0.33
+    restart: unless-stopped
+    env_file: ./.env.prod
+    environment:
+      - MYSQL_DATABASE
+      - MYSQL_ALLOW_PUBLIC_KEY_RETRIEVAL=true
+      - MYSQL_ROOT_PASSWORD=h-fPesa_g4WXEjdt
+    ports:
+      - '3306:3306'
+    volumes:
+      - db:/var/lib/mysql
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile.prod
+    command: ['./wait-for-it.sh', 'mysqldb:3306', '--', 'npm', 'run', 'debug']
+    depends_on:
+      - mysqldb
+    restart: unless-stopped
+    env_file: ./.env.dev
+    ports:
+      - $PORT:$PORT
+      - 9229:9229
+    stdin_open: true
+    tty: true
+    volumes:
+      - server_code:/usr/ecommerce-monorepo/packages/ecommerce-server
+      - /usr/ecommerce-monorepo/node_modules
+
+volumes:
+  db:
+  server_code:
+    driver: local
+    driver_opts:
+      type: none
+      device: ${PWD}/packages/ecommerce-server
+      o: bind
