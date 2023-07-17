@@ -10,7 +10,7 @@
     "build:all": "nx run-many -t buildAll",
     "watch:all": "nx run-many -t watch",
     "dev": "cd packages/ecommerce-server && npm run dev",
-    "prod": "cd packages/ecommerce-server && npm run swagger && npm run prod",
+    "prod": "cd packages/ecommerce-server && npm run prod",
     "affected:graph": "nx affected:graph",
     "affected:apps:json": "nx affected:graph --base=main --head=HEAD --file=affected-graph.json"
   },
