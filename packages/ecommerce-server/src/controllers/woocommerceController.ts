@@ -20,6 +20,7 @@ import {
   WoocomerceShippingZone,
   getShippingZones,
   getProductVariation,
+  ProductVariation,
 } from '@dg-live/ecommerce-woocommerce';
 import { WoocommerceProduct } from '@dg-live/ecommerce-db';
 
@@ -136,18 +137,15 @@ export class WoocommerceController extends Controller {
     }
   }
   @Get('/variation/{datasourceId}/{productId}')
-  @SuccessResponse('200', 'Fetch Shipping Methods')
+  @SuccessResponse('200', 'Fetch product variation')
   public async getProductVariation(
     @Header('api-key') apiKey: string,
     @Path() productId: number,
     @Path() datasourceId: number,
     @Query() attributes: string[],
     @Query() values: string[]
-  ): Promise<DGLResponse<WoocomerceShippingZone[]>> {
+  ): Promise<DGLResponse<ProductVariation | false>> {
     const errorFields: FieldErrors = {};
-    debugger;
-    console.log('attributes', attributes);
-    console.log('values', values);
     if (!apiKey) {
       errorFields.apiKey = {
         message: 'Invalid apiKey',
@@ -164,6 +162,12 @@ export class WoocommerceController extends Controller {
       errorFields.datasourceId = {
         message: 'Invalid datasourceId',
         value: datasourceId,
+      };
+    }
+    if (attributes.length !== values.length) {
+      errorFields.attributesVariations = {
+        message: 'Attributes and values must be equal length',
+        value: `attributes: ${attributes.length} | values: ${values.length}`,
       };
     }
     if (Object.keys(errorFields).length > 0)

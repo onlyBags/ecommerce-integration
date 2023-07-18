@@ -160,3 +160,92 @@ export interface WebhookCreate {
   delivery_url: string;
   secret: string;
 }
+
+export interface ImageVariationRes {
+  title: string;
+  caption: string;
+  url: string;
+  alt: string;
+  src: string;
+  srcset: string;
+  sizes: string;
+  full_src: string;
+  full_src_w: number;
+  full_src_h: number;
+  gallery_thumbnail_src: string;
+  gallery_thumbnail_src_w: number;
+  gallery_thumbnail_src_h: number;
+  thumb_src: string;
+  thumb_src_w: number;
+  thumb_src_h: number;
+  src_w: number;
+  src_h: number;
+}
+
+export interface ProductVariationRes {
+  availability_html: string;
+  backorders_allowed: boolean;
+  dimensions: DimensionsRes;
+  dimensions_html: string;
+  display_price: number;
+  display_regular_price: number;
+  image: ImageVariationRes;
+  image_id: number;
+  is_downloadable: boolean;
+  is_in_stock: boolean;
+  is_purchasable: boolean;
+  is_sold_individually: string;
+  is_virtual: boolean;
+  max_qty: number;
+  min_qty: number;
+  price_html: string;
+  sku: string;
+  variation_description: string;
+  variation_id: number;
+  variation_is_active: boolean;
+  variation_is_visible: boolean;
+  weight: string;
+  weight_html: string;
+}
+
+export interface ImageVariation {
+  title: string;
+  caption: string;
+  url: string;
+  alt: string;
+  src: string;
+  srcset: string;
+  sizes: string;
+  full_src: string;
+  full_src_w: number;
+  full_src_h: number;
+  gallery_thumbnail_src: string;
+  gallery_thumbnail_src_w: number;
+  gallery_thumbnail_src_h: number;
+  thumb_src: string;
+  thumb_src_w: number;
+  thumb_src_h: number;
+  src_w: number;
+  src_h: number;
+}
+export interface ProductVariation {
+  backordersAllowed: boolean;
+  dimensions: DimensionsRes;
+  price: number;
+  regularPrice: number;
+  image: ImageVariation;
+  imageId: number;
+  isDownloadable: boolean;
+  isInStock: boolean;
+  isPurchasable: boolean;
+  isSoldIndividually: string;
+  isVirtual: boolean;
+  maxQty: number;
+  minQty: number;
+  sku: string;
+  variationDescription: string;
+  id: number;
+  isActive: boolean;
+  isVisible: boolean;
+  weight: string;
+}
