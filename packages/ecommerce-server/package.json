@@ -14,7 +14,7 @@
     "start:dev2": "ts-node-dev --respawn --transpile-only --ignore-watch node_modules src/index.ts",
     "start:dev": "nodemon --watch 'src/**/*.ts' --exec 'node -r ts-node/register' src/index.ts",
     "swagger": "tsoa spec-and-routes",
-    "prod": "tsc -p tsconfig.json && node ./dist/src/index.js",
+    "prod": "npm run swagger && tsc -p tsconfig.json && node ./dist/src/index.js",
     "debug": "tsc -p tsconfig.json && node --inspect ./dist/src/index.js"
   },
   "copyFiles": [

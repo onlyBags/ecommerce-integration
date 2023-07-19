@@ -4,6 +4,7 @@
   "license": "MIT",
   "scripts": {
     "start": "docker-compose -f docker-compose.yml up --build",
+    "start:linux": "docker compose -f docker-compose.yml up --build -d",
     "start:debug": "docker-compose -f docker-compose.debug.yml up --build",
     "start:dev": "docker-compose -f docker-compose.dev.yml up --build",
     "build:server": "nx run-many -t build",
