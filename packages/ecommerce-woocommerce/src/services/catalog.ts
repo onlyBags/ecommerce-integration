@@ -136,10 +136,8 @@ export const updateProduct = async ({
         },
       },
     });
-    debugger;
     if (!foundUser || !foundUser.datasource.length)
       return { updatedProducts: [] };
-    debugger;
     const foundProduct = await woocommerceProductRepository.findOne({
       where: {
         productId: product.id,
@@ -197,7 +195,6 @@ const upsertProduct = async (woocommerceProduct: WoocommerceProduct) => {
       },
     });
     if (foundProduct) {
-      debugger;
       updatedProduct = await woocommerceProductRepository.save({
         ...foundProduct,
         ...woocommerceProduct,

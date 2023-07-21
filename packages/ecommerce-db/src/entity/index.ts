@@ -1,4 +1,4 @@
-export * from './User.js';
+export * from './Customer.js';
 export * from './Datasource.js';
 export * from './Dimensions.js';
 export * from './Category.js';
@@ -11,3 +11,7 @@ export * from './Self.js';
 export * from './Collection.js';
 export * from './Links.js';
 export * from './WoocommerceProduct.js';
+export * from './User.js';
+export * from './Billing.js';
+export * from './Shipping.js';
+export * from './Order.js';

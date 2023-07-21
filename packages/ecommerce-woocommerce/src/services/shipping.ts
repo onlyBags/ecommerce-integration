@@ -1,4 +1,5 @@
 import {
+  ShippingLocationsReq,
   WCRequestOptions,
   WoocomerceShippingZone,
 } from '../interfaces/index.js';
@@ -22,5 +23,50 @@ export const getShippingZones = async ({
     return [];
   } catch (err) {
     throw err;
+  }
+};
+
+export const shippingLocations = async ({
+  apiKey,
+  datasourceId,
+  shippingZoneId,
+}: ShippingLocationsReq): Promise<WoocomerceShippingZone[]> => {
+  try {
+    const wc = await createNewWoocommerceInstance({
+      apiKey,
+      datasourceId,
+    });
+    const shippingLocationsRes = await wc.get(
+      `shipping/zones/${shippingZoneId}/locations`
+    );
+    const shippingLocations =
+      shippingLocationsRes?.data as WoocomerceShippingZone[];
+
+    if (shippingLocations?.length) {
+      return shippingLocations;
+    }
+    return [];
+  } catch (err) {
+    console.log(err);
+    throw err;
+  }
+};
+
+export const shippingMethods = async ({
+  apiKey,
+  datasourceId,
+  shippingZoneId,
+}: ShippingLocationsReq) => {
+  const wc = await createNewWoocommerceInstance({
+    apiKey,
+    datasourceId,
+  });
+  try {
+    const methodsRes = await wc.get(`shipping/zones/${shippingZoneId}/methods`);
+    return methodsRes.data;
+  } catch (error) {
+    console.log(error);
+    debugger;
+    throw error;
   }
 };

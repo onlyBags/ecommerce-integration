@@ -5,17 +5,17 @@ import { getPassword } from '../../util/index.js';
 const userRepository = AppDataSource.getRepository(User);
 const datasourceRepository = AppDataSource.getRepository(Datasource);
 
-export const saveUser = async (userReq: SaveUserReq): Promise<User> => {
+export const saveClient = async (clientReq: SaveUserReq): Promise<User> => {
   const user = new User();
-  user.username = userReq.username;
-  user.apiKey = userReq.apiKey;
+  user.username = clientReq.username;
+  user.apiKey = clientReq.apiKey;
   user.isActive = true;
   return await userRepository.save(user);
 };
 
 export const saveUserDatasource = async (
   apiKey: string,
-  userReq: SaveUserDatasourceReq
+  clientReq: SaveUserDatasourceReq
 ): Promise<Datasource> => {
   const user = await userRepository.findOneBy({
     apiKey: apiKey,
@@ -26,13 +26,13 @@ export const saveUserDatasource = async (
 
   const datasource = new Datasource();
   datasource.user = user;
-  datasource.name = userReq.name;
-  datasource.platform = userReq.platform;
-  datasource.consumerKey = userReq.consumerKey;
-  datasource.consumerSecret = userReq.consumerSecret;
-  datasource.accessToken = userReq.accessToken;
-  datasource.accessTokenSecret = userReq.accessTokenSecret;
-  datasource.baseUrl = userReq.baseUrl;
+  datasource.name = clientReq.name;
+  datasource.platform = clientReq.platform;
+  datasource.consumerKey = clientReq.consumerKey;
+  datasource.consumerSecret = clientReq.consumerSecret;
+  datasource.accessToken = clientReq.accessToken;
+  datasource.accessTokenSecret = clientReq.accessTokenSecret;
+  datasource.baseUrl = clientReq.baseUrl;
   datasource.webhookSecret = getPassword();
   datasource.isActive = true;
   return await datasourceRepository.save(datasource);

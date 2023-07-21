@@ -11,7 +11,7 @@ export const createWebhooks = async ({
   datasourceId,
 }: WCRequestOptions) => {
   try {
-    const foundUser = await userReposiotry.findOne({
+    const foundClient = await userReposiotry.findOne({
       where: {
         apiKey,
         datasource: {
@@ -20,8 +20,8 @@ export const createWebhooks = async ({
       },
       relations: ['datasource'],
     });
-    if (!foundUser) throw new Error('User not found');
-    const secret = foundUser.datasource[0].webhookSecret;
+    if (!foundClient) throw new Error('User not found');
+    const secret = foundClient.datasource[0].webhookSecret;
     const wc = await createNewWoocommerceInstance({ apiKey, datasourceId });
     if (!wc) throw new Error('Could not create woocomerce instance');
 

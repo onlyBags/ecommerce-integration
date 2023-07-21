@@ -19,8 +19,13 @@ import {
   getAllProducts,
   WoocomerceShippingZone,
   getShippingZones,
+  shippingLocations,
   getProductVariation,
   ProductVariation,
+  createOrder,
+  WoocommerceOrderCreatedRes,
+  WoocommerceOrder,
+  shippingMethods,
 } from '@dg-live/ecommerce-woocommerce';
 import { WoocommerceProduct } from '@dg-live/ecommerce-db';
 
@@ -100,7 +105,7 @@ export class WoocommerceController extends Controller {
   }
 
   @Get('/shipping/{datasourceId}')
-  @SuccessResponse('200', 'Fetch Shipping Methods')
+  @SuccessResponse('200', 'Fetch Shipping Zones')
   public async getShippings(
     @Header('api-key') apiKey: string,
     @Path() datasourceId: number
@@ -136,6 +141,86 @@ export class WoocommerceController extends Controller {
       throw new ValidateError({}, err.message);
     }
   }
+  @Get('/shipping/{datasourceId}/locations/{shippingZoneId}')
+  @SuccessResponse('200', 'Fetch Shipping Locations')
+  public async getShippingLocations(
+    @Header('api-key') apiKey: string,
+    @Path() datasourceId: number,
+    @Path() shippingZoneId: number
+  ): Promise<DGLResponse<WoocomerceShippingZone[]>> {
+    const errorFields: FieldErrors = {};
+    if (!apiKey) {
+      errorFields.apiKey = {
+        message: 'Invalid apiKey',
+        value: apiKey,
+      };
+    }
+    if (!datasourceId) {
+      errorFields.datasourceId = {
+        message: 'Invalid datasourceId',
+        value: datasourceId,
+      };
+    }
+    if (Object.keys(errorFields).length > 0)
+      throw new ValidateError(errorFields, 'Error geting shipping zones');
+
+    try {
+      const locations = await shippingLocations({
+        apiKey,
+        datasourceId,
+        shippingZoneId,
+      });
+      const resp = {
+        message: 'Shipping Locations fetched successfully',
+        status: 200,
+        data: locations,
+      };
+      return resp;
+    } catch (err) {
+      throw new ValidateError({}, err.message);
+    }
+  }
+
+  @Get('/shipping/{datasourceId}/methods/{shippingZoneId}')
+  @SuccessResponse('200', 'Fetch Shipping Methods')
+  public async getShippingMethods(
+    @Header('api-key') apiKey: string,
+    @Path() datasourceId: number,
+    @Path() shippingZoneId: number
+  ): Promise<DGLResponse<WoocomerceShippingZone[]>> {
+    const errorFields: FieldErrors = {};
+    if (!apiKey) {
+      errorFields.apiKey = {
+        message: 'Invalid apiKey',
+        value: apiKey,
+      };
+    }
+    if (!datasourceId) {
+      errorFields.datasourceId = {
+        message: 'Invalid datasourceId',
+        value: datasourceId,
+      };
+    }
+    if (Object.keys(errorFields).length > 0)
+      throw new ValidateError(errorFields, 'Error geting shipping zones');
+
+    try {
+      const locations = await shippingMethods({
+        apiKey,
+        datasourceId,
+        shippingZoneId,
+      });
+      const resp = {
+        message: 'Shipping Methods fetched successfully',
+        status: 200,
+        data: locations,
+      };
+      return resp;
+    } catch (err) {
+      throw new ValidateError({}, err.message);
+    }
+  }
+
   @Get('/variation/{datasourceId}/{productId}')
   @SuccessResponse('200', 'Fetch product variation')
   public async getProductVariation(
@@ -187,6 +272,57 @@ export class WoocommerceController extends Controller {
         data: productVariation,
       };
       return resp;
+    } catch (err) {
+      throw new ValidateError({}, err.message);
+    }
+  }
+  @Post('/order')
+  @SuccessResponse('200', 'Order Created')
+  public async wcCreateOrder(
+    @Header('api-key') apiKey: string,
+    @Body()
+    body: {
+      datasourceId: number;
+      wcOrder: WoocommerceOrder;
+    }
+  ): Promise<DGLResponse<WoocommerceOrderCreatedRes>> {
+    const errorFields: FieldErrors = {};
+    if (!apiKey) {
+      errorFields.apiKey = {
+        message: 'Invalid apiKey',
+        value: apiKey,
+      };
+    }
+    if (!body.datasourceId) {
+      errorFields.datasourceId = {
+        message: 'Invalid datasourceId',
+        value: body.datasourceId,
+      };
+    }
+    if (!body.wcOrder.wallet) {
+      errorFields.wallet = {
+        message: 'Invalid wallet',
+        value: body.wcOrder.wallet,
+      };
+    }
+
+    if (Object.keys(errorFields).length > 0)
+      throw new ValidateError(errorFields, 'Error creating order');
+    const myObj: any = {
+      payment_method: 'bacs',
+    };
+    try {
+      const wcOrderRes = await createOrder({
+        apiKey,
+        datasourceId: body.datasourceId,
+        order: body.wcOrder,
+      });
+      const resp = {
+        message: 'Order created successfully',
+        status: 200,
+        data: wcOrderRes,
+      };
+      return resp as any;
     } catch (err) {
       throw new ValidateError({}, err.message);
     }

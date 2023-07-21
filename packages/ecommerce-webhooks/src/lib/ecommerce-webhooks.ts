@@ -7,7 +7,6 @@ const userRepository = AppDataSource.getRepository(User);
 
 export const handleWebhook = async (req: Request, res: Response) => {
   try {
-    debugger;
     const { headers, body, params } = req;
     const { apiKey, datasourceId } = params;
 
@@ -67,7 +66,6 @@ export const handleWebhook = async (req: Request, res: Response) => {
         })
         .end();
     } else {
-      debugger;
       res.status(200).json({ message: 'ok' }).end();
     }
     switch (whTopic) {
@@ -91,10 +89,10 @@ export const handleWebhook = async (req: Request, res: Response) => {
   }
 };
 
-const validateSource = async (user: User, source: string): Promise<boolean> => {
-  if (user?.datasource) {
-    if (user?.datasource.length) {
-      return user?.datasource[0].baseUrl === source;
+const validateSource = async (User: User, source: string): Promise<boolean> => {
+  if (User?.datasource) {
+    if (User?.datasource.length) {
+      return User?.datasource[0].baseUrl === source;
     }
     return false;
   }

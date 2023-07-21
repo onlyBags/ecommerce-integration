@@ -23,7 +23,7 @@ import {
 } from '../interfaces/index.js';
 import { createWebhooks } from '@dg-live/ecommerce-woocommerce';
 @Route('dashboard')
-@Tags('User')
+@Tags('Client')
 export class DashboardController extends Controller {
   @Post('/user')
   @SuccessResponse('201', 'Created')
@@ -43,7 +43,7 @@ export class DashboardController extends Controller {
       const resp = {
         message: 'User created successfully',
         status: 201,
-        data: await dashboardService.saveUser(requestBody),
+        data: await dashboardService.saveClient(requestBody),
       };
       return resp;
     } catch (err) {

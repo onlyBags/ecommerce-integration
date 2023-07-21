@@ -234,7 +234,7 @@ export const parseProductResponse = async (
 
         // Attributes to be added and updated
         let attributesToAddOrUpdate: AttributeRes[] = productData.attributes;
-        debugger;
+
         // Iterate over each attribute to add or update
         for (const attributeToAddOrUpdate of attributesToAddOrUpdate) {
           // Check if this attribute exists already
@@ -268,7 +268,6 @@ export const parseProductResponse = async (
                 },
               }
             );
-            debugger;
             // If this option doesn't exist, create a new one
             if (!existingOption) {
               existingOption = new AttributeOption();
@@ -453,7 +452,6 @@ export const parseProductResponse = async (
       }
     );
   }
-  debugger;
 
   return data;
 };

@@ -1,3 +1,4 @@
+import { MetaData } from '../index.js';
 export interface DimensionsRes {
   length: string;
   width: string;
@@ -36,10 +37,8 @@ export interface AttributeRes {
   options: string[];
 }
 
-export interface MetaDataRes {
+export interface MetaDataRes extends MetaData {
   id: number;
-  key: string;
-  value: any;
 }
 
 export interface LinksRes {
@@ -249,3 +248,6 @@ export interface ProductVariation {
   isVisible: boolean;
   weight: string;
 }
+
+export * from './wc-order.js';
+export * from './shipping.js';

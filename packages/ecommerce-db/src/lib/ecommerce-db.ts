@@ -3,6 +3,7 @@ import * as typeorm from 'typeorm';
 
 import {
   User,
+  Customer,
   Datasource,
   Dimensions,
   Category,
@@ -15,6 +16,9 @@ import {
   Collection,
   Links,
   WoocommerceProduct,
+  Billing,
+  Shipping,
+  Order,
 } from '../entity/index.js';
 import { envConfig } from '@dg-live/ecommerce-config';
 
@@ -36,6 +40,7 @@ export const AppDataSource = new typeorm.DataSource({
   insecureAuth: true,
   entities: [
     User,
+    Customer,
     Datasource,
     Dimensions,
     Category,
@@ -48,6 +53,9 @@ export const AppDataSource = new typeorm.DataSource({
     Collection,
     Links,
     WoocommerceProduct,
+    Billing,
+    Shipping,
+    Order,
   ],
   migrations: [],
   subscribers: [],

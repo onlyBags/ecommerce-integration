@@ -8,3 +8,8 @@ export interface WCRequestOptions {
 export interface WCUpdateProduct extends WCRequestOptions {
   product: WoocommerceProductRes;
 }
+
+export interface MetaData {
+  key: string;
+  value: any;
+}
