@@ -27,6 +27,7 @@ export const saveUserDatasource = async (
   const datasource = new Datasource();
   datasource.user = user;
   datasource.name = clientReq.name;
+  datasource.wallet = clientReq.wallet;
   datasource.platform = clientReq.platform;
   datasource.consumerKey = clientReq.consumerKey;
   datasource.consumerSecret = clientReq.consumerSecret;
@@ -35,7 +36,12 @@ export const saveUserDatasource = async (
   datasource.baseUrl = clientReq.baseUrl;
   datasource.webhookSecret = getPassword();
   datasource.isActive = true;
-  return await datasourceRepository.save(datasource);
+  try {
+    return await datasourceRepository.save(datasource);
+  } catch (err) {
+    console.log(err);
+    throw err;
+  }
 };
 
 export const getUserDatasources = async (

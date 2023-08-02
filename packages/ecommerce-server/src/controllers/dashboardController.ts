@@ -65,6 +65,7 @@ export class DashboardController extends Controller {
       accessToken,
       accessTokenSecret,
       baseUrl,
+      wallet,
     } = requestBody;
     if (!apiKey) {
       fields.apiKey = {
@@ -103,6 +104,12 @@ export class DashboardController extends Controller {
           value: accessTokenSecret,
         };
       }
+      if (!wallet) {
+        fields.wallet = {
+          message: 'Invalid wallet',
+          value: wallet,
+        };
+      }
     }
     if (Object.keys(fields).length) {
       throw new ValidateError(fields, 'Error saving user datasource');
@@ -139,7 +146,7 @@ export class DashboardController extends Controller {
     }
     try {
       const resp = {
-        message: 'User datasources fetched successfully-55555',
+        message: 'User datasources fetched successfully',
         status: 200,
         data: await dashboardService.getUserDatasources(apiKey),
       };

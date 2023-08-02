@@ -19,6 +19,9 @@ export class Datasource {
   @Column({ length: 500 })
   name: string;
 
+  @Column({ length: 100 })
+  wallet: string;
+
   @ManyToOne(() => User, (user) => user.datasource)
   user: User;
 
