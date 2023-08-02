@@ -3,6 +3,21 @@ export interface SaveUserReq {
   apiKey: string;
   masterKey: string;
 }
+export interface NewSlotReq {
+  name: string;
+  datasourceId: number;
+  enabled?: boolean;
+  posX: number;
+  posY: number;
+  posZ: number;
+  sizeX: number;
+  sizeY: number;
+  sizeZ: number;
+  rotX: number;
+  rotY: number;
+  rotZ: number;
+  productId: number;
+}
 
 export interface SaveUserDatasourceReq {
   name: string;

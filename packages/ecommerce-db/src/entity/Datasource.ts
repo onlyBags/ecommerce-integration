@@ -10,6 +10,7 @@ import {
 import { encrypt } from '../utils/index.js';
 import { User } from './User.js';
 import { WoocommerceProduct } from './WoocommerceProduct.js';
+import { Slot } from './Slot.js';
 
 @Entity()
 export class Datasource {
@@ -30,6 +31,9 @@ export class Datasource {
     (woocommerceProduct) => woocommerceProduct.datasource
   )
   woocommerceProduct: WoocommerceProduct[];
+
+  @OneToMany(() => Slot, (slot) => slot.datasource)
+  slot: Slot[];
 
   @Column()
   platform: 'woocommerce' | 'magento';

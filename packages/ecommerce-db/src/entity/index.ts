@@ -15,3 +15,4 @@ export * from './User.js';
 export * from './Billing.js';
 export * from './Shipping.js';
 export * from './Order.js';
+export * from './Slot.js';
