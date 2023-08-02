@@ -29,7 +29,15 @@ services:
       context: .
       dockerfile: Dockerfile.prod
     command:
-      ['./wait-for-it.sh', 'mysqldb-prod:3306', '--', 'npm', 'run', 'prod']
+      [
+        './wait-for-it.sh',
+        '-t 120',
+        'mysqldb-prod:3306',
+        '--',
+        'npm',
+        'run',
+        'prod',
+      ]
     depends_on:
       - mysqldb-prod
     restart: unless-stopped
