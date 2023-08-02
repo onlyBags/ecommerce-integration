@@ -41,5 +41,6 @@ Thumbs.db
 # Custom
 .env
 .env.prod
+.env.*
 packages/ecommerce-server/public/swagger.json
 packages/ecommerce-server/src/routes/routes.ts
