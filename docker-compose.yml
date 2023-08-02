@@ -1,5 +1,5 @@
 services:
-  mysqldb-prod:
+  mysql-prod:
     image: mysql:8.0.33
     restart: unless-stopped
     env_file:
@@ -35,14 +35,14 @@ services:
         './wait-for-it.sh',
         '-t',
         '120',
-        'mysqldb-prod:3306',
+        'mysql-prod:3306',
         '--',
         'npm',
         'run',
         'prod',
       ]
     depends_on:
-      - mysqldb-prod
+      - mysql-prod
     restart: unless-stopped
     env_file:
       - ./.env.prod
