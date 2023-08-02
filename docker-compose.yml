@@ -1,27 +1,40 @@
-version: '3.8'
-
 services:
-  mysqldb:
+  mysqldb-prod:
     image: mysql:8.0.33
     restart: unless-stopped
-    env_file: ./.env.prod
+    env_file:
+      - ./.env.prod
     environment:
-      - MYSQL_DATABASE
       - MYSQL_ALLOW_PUBLIC_KEY_RETRIEVAL=true
-      - MYSQL_ROOT_PASSWORD=h-fPesa_g4WXEjdt
+      - MYSQL_ALLOW_EMPTY_PASSWORD=false
+      - MYSQL_DATABASE=${MYSQL_DATABASE}
+      - MYSQL_USER=${MYSQL_USERNAME}
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
     ports:
-      - '3306:3306'
+      - ${MYSQL_PORT}:${MYSQL_PORT}
     volumes:
       - db:/var/lib/mysql
+  redis-prod:
+    image: redis/redis-stack-server
+    restart: unless-stopped
+    env_file:
+      - ./.env.prod
+    ports:
+      - ${REDIS_PORT}:${REDIS_PORT}
+    command: redis-server --loglevel warning --requirepass ${REDIS_PASSWORD} --loadmodule /opt/redis-stack/lib/rejson.so --loadmodule /opt/redis-stack/lib/redisearch.so
+    networks:
+      - ecommerce-network
   app:
     build:
       context: .
       dockerfile: Dockerfile.prod
-    command: ['./wait-for-it.sh', 'mysqldb:3306', '--', 'npm', 'run', 'prod']
+    command:
+      ['./wait-for-it.sh', 'mysqldb-prod:3306', '--', 'npm', 'run', 'prod']
     depends_on:
-      - mysqldb
+      - mysqldb-prod
     restart: unless-stopped
-    env_file: ./.env.prod
+    env_file:
+      - ./.env.prod
     ports:
       - $PORT:$PORT
     stdin_open: true
@@ -29,6 +42,8 @@ services:
     volumes:
       - server_code:/usr/ecommerce-monorepo/packages/ecommerce-server
       - /usr/ecommerce-monorepo/node_modules
+    networks:
+      - ecommerce-network
 
 volumes:
   db:
@@ -38,3 +53,7 @@ volumes:
       type: none
       device: ${PWD}/packages/ecommerce-server
       o: bind
+
+networks:
+  ecommerce-network:
+    driver: bridge

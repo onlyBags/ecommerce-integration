@@ -26,7 +26,7 @@ export interface LineItem {
 export interface ShippingLine {
   methodId: string;
   methodTitle: string;
-  total: string;
+  total?: string;
 }
 
 export interface WoocommerceOrderCreatedRes {

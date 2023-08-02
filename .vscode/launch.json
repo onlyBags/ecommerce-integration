@@ -19,6 +19,18 @@
     {
       "type": "node",
       "request": "launch",
+      "name": "Prod Build Server",
+      "skipFiles": ["<node_internals>/**"],
+      "program": "${workspaceFolder}\\packages\\ecommerce-server\\src\\index.ts",
+      "outFiles": ["${workspaceFolder}/**/*.js"],
+      "preLaunchTask": "BuildServer",
+      "env": {
+        "NODE_ENV": "production"
+      }
+    },
+    {
+      "type": "node",
+      "request": "launch",
       "name": "Build Server & Routes",
       "skipFiles": ["<node_internals>/**"],
       "program": "NODE_ENV=development ${workspaceFolder}\\packages\\ecommerce-server\\src\\index.ts",

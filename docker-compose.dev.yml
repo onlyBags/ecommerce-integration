@@ -12,9 +12,18 @@ services:
       - MYSQL_USER=ecommerce-user
       - MYSQL_PASSWORD=ecommerce-user-pwd
     ports:
-      - '3306:3306'
+      - 3306:3306
     volumes:
       - db:/var/lib/mysql
+    networks:
+      - ecommerce-network
+  cache:
+    image: redis/redis-stack
+    restart: unless-stopped
+    env_file: ./.env.dev
+    ports:
+      - 6379:6379
+    command: redis-server --loglevel warning --requirepass ${REDIS_PASSWORD} --loadmodule /opt/redis-stack/lib/rejson.so --loadmodule /opt/redis-stack/lib/redisearch.so
     networks:
       - ecommerce-network
   app:

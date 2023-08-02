@@ -1,5 +1,4 @@
 import { Equal, In, Like } from 'typeorm';
-import { createHash } from 'crypto';
 import {
   AppDataSource,
   User,
@@ -21,6 +20,8 @@ import {
   AttributeRes,
   MetaDataRes,
 } from '../interfaces/index.js';
+import { datasourceCacheRepository } from '@dg-live/ecommerce-cache';
+import { Entity, EntityId } from 'redis-om';
 
 const WooCommerceRest = WooCommerceRestApi.default;
 const userRepository = AppDataSource.getRepository(User);
@@ -38,22 +39,65 @@ export const createNewWoocommerceInstance = async ({
   apiKey: string;
   datasourceId: number;
 }): Promise<InstanceType<typeof WooCommerceRest> | null> => {
-  const foundUserDatasource = await userRepository.findOne({
-    where: { apiKey, datasource: { id: datasourceId } },
-    relations: ['datasource'],
-  });
-  if (!foundUserDatasource) throw new Error("User's datasource not found");
+  let foundCached: Entity[];
+  let wooCommerceApi: InstanceType<typeof WooCommerceRest>;
+  try {
+    foundCached = await datasourceCacheRepository
+      .search()
+      .where('apiKey')
+      .eq(apiKey)
+      .where('datasourceId')
+      .eq(datasourceId)
+      .return.all();
+  } catch (error) {
+    console.log('error in cache search', error);
+  }
+  if (foundCached.length) {
+    console.log(foundCached[0]);
+    const { consumerKey, consumerSecret, baseUrl } = foundCached[0] as {
+      consumerKey: string;
+      consumerSecret: string;
+      baseUrl: string;
+    };
+    wooCommerceApi = new WooCommerceRest({
+      url: baseUrl,
+      consumerKey,
+      consumerSecret,
+      version: 'wc/v3',
+    });
+  } else {
+    const foundUserDatasource = await userRepository.findOne({
+      where: { apiKey, datasource: { id: datasourceId } },
+      relations: ['datasource'],
+    });
+    if (!foundUserDatasource) throw new Error("User's datasource not found");
 
-  const { baseUrl, consumerKey, consumerSecret } =
-    foundUserDatasource.datasource[0];
-
-  const WooCommerceApi = new WooCommerceRest({
-    url: baseUrl,
-    consumerKey,
-    consumerSecret,
-    version: 'wc/v3',
-  });
-  return WooCommerceApi;
+    const { baseUrl, consumerKey, consumerSecret } =
+      foundUserDatasource.datasource[0];
+    try {
+      const cachedEntity = await datasourceCacheRepository.save({
+        apiKey,
+        datasourceId,
+        consumerKey,
+        consumerSecret,
+        baseUrl,
+      });
+      const ttlInSeconds = 60 * 5; // 5 minutes
+      await datasourceCacheRepository.expire(
+        cachedEntity[EntityId],
+        ttlInSeconds
+      );
+    } catch (error) {
+      console.log('Error saving in cache');
+    }
+    wooCommerceApi = new WooCommerceRest({
+      url: baseUrl,
+      consumerKey,
+      consumerSecret,
+      version: 'wc/v3',
+    });
+  }
+  return wooCommerceApi;
 };
 
 export const parseProductResponse = async (

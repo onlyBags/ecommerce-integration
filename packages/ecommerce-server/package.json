@@ -28,6 +28,7 @@
     "@dg-live/ecommerce-config": "*",
     "@dg-live/ecommerce-magento": "*",
     "@dg-live/ecommerce-woocommerce": "*",
-    "@dg-live/ecommerce-webhooks": "*"
+    "@dg-live/ecommerce-webhooks": "*",
+    "@dg-live/ecommerce-cache": "*"
   }
 }

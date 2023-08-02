@@ -1,5 +1,5 @@
 {
-  "name": "@dg-live/ecommerce-woocommerce",
+  "name": "@dg-live/ecommerce-cache",
   "version": "0.0.1",
   "type": "module",
   "main": "./dist/index.js",
@@ -9,12 +9,10 @@
   },
   "nx": {
     "implicitDependencies": [
-      "@dg-live/ecommerce-db"
+      "@dg-live/ecommerce-config"
     ]
   },
   "dependencies": {
-    "@dg-live/ecommerce-config": "*",
-    "@dg-live/ecommerce-db": "*",
-    "@dg-live/ecommerce-cache": "*"
+    "@dg-live/ecommerce-config": "*"
   }
 }

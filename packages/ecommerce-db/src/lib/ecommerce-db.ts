@@ -22,19 +22,23 @@ import {
 } from '../entity/index.js';
 import { envConfig } from '@dg-live/ecommerce-config';
 
-const { dbType, dbHost, dbPort, dbUsername, dbPassword, dbDatabase } =
+const { dbType, dbHost, dbPort, dbUsername, dbPassword, dbDatabase, nodeEnv } =
   envConfig;
 
+console.log(
+  '********************nodeEnv !== production: ',
+  nodeEnv !== 'production'
+);
 export const AppDataSource = new typeorm.DataSource({
-  type: 'mysql', // dbType as 'mysql',
+  type: dbType as 'mysql' | 'mariadb', // 'mysql', // dbType as 'mysql',
   host: dbHost,
   port: dbPort,
   username: dbUsername,
   password: dbPassword,
   database: dbDatabase,
-  synchronize: true,
+  synchronize: nodeEnv !== 'production',
   // poolSize: 10,
-  logging: true,
+  logging: nodeEnv !== 'production',
   // debug: true,
   // trace: true,
   insecureAuth: true,
