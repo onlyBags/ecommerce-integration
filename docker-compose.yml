@@ -11,7 +11,8 @@ services:
       - MYSQL_USER=${MYSQL_USERNAME}
       - MYSQL_PASSWORD=${MYSQL_PASSWORD}
     ports:
-      - ${MYSQL_PORT}:${MYSQL_PORT}
+      - target: 3306
+        published: ${MYSQL_PORT}
     volumes:
       - db:/var/lib/mysql
     networks:
@@ -22,7 +23,8 @@ services:
     env_file:
       - ./.env.prod
     ports:
-      - ${REDIS_PORT}:${REDIS_PORT}
+      - target: 6379
+        published: ${REDIS_PORT}
     command: redis-server --loglevel warning --requirepass ${REDIS_PASSWORD} --loadmodule /opt/redis-stack/lib/rejson.so --loadmodule /opt/redis-stack/lib/redisearch.so
     networks:
       - ecommerce-network
