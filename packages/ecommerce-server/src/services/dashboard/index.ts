@@ -9,6 +9,7 @@ import {
   NewSlotReq,
   SaveUserDatasourceReq,
   SaveUserReq,
+  UpdateSlotReq,
 } from '../../interfaces/index.js';
 import { getPassword } from '../../util/index.js';
 
@@ -87,11 +88,11 @@ export const getUserDatasource = async (
 
 export const saveSlot = async (
   apiKey: string,
+  datasourceId: number,
   slotReq: NewSlotReq
 ): Promise<Slot> => {
   const {
     name,
-    datasourceId,
     enabled,
     posX,
     posY,
@@ -105,10 +106,8 @@ export const saveSlot = async (
     productId,
   } = slotReq;
 
-  const foundUser = await userRepository.findOne({
-    where: { apiKey, datasource: { id: datasourceId } },
-    relations: ['datasource'],
-  });
+  const foundUser = await getUserAndCheckDatasource(apiKey, datasourceId);
+
   if (!foundUser) throw new Error('User not found');
   if (!foundUser.datasource.length) throw new Error('Datasource not found');
 
@@ -155,3 +154,161 @@ export const saveSlot = async (
     throw err;
   }
 };
+
+export const updateSlot = async (
+  apiKey: string,
+  datasourceId: number,
+  slotId: number,
+  slotReq: UpdateSlotReq
+): Promise<Slot> => {
+  const foundUser = await getUserAndCheckDatasource(apiKey, datasourceId);
+  if (!foundUser) throw new Error('User not found');
+  if (!foundUser.datasource.length) throw new Error('Datasource not found');
+
+  const foundSlot = await slotRepository.preload({ id: slotId, ...slotReq });
+
+  if (!foundSlot) throw new Error('Slot not found');
+
+  try {
+    return await slotRepository.save(foundSlot);
+  } catch (err) {
+    console.log(err);
+    throw err;
+  }
+};
+
+// export const updateSlot = async (
+//   apiKey: string,
+//   datasourceId: number,
+//   slotId: number,
+//   slotReq: UpdateSlotReq
+// ): Promise<Slot> => {
+//   const foundUser = await getUserAndCheckDatasource(apiKey, datasourceId);
+//   if (!foundUser) throw new Error('User not found');
+//   if (!foundUser.datasource.length) throw new Error('Datasource not found');
+
+//   const foundSlot = await slotRepository.findOne({
+//     where: { id: slotId, datasource: { id: datasourceId } },
+//   });
+
+//   if (!foundSlot) throw new Error('Slot not found');
+
+//   if (slotReq.name !== undefined) {
+//     foundSlot.name = slotReq.name;
+//   }
+//   if (slotReq.enabled !== undefined) {
+//     foundSlot.enabled = slotReq.enabled;
+//   }
+//   if (slotReq.posX !== undefined) {
+//     foundSlot.posX = slotReq.posX;
+//   }
+//   if (slotReq.posY !== undefined) {
+//     foundSlot.posY = slotReq.posY;
+//   }
+//   if (slotReq.posZ !== undefined) {
+//     foundSlot.posZ = slotReq.posZ;
+//   }
+//   if (slotReq.sizeX !== undefined) {
+//     foundSlot.sizeX = slotReq.sizeX;
+//   }
+//   if (slotReq.sizeY !== undefined) {
+//     foundSlot.sizeY = slotReq.sizeY;
+//   }
+//   if (slotReq.sizeZ !== undefined) {
+//     foundSlot.sizeZ = slotReq.sizeZ;
+//   }
+//   if (slotReq.rotX !== undefined) {
+//     foundSlot.rotX = slotReq.rotX;
+//   }
+//   if (slotReq.rotY !== undefined) {
+//     foundSlot.rotY = slotReq.rotY;
+//   }
+//   if (slotReq.rotZ !== undefined) {
+//     foundSlot.rotZ = slotReq.rotZ;
+//   }
+//   if (slotReq.productId !== undefined) {
+//     foundSlot.productId = slotReq.productId;
+//   }
+
+//   try {
+//     return await slotRepository.save(foundSlot);
+//   } catch (err) {
+//     console.log(err);
+//     throw err;
+//   }
+// };
+
+export const deleteSlot = async (
+  apiKey: string,
+  datasourceId: number,
+  slotId: number
+): Promise<void> => {
+  const foundUser = await getUserAndCheckDatasource(apiKey, datasourceId);
+  if (!foundUser) throw new Error('User not found');
+  if (!foundUser.datasource.length) throw new Error('Datasource not found');
+
+  const foundSlot = await slotRepository.findOne({
+    where: { id: slotId, datasource: { id: datasourceId } },
+  });
+
+  if (!foundSlot) throw new Error('Slot not found');
+
+  try {
+    await slotRepository.remove(foundSlot);
+  } catch (err) {
+    console.log(err);
+    throw err;
+  }
+};
+
+export const getSlot = async (
+  apiKey: string,
+  datasourceId: number,
+  slotId: number
+): Promise<Slot> => {
+  const foundUser = await userRepository.findOne({
+    where: { apiKey, datasource: { id: datasourceId } },
+    relations: ['datasource'],
+  });
+  if (!foundUser) throw new Error('User not found');
+  if (!foundUser.datasource.length) throw new Error('Datasource not found');
+
+  const foundSlot = await slotRepository.findOne({
+    where: { id: slotId, datasource: { id: datasourceId } },
+  });
+
+  if (!foundSlot) throw new Error('Slot not found');
+
+  return foundSlot;
+};
+
+export const getSlots = async (
+  apiKey: string,
+  datasourceId: number
+): Promise<Slot[]> => {
+  const foundUser = await userRepository.findOne({
+    where: { apiKey, datasource: { id: datasourceId } },
+    relations: ['datasource'],
+  });
+  if (!foundUser) throw new Error('User not found');
+  if (!foundUser.datasource.length) throw new Error('Datasource not found');
+
+  const foundSlot = await slotRepository.find({
+    where: { datasource: { id: datasourceId } },
+  });
+
+  if (!foundSlot) throw new Error('Slot not found');
+
+  return foundSlot;
+};
+async function getUserAndCheckDatasource(apiKey: string, datasourceId: number) {
+  const foundUser = await userRepository.findOne({
+    where: { apiKey, datasource: { id: datasourceId } },
+    relations: ['datasource'],
+  });
+
+  if (!foundUser) throw new Error('User not found');
+  if (!foundUser.datasource.length) throw new Error('Datasource not found');
+
+  return foundUser;
+}

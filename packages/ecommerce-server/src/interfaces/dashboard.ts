@@ -5,7 +5,6 @@ export interface SaveUserReq {
 }
 export interface NewSlotReq {
   name: string;
-  datasourceId: number;
   enabled?: boolean;
   posX: number;
   posY: number;
@@ -19,6 +18,21 @@ export interface NewSlotReq {
   productId: number;
 }
 
+export interface UpdateSlotReq {
+  datasourceId: number;
+  name?: string;
+  enabled?: boolean;
+  posX?: number;
+  posY?: number;
+  posZ?: number;
+  sizeX?: number;
+  sizeY?: number;
+  sizeZ?: number;
+  rotX?: number;
+  rotY?: number;
+  rotZ?: number;
+  productId?: number;
+}
 export interface SaveUserDatasourceReq {
   name: string;
   wallet: string;

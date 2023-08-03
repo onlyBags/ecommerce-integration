@@ -11,6 +11,8 @@ import {
   ValidateError,
   Header,
   Path,
+  Put,
+  Delete,
 } from 'tsoa';
 
 import { envConfig } from '@dg-live/ecommerce-config';
@@ -21,10 +23,12 @@ import {
   SaveUserDatasourceReq,
   DGLResponse,
   NewSlotReq,
+  UpdateSlotReq,
 } from '../interfaces/index.js';
 import { createWebhooks } from '@dg-live/ecommerce-woocommerce';
+import { type } from 'os';
 @Route('dashboard')
-@Tags('Client')
+@Tags('User')
 export class DashboardController extends Controller {
   @Post('/user')
   @SuccessResponse('201', 'Created')
@@ -184,17 +188,16 @@ export class DashboardController extends Controller {
     }
   }
 
-  @Post('/user/slot')
+  @Post('/user/slot/{datasourceId}')
   @SuccessResponse('201', 'Created')
   public async newSlot(
     @Header('api-key') apiKey: string,
+    @Path() datasourceId: number,
     @Body() requestBody: NewSlotReq
   ): Promise<DGLResponse<Slot>> {
     const fields: FieldErrors = {};
     const {
       name,
-      datasourceId,
-      enabled,
       posX,
       posY,
       posZ,
@@ -299,7 +302,264 @@ export class DashboardController extends Controller {
       const resp = {
         message: 'Slot created successfully',
         status: 201,
-        data: await dashboardService.saveSlot(apiKey, requestBody),
+        data: await dashboardService.saveSlot(
+          apiKey,
+          datasourceId,
+          requestBody
+        ),
+      };
+      return resp;
+    } catch (err) {
+      throw new ValidateError({}, err.message);
+    }
+  }
+
+  @Put('/user/slot/{datasourceId}/{slotId}')
+  @SuccessResponse('204', 'Resource updated successfully')
+  public async updateSlot(
+    @Header('api-key') apiKey: string,
+    @Path() slotId: number,
+    @Path() datasourceId: number,
+    @Body() requestBody: UpdateSlotReq
+  ): Promise<DGLResponse<Slot>> {
+    const fields: FieldErrors = {};
+    const {
+      name,
+      enabled,
+      posX,
+      posY,
+      posZ,
+      sizeX,
+      sizeY,
+      sizeZ,
+      rotX,
+      rotY,
+      rotZ,
+      productId,
+    } = requestBody;
+    if (!apiKey || typeof apiKey !== 'string') {
+      fields.apiKey = {
+        message: 'Invalid apiKey',
+        value: apiKey,
+      };
+    }
+    if (
+      !name ||
+      typeof name !== 'string' ||
+      name.length > 255 ||
+      name.length < 3
+    ) {
+      fields.name = {
+        message:
+          'Invalid name, it should be a string between 3 and 255 characters',
+        value: name,
+      };
+    }
+    if (typeof datasourceId !== 'number') {
+      fields.datasourceId = {
+        message: 'Invalid datasourceId, it should be a number',
+        value: datasourceId,
+      };
+    }
+    if (!Number.isFinite(posX)) {
+      fields.posX = {
+        message: 'Invalid posX',
+        value: posX,
+      };
+    }
+    if (!Number.isFinite(posY)) {
+      fields.posY = {
+        message: 'Invalid posY',
+        value: posY,
+      };
+    }
+    if (!Number.isFinite(posZ)) {
+      fields.posZ = {
+        message: 'Invalid posZ',
+        value: posZ,
+      };
+    }
+    if (!Number.isFinite(sizeX)) {
+      fields.sizeX = {
+        message: 'Invalid sizeX',
+        value: sizeX,
+      };
+    }
+    if (!Number.isFinite(sizeY)) {
+      fields.sizeY = {
+        message: 'Invalid sizeY',
+        value: sizeY,
+      };
+    }
+    if (!Number.isFinite(sizeZ)) {
+      fields.sizeZ = {
+        message: 'Invalid sizeZ',
+        value: sizeZ,
+      };
+    }
+    if (!Number.isFinite(rotX) || rotX < 0 || rotX > 360) {
+      fields.rotX = {
+        message: 'Invalid rotX, it should be a number between 0 and 360',
+        value: rotX,
+      };
+    }
+    if (!Number.isFinite(rotY) || rotY < 0 || rotY > 360) {
+      fields.rotY = {
+        message: 'Invalid rotY, it should be a number between 0 and 360',
+        value: rotY,
+      };
+    }
+    if (!Number.isFinite(rotZ) || rotZ < 0 || rotZ > 360) {
+      fields.rotZ = {
+        message: 'Invalid rotZ, it should be a number between 0 and 360',
+        value: rotZ,
+      };
+    }
+    if (typeof productId !== 'number') {
+      fields.productId = {
+        message: 'Invalid productId, it should be a number',
+        value: productId,
+      };
+    }
+    if (typeof enabled !== 'boolean') {
+      fields.enabled = {
+        message: 'Invalid enabled, it should be a boolean',
+        value: enabled,
+      };
+    }
+    if (Object.keys(fields).length > 0) {
+      throw new ValidateError(fields, 'Error creating new slot');
+    }
+
+    try {
+      const resp = {
+        message: 'Slot updated successfully',
+        status: 204,
+        data: await dashboardService.updateSlot(
+          apiKey,
+          datasourceId,
+          slotId,
+          requestBody
+        ),
+      };
+      return resp;
+    } catch (err) {
+      throw new ValidateError({}, err.message);
+    }
+  }
+
+  @Delete('/user/slot/{datasourceId}/{slotId}')
+  @SuccessResponse('204', 'Resource updated successfully')
+  public async deleteSlot(
+    @Header('api-key') apiKey: string,
+    @Path() slotId: number,
+    @Path() datasourceId: number
+  ): Promise<DGLResponse<void>> {
+    const fields: FieldErrors = {};
+    if (!apiKey || typeof apiKey !== 'string') {
+      fields.apiKey = {
+        message: 'Invalid apiKey',
+        value: apiKey,
+      };
+    }
+    if (typeof datasourceId !== 'number') {
+      fields.datasourceId = {
+        message: 'Invalid datasourceId, it should be a number',
+        value: datasourceId,
+      };
+    }
+    if (!Number.isFinite(slotId)) {
+      fields.slotId = {
+        message: 'Invalid slotId, it should be a number',
+        value: slotId,
+      };
+    }
+    if (Object.keys(fields).length > 0) {
+      throw new ValidateError(fields, 'Error creating new slot');
+    }
+
+    try {
+      const resp = {
+        message: 'Slot deleted successfully',
+        status: 204,
+        data: await dashboardService.deleteSlot(apiKey, datasourceId, slotId),
+      };
+      return resp;
+    } catch (err) {
+      throw new ValidateError({}, err.message);
+    }
+  }
+
+  @Get('/user/slot/{datasourceId}/{slotId}')
+  @SuccessResponse('200', 'Resource fetched successfully')
+  public async getSlot(
+    @Header('api-key') apiKey: string,
+    @Path() slotId: number,
+    @Path() datasourceId: number
+  ): Promise<DGLResponse<Slot>> {
+    const fields: FieldErrors = {};
+    if (!apiKey || typeof apiKey !== 'string') {
+      fields.apiKey = {
+        message: 'Invalid apiKey',
+        value: apiKey,
+      };
+    }
+    if (typeof datasourceId !== 'number') {
+      fields.datasourceId = {
+        message: 'Invalid datasourceId, it should be a number',
+        value: datasourceId,
+      };
+    }
+    if (!Number.isFinite(slotId)) {
+      fields.slotId = {
+        message: 'Invalid slotId, it should be a number',
+        value: slotId,
+      };
+    }
+    if (Object.keys(fields).length > 0) {
+      throw new ValidateError(fields, 'Error getting the slot');
+    }
+
+    try {
+      const resp = {
+        message: 'Slot fetched successfully',
+        status: 200,
+        data: await dashboardService.getSlot(apiKey, datasourceId, slotId),
+      };
+      return resp;
+    } catch (err) {
+      throw new ValidateError({}, err.message);
+    }
+  }
+
+  @Get('/user/slots/{datasourceId}')
+  @SuccessResponse('200', 'Resource fetched successfully')
+  public async getSlots(
+    @Header('api-key') apiKey: string,
+    @Path() datasourceId: number
+  ): Promise<DGLResponse<Slot[]>> {
+    const fields: FieldErrors = {};
+    if (!apiKey || typeof apiKey !== 'string') {
+      fields.apiKey = {
+        message: 'Invalid apiKey',
+        value: apiKey,
+      };
+    }
+    if (typeof datasourceId !== 'number') {
+      fields.datasourceId = {
+        message: 'Invalid datasourceId, it should be a number',
+        value: datasourceId,
+      };
+    }
+    if (Object.keys(fields).length > 0) {
+      throw new ValidateError(fields, 'Error getting the slot');
+    }
+
+    try {
+      const resp = {
+        message: 'Slot fetched successfully',
+        status: 200,
+        data: await dashboardService.getSlots(apiKey, datasourceId),
       };
       return resp;
     } catch (err) {
