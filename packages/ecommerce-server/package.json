@@ -29,6 +29,7 @@
     "@dg-live/ecommerce-magento": "*",
     "@dg-live/ecommerce-woocommerce": "*",
     "@dg-live/ecommerce-webhooks": "*",
-    "@dg-live/ecommerce-cache": "*"
+    "@dg-live/ecommerce-cache": "*",
+    "@dg-live/ecommerce-data-types": "*"
   }
 }

@@ -10,7 +10,8 @@ import {
   SaveUserDatasourceReq,
   SaveUserReq,
   UpdateSlotReq,
-} from '../../interfaces/index.js';
+} from '@dg-live/ecommerce-data-types';
+
 import { getPassword } from '../../util/index.js';
 
 const userRepository = AppDataSource.getRepository(User);

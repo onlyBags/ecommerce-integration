@@ -24,9 +24,8 @@ import {
   DGLResponse,
   NewSlotReq,
   UpdateSlotReq,
-} from '../interfaces/index.js';
+} from '@dg-live/ecommerce-data-types';
 import { createWebhooks } from '@dg-live/ecommerce-woocommerce';
-import { type } from 'os';
 @Route('dashboard')
 @Tags('User')
 export class DashboardController extends Controller {

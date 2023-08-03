@@ -14,20 +14,24 @@ import {
   Example,
 } from 'tsoa';
 
-import { DGLResponse } from '../interfaces/index.js';
+import {
+  DGLResponse,
+  WoocomerceShippingZone,
+  ProductVariation,
+  WoocommerceOrderCreatedRes,
+  WoocommerceOrder,
+} from '@dg-live/ecommerce-data-types';
+
 import {
   syncCatalog,
   getAllProducts,
-  WoocomerceShippingZone,
   getShippingZones,
   shippingLocations,
   getProductVariation,
-  ProductVariation,
   createOrder,
-  WoocommerceOrderCreatedRes,
-  WoocommerceOrder,
   shippingMethods,
 } from '@dg-live/ecommerce-woocommerce';
+
 import { WoocommerceProduct } from '@dg-live/ecommerce-db';
 
 type OrderExample = {

@@ -13,7 +13,7 @@ import {
   Path,
 } from 'tsoa';
 
-import { DGLResponse } from '../interfaces/index.js';
+import { DGLResponse } from '@dg-live/ecommerce-data-types';
 import { getAllProducts } from '@dg-live/ecommerce-magento';
 import { WoocommerceProduct } from '@dg-live/ecommerce-db';
 
