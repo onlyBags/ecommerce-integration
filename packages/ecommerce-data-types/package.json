@@ -10,5 +10,7 @@
   "nx": {
     "implicitDependencies": []
   },
-  "dependencies": {}
+  "dependencies": {
+    "@dg-live/ecommerce-db": "*"
+  }
 }
