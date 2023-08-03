@@ -361,55 +361,55 @@ export class DashboardController extends Controller {
         value: datasourceId,
       };
     }
-    if (!Number.isFinite(posX)) {
+    if (posX && !Number.isFinite(posX)) {
       fields.posX = {
         message: 'Invalid posX',
         value: posX,
       };
     }
-    if (!Number.isFinite(posY)) {
+    if (posY && !Number.isFinite(posY)) {
       fields.posY = {
         message: 'Invalid posY',
         value: posY,
       };
     }
-    if (!Number.isFinite(posZ)) {
+    if (posZ && !Number.isFinite(posZ)) {
       fields.posZ = {
         message: 'Invalid posZ',
         value: posZ,
       };
     }
-    if (!Number.isFinite(sizeX)) {
+    if (sizeX && !Number.isFinite(sizeX)) {
       fields.sizeX = {
         message: 'Invalid sizeX',
         value: sizeX,
       };
     }
-    if (!Number.isFinite(sizeY)) {
+    if (sizeY && !Number.isFinite(sizeY)) {
       fields.sizeY = {
         message: 'Invalid sizeY',
         value: sizeY,
       };
     }
-    if (!Number.isFinite(sizeZ)) {
+    if (sizeZ && !Number.isFinite(sizeZ)) {
       fields.sizeZ = {
         message: 'Invalid sizeZ',
         value: sizeZ,
       };
     }
-    if (!Number.isFinite(rotX) || rotX < 0 || rotX > 360) {
+    if (rotX && (!Number.isFinite(rotX) || rotX < 0 || rotX > 360)) {
       fields.rotX = {
         message: 'Invalid rotX, it should be a number between 0 and 360',
         value: rotX,
       };
     }
-    if (!Number.isFinite(rotY) || rotY < 0 || rotY > 360) {
+    if (rotY && (!Number.isFinite(rotY) || rotY < 0 || rotY > 360)) {
       fields.rotY = {
         message: 'Invalid rotY, it should be a number between 0 and 360',
         value: rotY,
       };
     }
-    if (!Number.isFinite(rotZ) || rotZ < 0 || rotZ > 360) {
+    if (rotZ && (!Number.isFinite(rotZ) || rotZ < 0 || rotZ > 360)) {
       fields.rotZ = {
         message: 'Invalid rotZ, it should be a number between 0 and 360',
         value: rotZ,
