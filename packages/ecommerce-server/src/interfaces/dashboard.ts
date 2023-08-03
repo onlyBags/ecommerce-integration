@@ -19,7 +19,6 @@ export interface NewSlotReq {
 }
 
 export interface UpdateSlotReq {
-  datasourceId: number;
   name?: string;
   enabled?: boolean;
   posX?: number;
