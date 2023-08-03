@@ -8,7 +8,8 @@ import {
   BillingReq,
   ShippingReq,
   WoocommerceOrderCreatedRes,
-} from '../interfaces/index.js';
+} from '@dg-live/ecommerce-data-types';
+
 import { AxiosResponse } from 'axios';
 import {
   AppDataSource,
@@ -18,10 +19,10 @@ import {
   Customer,
 } from '@dg-live/ecommerce-db';
 
+import { saveBilling, saveShipping } from '@dg-live/ecommerce-customer';
+
 const orderRepository = AppDataSource.getRepository(Order);
 const customerRepository = AppDataSource.getRepository(Customer);
-const shippingRepository = AppDataSource.getRepository(Shipping);
-const billingRepository = AppDataSource.getRepository(Billing);
 
 export const createOrder = async ({
   apiKey,
@@ -149,60 +150,6 @@ const getCustomer = async (wallet: string) => {
   const newCustomer = new Customer();
   newCustomer.wallet = wallet;
   return await customerRepository.save(newCustomer);
-};
-
-const saveBilling = async ({
-  customer,
-  billingData,
-}: {
-  customer: Customer;
-  billingData: OrderBilling;
-}) => {
-  const newBilling = new Billing();
-  newBilling.customer = customer;
-  newBilling.firstName = billingData.firstName;
-  newBilling.lastName = billingData.lastName;
-  newBilling.address1 = billingData.address1;
-  newBilling.address2 = billingData.address2;
-  newBilling.city = billingData.city;
-  newBilling.state = billingData.state;
-  newBilling.postcode = billingData.postcode;
-  newBilling.country = billingData.country;
-  newBilling.email = billingData.email;
-  newBilling.phone = billingData.phone;
-  try {
-    return await billingRepository.save(newBilling);
-  } catch (error) {
-    console.log('error', error);
-    debugger;
-    throw error;
-  }
-};
-
-const saveShipping = async ({
-  customer,
-  shippingData,
-}: {
-  customer: Customer;
-  shippingData: OrderShipping;
-}) => {
-  const newShipping = new Shipping();
-  newShipping.customer = customer;
-  newShipping.firstName = shippingData.firstName;
-  newShipping.lastName = shippingData.lastName;
-  newShipping.address1 = shippingData.address1;
-  newShipping.address2 = shippingData.address2;
-  newShipping.city = shippingData.city;
-  newShipping.state = shippingData.state;
-  newShipping.postcode = shippingData.postcode;
-  newShipping.country = shippingData.country;
-  try {
-    return await shippingRepository.save(newShipping);
-  } catch (error) {
-    console.log('error', error);
-    debugger;
-    throw error;
-  }
 };
 
 const mapShippingWCShipping = (shipping: Shipping | OrderShipping) => {

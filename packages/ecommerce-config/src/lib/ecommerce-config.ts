@@ -39,5 +39,4 @@ export const envConfig = Object.freeze({
   nodeEnv: process.env.NODE_ENV || 'local',
 });
 
-console.log(JSON.stringify(envConfig, null, 2));
 export default envConfig;

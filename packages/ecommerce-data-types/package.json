@@ -1,0 +1,14 @@
+{
+  "name": "@dg-live/ecommerce-data-types",
+  "version": "0.0.1",
+  "type": "module",
+  "main": "./dist/index.js",
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "watch": "tsc -p tsconfig.json --watch"
+  },
+  "nx": {
+    "implicitDependencies": []
+  },
+  "dependencies": {}
+}

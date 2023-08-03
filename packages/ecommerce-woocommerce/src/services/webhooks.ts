@@ -1,9 +1,7 @@
-import { WCRequestOptions } from '../interfaces/index.js';
 import { createNewWoocommerceInstance } from '../util/index.js';
-import { envConfig } from '@dg-live/ecommerce-config';
 import { AppDataSource, User } from '@dg-live/ecommerce-db';
 
-import { WebhookData } from '../interfaces/index.js';
+import { WebhookData, WCRequestOptions } from '@dg-live/ecommerce-data-types';
 const userReposiotry = AppDataSource.getRepository(User);
 
 export const createWebhooks = async ({

@@ -1,7 +1,10 @@
 import axios, { AxiosResponse } from 'axios';
 import FormData from 'form-data';
 import { AppDataSource, User } from '@dg-live/ecommerce-db';
-import { ProductVariation, ProductVariationRes } from '../interfaces/index.js';
+import {
+  ProductVariation,
+  ProductVariationRes,
+} from '@dg-live/ecommerce-data-types';
 const userRepository = AppDataSource.getRepository(User);
 
 export const getProductVariation = async ({

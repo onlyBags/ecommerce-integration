@@ -2,7 +2,7 @@ import {
   ShippingLocationsReq,
   WCRequestOptions,
   WoocomerceShippingZone,
-} from '../interfaces/index.js';
+} from '@dg-live/ecommerce-data-types';
 import { createNewWoocommerceInstance } from '../util/index.js';
 
 export const getShippingZones = async ({

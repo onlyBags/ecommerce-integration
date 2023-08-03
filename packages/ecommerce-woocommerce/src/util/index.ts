@@ -19,7 +19,7 @@ import {
   ImageRes,
   AttributeRes,
   MetaDataRes,
-} from '../interfaces/index.js';
+} from '@dg-live/ecommerce-data-types';
 import { datasourceCacheRepository } from '@dg-live/ecommerce-cache';
 import { Entity, EntityId } from 'redis-om';
 

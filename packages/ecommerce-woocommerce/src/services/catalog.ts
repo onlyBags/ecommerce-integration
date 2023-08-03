@@ -7,7 +7,7 @@ import {
   WCRequestOptions,
   WCUpdateProduct,
   WoocommerceProductRes,
-} from '../interfaces/index.js';
+} from '@dg-live/ecommerce-data-types';
 
 import { AppDataSource, WoocommerceProduct, User } from '@dg-live/ecommerce-db';
 // import { myData } from './mydata.js';
