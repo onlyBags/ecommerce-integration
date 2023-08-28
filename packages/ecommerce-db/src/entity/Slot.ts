@@ -4,8 +4,11 @@ import {
   Column,
   Unique,
   ManyToOne,
+  ManyToMany,
+  OneToMany,
 } from 'typeorm';
 import { Datasource } from './Datasource.js';
+import { WoocommerceProduct } from './WoocommerceProduct.js';
 
 @Entity({
   name: 'slot',
@@ -23,8 +26,11 @@ export class Slot {
   @Column({ default: true })
   enabled: boolean;
 
-  @Column()
-  productId: number;
+  @OneToMany(
+    () => WoocommerceProduct,
+    (woocommerceProduct) => woocommerceProduct.slot
+  )
+  woocommerceProduct: WoocommerceProduct[];
 
   @Column()
   posX: number;

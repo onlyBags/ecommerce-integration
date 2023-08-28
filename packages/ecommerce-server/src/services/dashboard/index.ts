@@ -113,17 +113,16 @@ export const saveSlot = async (
   if (!foundUser.datasource.length) throw new Error('Datasource not found');
 
   const datasource = foundUser.datasource[0];
-  let foundProductId: number;
+  let foundProduct: WoocommerceProduct;
 
   if (datasource.platform === 'woocommerce') {
-    const foundProduct = await woocommerceProduct.findOne({
+    foundProduct = await woocommerceProduct.findOne({
       where: { productId: productId, datasourceId },
     });
-    if (foundProduct && foundProduct.id) foundProductId = foundProduct.id;
   } else if (datasource.platform === 'magento') {
     throw new Error('Magento platform not supported yet');
   }
-  if (!foundProductId)
+  if (!foundProduct)
     throw new Error(
       `Product ${productId} not found in datasource ${datasourceId} and platform ${datasource.platform}`
     );
@@ -139,7 +138,8 @@ export const saveSlot = async (
   slot.rotX = rotX;
   slot.rotY = rotY;
   slot.rotZ = rotZ;
-  slot.productId = foundProductId;
+  slot.woocommerceProduct = [];
+  slot.woocommerceProduct.push(foundProduct);
 
   if (!foundUser.datasource) {
     throw new Error('Datasource not found');

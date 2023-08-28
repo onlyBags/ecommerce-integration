@@ -14,6 +14,7 @@
     "dev": "cd packages/ecommerce-server && npm run dev",
     "prod": "cd packages/ecommerce-server && npm run prod",
     "debug": "cd packages/ecommerce-server && npm run debug",
+    "build:db": "cd packages/ecommerce-db && npm run build",
     "affected:graph": "nx affected:graph",
     "affected:apps:json": "nx affected:graph --base=main --head=HEAD --file=affected-graph.json",
     "docker:prune:volume": "docker volume prune -a --force --filter \"label!=dg-live-monorepo_db\""

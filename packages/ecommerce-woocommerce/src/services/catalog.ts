@@ -26,6 +26,7 @@ export const getAllProducts = async ({
         datasource: {
           woocommerceProduct: {
             images: true,
+            slot: true,
             categories: true,
             attributes: {
               options: true,
@@ -34,6 +35,8 @@ export const getAllProducts = async ({
         },
       },
     });
+    console.log(foundUser);
+    debugger;
     if (
       !foundUser ||
       !foundUser.datasource.length ||

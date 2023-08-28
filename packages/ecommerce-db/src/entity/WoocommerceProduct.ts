@@ -19,6 +19,7 @@ import {
   MetaData,
   Links,
   Datasource,
+  Slot,
 } from './index.js';
 
 @Entity({
@@ -249,4 +250,7 @@ export class WoocommerceProduct {
   //   name: 'wc_product_x_meta_data',
   // })
   metaData: MetaData[];
+
+  @ManyToOne(() => Slot, (slot) => slot.woocommerceProduct)
+  slot: Slot;
 }
