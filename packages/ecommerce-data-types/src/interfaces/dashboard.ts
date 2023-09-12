@@ -21,7 +21,6 @@ export interface NewSlotReq {
   rotX: number;
   rotY: number;
   rotZ: number;
-  productId: number;
 }
 
 export interface UpdateSlotReq {

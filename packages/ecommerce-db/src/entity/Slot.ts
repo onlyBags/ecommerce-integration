@@ -26,11 +26,11 @@ export class Slot {
   @Column({ default: true })
   enabled: boolean;
 
-  @OneToMany(
+  @ManyToOne(
     () => WoocommerceProduct,
     (woocommerceProduct) => woocommerceProduct.slot
   )
-  woocommerceProduct: WoocommerceProduct[];
+  woocommerceProduct: WoocommerceProduct;
 
   @Column()
   posX: number;

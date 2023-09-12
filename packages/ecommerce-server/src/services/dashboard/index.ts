@@ -104,7 +104,6 @@ export const saveSlot = async (
     rotX,
     rotY,
     rotZ,
-    productId,
   } = slotReq;
 
   const foundUser = await getUserAndCheckDatasource(apiKey, datasourceId);
@@ -113,19 +112,7 @@ export const saveSlot = async (
   if (!foundUser.datasource.length) throw new Error('Datasource not found');
 
   const datasource = foundUser.datasource[0];
-  let foundProduct: WoocommerceProduct;
 
-  if (datasource.platform === 'woocommerce') {
-    foundProduct = await woocommerceProduct.findOne({
-      where: { productId: productId, datasourceId },
-    });
-  } else if (datasource.platform === 'magento') {
-    throw new Error('Magento platform not supported yet');
-  }
-  if (!foundProduct)
-    throw new Error(
-      `Product ${productId} not found in datasource ${datasourceId} and platform ${datasource.platform}`
-    );
   const slot = new Slot();
   slot.name = name;
   slot.enabled = enabled;
@@ -138,8 +125,6 @@ export const saveSlot = async (
   slot.rotX = rotX;
   slot.rotY = rotY;
   slot.rotZ = rotZ;
-  slot.woocommerceProduct = [];
-  slot.woocommerceProduct.push(foundProduct);
 
   if (!foundUser.datasource) {
     throw new Error('Datasource not found');
@@ -166,12 +151,52 @@ export const updateSlot = async (
   if (!foundUser) throw new Error('User not found');
   if (!foundUser.datasource.length) throw new Error('Datasource not found');
 
-  const foundSlot = await slotRepository.preload({ id: slotId, ...slotReq });
+  const foundSlot = await slotRepository.findOne({
+    where: { id: slotId, datasource: { id: datasourceId } },
+    relations: {
+      woocommerceProduct: true,
+    },
+  });
+  // const foundSlot = await slotRepository.preload({ id: slotId, ...slotReq },);
 
   if (!foundSlot) throw new Error('Slot not found');
 
+  if (!!slotReq.productId) {
+    const productId = slotReq.productId;
+    delete slotReq.productId;
+    const datasource = foundUser.datasource[0];
+    let foundProduct: WoocommerceProduct;
+
+    if (datasource.platform === 'woocommerce') {
+      foundProduct = await woocommerceProduct.findOne({
+        where: { productId: productId, datasourceId },
+      });
+    } else if (datasource.platform === 'magento') {
+      throw new Error('Magento platform not supported yet');
+    }
+    if (!foundProduct)
+      throw new Error(
+        `Product ${productId} not found in datasource ${datasourceId} and platform ${datasource.platform}`
+      );
+    foundSlot.woocommerceProduct = foundProduct;
+    try {
+      await slotRepository.save(foundSlot);
+    } catch (error) {
+      console.log(error);
+      throw error;
+    }
+  }
   try {
-    return await slotRepository.save(foundSlot);
+    if (Object.keys(slotReq).length) {
+      const result = await slotRepository.update({ id: foundSlot.id }, slotReq);
+    }
+    const updatedSlot = await slotRepository.findOne({
+      where: { id: slotId, datasource: { id: datasourceId } },
+      relations: {
+        woocommerceProduct: true,
+      },
+    });
+    return updatedSlot;
   } catch (err) {
     console.log(err);
     throw err;
@@ -263,12 +288,11 @@ export const deleteSlot = async (
 };
 
 export const getSlot = async (
-  apiKey: string,
   datasourceId: number,
   slotId: number
 ): Promise<Slot> => {
   const foundUser = await userRepository.findOne({
-    where: { apiKey, datasource: { id: datasourceId } },
+    where: { datasource: { id: datasourceId } },
     relations: ['datasource'],
   });
   if (!foundUser) throw new Error('User not found');
@@ -276,6 +300,9 @@ export const getSlot = async (
 
   const foundSlot = await slotRepository.findOne({
     where: { id: slotId, datasource: { id: datasourceId } },
+    relations: {
+      woocommerceProduct: true,
+    },
   });
 
   if (!foundSlot) throw new Error('Slot not found');
@@ -283,12 +310,9 @@ export const getSlot = async (
   return foundSlot;
 };
 
-export const getSlots = async (
-  apiKey: string,
-  datasourceId: number
-): Promise<Slot[]> => {
+export const getSlots = async (datasourceId: number): Promise<Slot[]> => {
   const foundUser = await userRepository.findOne({
-    where: { apiKey, datasource: { id: datasourceId } },
+    where: { datasource: { id: datasourceId } },
     relations: ['datasource'],
   });
   if (!foundUser) throw new Error('User not found');
@@ -296,12 +320,16 @@ export const getSlots = async (
 
   const foundSlot = await slotRepository.find({
     where: { datasource: { id: datasourceId } },
+    relations: {
+      woocommerceProduct: true,
+    },
   });
 
   if (!foundSlot) throw new Error('Slot not found');
 
   return foundSlot;
 };
+
 async function getUserAndCheckDatasource(apiKey: string, datasourceId: number) {
   const foundUser = await userRepository.findOne({
     where: { apiKey, datasource: { id: datasourceId } },

@@ -195,19 +195,8 @@ export class DashboardController extends Controller {
     @Body() requestBody: NewSlotReq
   ): Promise<DGLResponse<Slot>> {
     const fields: FieldErrors = {};
-    const {
-      name,
-      posX,
-      posY,
-      posZ,
-      sizeX,
-      sizeY,
-      sizeZ,
-      rotX,
-      rotY,
-      rotZ,
-      productId,
-    } = requestBody;
+    const { name, posX, posY, posZ, sizeX, sizeY, sizeZ, rotX, rotY, rotZ } =
+      requestBody;
     if (!apiKey || typeof apiKey !== 'string') {
       fields.apiKey = {
         message: 'Invalid apiKey',
@@ -286,12 +275,6 @@ export class DashboardController extends Controller {
         value: rotZ,
       };
     }
-    if (typeof productId !== 'number') {
-      fields.productId = {
-        message: 'Invalid productId, it should be a number',
-        value: productId,
-      };
-    }
 
     if (Object.keys(fields).length > 0) {
       throw new ValidateError(fields, 'Error creating new slot');
@@ -342,22 +325,27 @@ export class DashboardController extends Controller {
         value: apiKey,
       };
     }
+    if (typeof datasourceId !== 'number') {
+      fields.datasourceId = {
+        message: 'Invalid datasourceId, it should be a number',
+        value: datasourceId,
+      };
+    }
+    if (typeof slotId !== 'number') {
+      fields.slotId = {
+        message: 'Invalid slotId, it should be a number',
+        value: slotId,
+      };
+    }
     if (
-      !name ||
-      typeof name !== 'string' ||
-      name.length > 255 ||
-      name.length < 3
+      !!name &&
+      typeof name === 'string' &&
+      (name?.length > 255 || name?.length < 3)
     ) {
       fields.name = {
         message:
           'Invalid name, it should be a string between 3 and 255 characters',
         value: name,
-      };
-    }
-    if (typeof datasourceId !== 'number') {
-      fields.datasourceId = {
-        message: 'Invalid datasourceId, it should be a number',
-        value: datasourceId,
       };
     }
     if (posX && !Number.isFinite(posX)) {
@@ -414,13 +402,13 @@ export class DashboardController extends Controller {
         value: rotZ,
       };
     }
-    if (typeof productId !== 'number') {
+    if (!!productId && typeof productId !== 'number') {
       fields.productId = {
         message: 'Invalid productId, it should be a number',
         value: productId,
       };
     }
-    if (typeof enabled !== 'boolean') {
+    if (!!enabled && typeof enabled !== 'boolean') {
       fields.enabled = {
         message: 'Invalid enabled, it should be a boolean',
         value: enabled,
@@ -492,17 +480,10 @@ export class DashboardController extends Controller {
   @Get('/user/slot/{datasourceId}/{slotId}')
   @SuccessResponse('200', 'Resource fetched successfully')
   public async getSlot(
-    @Header('api-key') apiKey: string,
     @Path() slotId: number,
     @Path() datasourceId: number
   ): Promise<DGLResponse<Slot>> {
     const fields: FieldErrors = {};
-    if (!apiKey || typeof apiKey !== 'string') {
-      fields.apiKey = {
-        message: 'Invalid apiKey',
-        value: apiKey,
-      };
-    }
     if (typeof datasourceId !== 'number') {
       fields.datasourceId = {
         message: 'Invalid datasourceId, it should be a number',
@@ -523,7 +504,7 @@ export class DashboardController extends Controller {
       const resp = {
         message: 'Slot fetched successfully',
         status: 200,
-        data: await dashboardService.getSlot(apiKey, datasourceId, slotId),
+        data: await dashboardService.getSlot(datasourceId, slotId),
       };
       return resp;
     } catch (err) {
@@ -534,16 +515,9 @@ export class DashboardController extends Controller {
   @Get('/user/slots/{datasourceId}')
   @SuccessResponse('200', 'Resource fetched successfully')
   public async getSlots(
-    @Header('api-key') apiKey: string,
     @Path() datasourceId: number
   ): Promise<DGLResponse<Slot[]>> {
     const fields: FieldErrors = {};
-    if (!apiKey || typeof apiKey !== 'string') {
-      fields.apiKey = {
-        message: 'Invalid apiKey',
-        value: apiKey,
-      };
-    }
     if (typeof datasourceId !== 'number') {
       fields.datasourceId = {
         message: 'Invalid datasourceId, it should be a number',
@@ -558,7 +532,7 @@ export class DashboardController extends Controller {
       const resp = {
         message: 'Slot fetched successfully',
         status: 200,
-        data: await dashboardService.getSlots(apiKey, datasourceId),
+        data: await dashboardService.getSlots(datasourceId),
       };
       return resp;
     } catch (err) {

@@ -251,6 +251,6 @@ export class WoocommerceProduct {
   // })
   metaData: MetaData[];
 
-  @ManyToOne(() => Slot, (slot) => slot.woocommerceProduct)
-  slot: Slot;
+  @OneToMany(() => Slot, (slot) => slot.woocommerceProduct)
+  slot: Slot[];
 }
