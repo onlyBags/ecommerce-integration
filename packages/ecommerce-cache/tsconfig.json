@@ -6,9 +6,9 @@
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "lib": ["es5", "es6"],
-    "module": "esnext",
+    "module": "NodeNext",
     "baseUrl": ".",
-    "moduleResolution": "nodenext",
+    "moduleResolution": "NodeNext",
     "sourceMap": true,
     "target": "ESNext"
   },

@@ -34,9 +34,9 @@ export class Order {
   @Column()
   orderKey: string;
 
-  @Column()
+  @Column({ default: 0 })
   iceValue: number;
 
-  @Column()
+  @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   iceValueTimestamp: Date;
 }
