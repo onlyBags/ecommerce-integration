@@ -8,9 +8,10 @@ import {
   BillingReq,
   ShippingReq,
   WoocommerceOrderCreatedRes,
+  IcePriceResponse,
 } from '@dg-live/ecommerce-data-types';
 
-import { AxiosResponse } from 'axios';
+import axios, { AxiosResponse } from 'axios';
 import {
   AppDataSource,
   Billing,
@@ -193,6 +194,15 @@ const mapBillingWCBilling = (billing: Billing | OrderBilling) => {
   return mappedBilling;
 };
 
+const getIcePrice = async (): Promise<IcePriceResponse> => {
+  try {
+    const res = await axios.get<IcePriceResponse>('myUrl'); // Axios will infer the type for AxiosResponse
+    return res.data;
+  } catch (error) {
+    console.error('An error occurred:', error);
+    throw new Error('Failed to fetch ICE price');
+  }
+};
 const saveOrder = async (order: WCOrderCreated, customer: Customer) => {
   const mockData = {
     id: 131,
@@ -236,14 +246,15 @@ const saveOrder = async (order: WCOrderCreated, customer: Customer) => {
   };
   try {
     const savedOrder = new Order();
+    const icePrice = await getIcePrice();
     savedOrder.orderId = order.id;
     savedOrder.orderKey = order.order_key;
     savedOrder.status = order.status;
     savedOrder.customer = customer;
     savedOrder.total = +order.total;
     savedOrder.currency = order.currency;
-    savedOrder.iceValue = 0;
-    savedOrder.iceValueTimestamp = new Date();
+    savedOrder.iceValue = icePrice.data.quote.USD.price;
+    savedOrder.iceValueTimestamp = new Date(icePrice.data.last_updated);
     return await orderRepository.save(savedOrder);
   } catch (error) {
     console.log('error', error);
