@@ -16,10 +16,11 @@ import {
 
 import {
   DGLResponse,
-  WoocomerceShippingZone,
+  WoocommerceShippingZone,
   ProductVariation,
   WoocommerceOrderCreatedRes,
   WoocommerceOrder,
+  WoocommerceWebhookResponse,
 } from '@dg-live/ecommerce-data-types';
 
 import {
@@ -30,6 +31,8 @@ import {
   getProductVariation,
   createOrder,
   shippingMethods,
+  getWebhooks,
+  createWebhooks,
 } from '@dg-live/ecommerce-woocommerce';
 
 import { WoocommerceProduct } from '@dg-live/ecommerce-db';
@@ -118,7 +121,7 @@ export class WoocommerceController extends Controller {
   public async getShippings(
     @Header('api-key') apiKey: string,
     @Path() datasourceId: number
-  ): Promise<DGLResponse<WoocomerceShippingZone[]>> {
+  ): Promise<DGLResponse<WoocommerceShippingZone[]>> {
     const errorFields: FieldErrors = {};
     if (!apiKey) {
       errorFields.apiKey = {
@@ -156,7 +159,7 @@ export class WoocommerceController extends Controller {
     @Header('api-key') apiKey: string,
     @Path() datasourceId: number,
     @Path() shippingZoneId: number
-  ): Promise<DGLResponse<WoocomerceShippingZone[]>> {
+  ): Promise<DGLResponse<WoocommerceShippingZone[]>> {
     const errorFields: FieldErrors = {};
     if (!apiKey) {
       errorFields.apiKey = {
@@ -196,7 +199,7 @@ export class WoocommerceController extends Controller {
     @Header('api-key') apiKey: string,
     @Path() datasourceId: number,
     @Path() shippingZoneId: number
-  ): Promise<DGLResponse<WoocomerceShippingZone[]>> {
+  ): Promise<DGLResponse<WoocommerceShippingZone[]>> {
     const errorFields: FieldErrors = {};
     if (!apiKey) {
       errorFields.apiKey = {
@@ -373,6 +376,52 @@ export class WoocommerceController extends Controller {
       return resp as any;
     } catch (err) {
       throw new ValidateError({}, err.message);
+    }
+  }
+
+  @Get('/webhooks/{datasourceId}')
+  @SuccessResponse('200', 'Webhook')
+  public async getWebhooks(
+    @Header('api-key') apiKey: string,
+    @Path() datasourceId: number
+  ): Promise<DGLResponse<WoocommerceWebhookResponse[]>> {
+    if (!apiKey) throw new Error('Invalid apiKey');
+    if (!datasourceId) throw new Error('Invalid datasourceId');
+    try {
+      const webhooks = await getWebhooks({ apiKey, datasourceId });
+      return {
+        message: 'Webhooks fetched successfully',
+        status: 200,
+        data: webhooks,
+      };
+    } catch (error) {
+      throw new ValidateError(
+        {},
+        'Error getting webhooks: ' + error.message || ''
+      );
+    }
+  }
+
+  @Post('/webhooks/{datasourceId}')
+  @SuccessResponse('200', 'Webhook')
+  public async createWebhooks(
+    @Header('api-key') apiKey: string,
+    @Path() datasourceId: number
+  ): Promise<DGLResponse<WoocommerceWebhookResponse[]>> {
+    if (!apiKey) throw new Error('Invalid apiKey');
+    if (!datasourceId) throw new Error('Invalid datasourceId');
+    try {
+      const webhooks = await createWebhooks({ apiKey, datasourceId });
+      return {
+        message: 'Webhooks created successfully',
+        status: 200,
+        data: webhooks,
+      };
+    } catch (error) {
+      throw new ValidateError(
+        {},
+        'Error getting webhooks: ' + error.message || ''
+      );
     }
   }
 }

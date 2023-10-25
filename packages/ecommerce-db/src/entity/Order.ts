@@ -33,4 +33,10 @@ export class Order {
 
   @Column()
   orderKey: string;
+
+  @Column()
+  iceValue: number;
+
+  @Column()
+  iceValueTimestamp: Date;
 }

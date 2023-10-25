@@ -125,7 +125,7 @@ export interface WoocommerceProductRes {
   _links: Links;
 }
 
-export interface WoocomerceShippingZone {
+export interface WoocommerceShippingZone {
   id: number;
   name: string;
   order: number;
@@ -252,3 +252,4 @@ export interface ProductVariation {
 
 export * from './wc-order.js';
 export * from './shipping.js';
+export * from './webhooks.js';

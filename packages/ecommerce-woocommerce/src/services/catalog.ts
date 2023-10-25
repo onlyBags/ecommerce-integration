@@ -145,14 +145,6 @@ export const updateProduct = async ({
       where: {
         productId: product.id,
       },
-      // relations: {
-      //   categories: true,
-      //   tags: true,
-      //   images: true,
-      //   attributes: true,
-      //   dimensions: true,
-      //   metaData: true,
-      // },
     });
     if (foundProduct) {
       const woocommerceProduct = await parseProductResponse(
@@ -161,25 +153,15 @@ export const updateProduct = async ({
         datasourceId,
         new Date()
       );
-      // if (woocommerceProduct.length > 1)
-      //   throw new Error(
-      //     "Can't update product, more than one product found for id: " +
-      //       product.id
-      //   );
-      // debugger;
-      // const updateRes = await upsertProduct(woocommerceProduct[0]);
-      // debugger;
-      // if (updateRes.updatedProduct) {
-      //   debugger;
-      //   return {
-      //     updatedProducts: [updateRes.updatedProduct],
-      //   };
-      // }
-      // throw new Error("Can't update product, for id: " + product.id);
+      if (woocommerceProduct.length > 0) {
+        return {
+          updatedProducts: woocommerceProduct,
+        };
+      } else {
+        throw new Error('No product updated for id: ' + product.id);
+      }
     }
-    throw new Error(
-      "Can't update product, no products found for id: " + product.id
-    );
+    throw new Error('No product found for id: ' + product.id);
   } catch (err) {
     console.log(err);
     debugger;
@@ -187,7 +169,36 @@ export const updateProduct = async ({
   }
 };
 
-const upsertProduct = async (woocommerceProduct: WoocommerceProduct) => {
+export const createProduct = async ({
+  apiKey,
+  datasourceId,
+  product,
+}: WCUpdateProduct): Promise<{
+  savedProduct: WoocommerceProduct;
+}> => {
+  try {
+    const woocommerceProduct = await parseProductResponse(
+      [product],
+      apiKey,
+      datasourceId,
+      new Date()
+    );
+    if (woocommerceProduct.length > 0) {
+      const { savedProduct } = await upsertProduct(woocommerceProduct[0]);
+      return {
+        savedProduct,
+      };
+    } else {
+      throw new Error('No product updated for id: ' + product.id);
+    }
+  } catch (err) {
+    console.log(err);
+    debugger;
+    throw err;
+  }
+};
+
+export const upsertProduct = async (woocommerceProduct: WoocommerceProduct) => {
   let savedProduct: WoocommerceProduct;
   let updatedProduct: WoocommerceProduct;
   try {

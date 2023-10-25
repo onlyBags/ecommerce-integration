@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import { validateWebhookBody } from '../utils/index.js';
 import { AppDataSource, User } from '@dg-live/ecommerce-db';
-import { updateProduct } from '@dg-live/ecommerce-woocommerce';
+import { updateProduct, createProduct } from '@dg-live/ecommerce-woocommerce';
 
 const userRepository = AppDataSource.getRepository(User);
 
@@ -9,7 +9,6 @@ export const handleWebhook = async (req: Request, res: Response) => {
   try {
     const { headers, body, params } = req;
     const { apiKey, datasourceId } = params;
-
     const whSignature =
       headers['x-wc-webhook-signature'] &&
       typeof headers['x-wc-webhook-signature'] === 'string'
@@ -37,11 +36,19 @@ export const handleWebhook = async (req: Request, res: Response) => {
         ? headers['x-wc-webhook-event']
         : '';
     const reqIp = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
-    if (!whSignature && !whEvent && !whSource)
+    if (!whSignature && !whEvent && !whSource) {
+      const parsedBody = body.toString();
+      if (parsedBody.indexOf('webhook_id') > -1) {
+        return res
+          .status(200)
+          .json({ message: `${parsedBody} - Created` })
+          .end();
+      }
       return res
         .status(200)
         .json({ message: `hi ${reqIp}` })
         .end();
+    }
     if (!whSignature) throw new Error("Signature doesn't exist");
 
     const foundUser = await userRepository.findOne({
@@ -62,7 +69,7 @@ export const handleWebhook = async (req: Request, res: Response) => {
       return res
         .status(200)
         .json({
-          message: 'But Unauthorized',
+          message: 'Unauthorized',
         })
         .end();
     } else {
@@ -79,13 +86,18 @@ export const handleWebhook = async (req: Request, res: Response) => {
         });
         break;
       case 'product.created':
+        createProduct({
+          apiKey,
+          datasourceId: +datasourceId,
+          product: JSON.parse(body),
+        });
         break;
       default:
         console.log('default');
     }
   } catch (err) {
     console.log(err);
-    debugger;
+    throw new Error("Couldn't handle webhook: " + err.message || '');
   }
 };
 
