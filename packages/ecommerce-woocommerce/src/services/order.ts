@@ -98,7 +98,7 @@ export const createOrder = async ({
   const orderReq: WoocommerceOrderReq = {
     payment_method: order.paymentMethod,
     payment_method_title: order.paymentMethodTitle,
-    set_paid: order.setPaid,
+    set_paid: false,
     billing: wcBilling,
     shipping: wcShipping,
     line_items: order.lineItems.map((lineItem) => ({
@@ -133,6 +133,12 @@ export const createOrder = async ({
       dgLiveOrder: savedOrder,
       raw: res.data,
     };
+    // --contrato:
+    //  orderId*
+    //  amount *
+    //  beneficiaryWallet (wallet del store donde mandar la plata) - Agregar campo wallet en datasource
+    // call pay(orderId, amount, beneficiaryWallet)
+    // contract emits "paymentProcceed" event
   } catch (error) {
     console.log('error', error);
     debugger;
@@ -236,6 +242,8 @@ const saveOrder = async (order: WCOrderCreated, customer: Customer) => {
     savedOrder.customer = customer;
     savedOrder.total = +order.total;
     savedOrder.currency = order.currency;
+    savedOrder.iceValue = 0;
+    savedOrder.iceValueTimestamp = new Date();
     return await orderRepository.save(savedOrder);
   } catch (error) {
     console.log('error', error);

@@ -1,0 +1,1051 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>DG - Slot edit Joystick</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65"
+      crossorigin="anonymous"
+    />
+    <style>
+      * {
+        box-sizing: border-box;
+        user-select: none !important;
+        -webkit-touch-callout: none !important;
+        -webkit-user-select: none !important;
+      }
+      body {
+        background-color: #fefefe;
+        height: 100vh;
+        position: fixed;
+        overflow: hidden;
+      }
+      .spinner-container {
+        display: flex;
+        width: 100vw;
+        height: 100vh;
+        position: absolute;
+        opacity: 0.5;
+        background: gray;
+        z-index: 9999;
+        align-items: center;
+        justify-content: center;
+      }
+      .controllerContainer {
+        display: flex;
+        height: 100%;
+        align-items: center;
+        justify-content: center;
+      }
+      .controller {
+        /* height: 200px;
+        width: 400px; */
+        position: relative;
+      }
+
+      .controllerLeft {
+        /* height: 250px;
+        width: 250px; */
+        position: absolute;
+        border-radius: 100%;
+        margin-left: -125px;
+      }
+
+      .circle {
+        height: 150px;
+        width: 150px;
+        background-color: #e6e6e6;
+        position: absolute;
+        border-radius: 100%;
+        border: solid 5px rgba(184, 184, 184, 1);
+        /* margin-left: 42px;
+        margin-top: 52px; */
+      }
+
+      .crossCenter {
+        background-color: #333333;
+        width: 35px;
+        height: 35px;
+        /* margin-top: 110px;
+        margin-left: 100px; */
+        position: relative;
+      }
+
+      .crossCircle {
+        background-color: #292929;
+        width: 25px;
+        height: 25px;
+        position: absolute;
+        border-radius: 100%;
+        margin-top: 5px;
+        margin-left: 5px;
+      }
+
+      .crossTop {
+        background-color: #333333;
+        width: 35px;
+        height: 35px;
+        position: absolute;
+        border-radius: 15%;
+        margin-top: -30px;
+      }
+
+      .crossBottom {
+        background-color: #333333;
+        width: 35px;
+        height: 35px;
+        position: absolute;
+        border-radius: 15%;
+        margin-top: 30px;
+      }
+
+      .crossLeft {
+        background-color: #333333;
+        width: 35px;
+        height: 35px;
+        position: absolute;
+        border-radius: 15%;
+        margin-left: -30px;
+      }
+
+      .crossRight {
+        background-color: #333333;
+        width: 35px;
+        height: 35px;
+        position: absolute;
+        border-radius: 15%;
+        margin-left: 30px;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="loader" class="spinner-container">
+      <div class="spinner-border" role="status">
+        <span class="visually-hidden">Loading...</span>
+      </div>
+    </div>
+    <div class="container-fluid h-100">
+      <div id="errorModal" class="modal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h3 class="modal-title">Error</h3>
+              <button
+                type="button"
+                class="btn-close"
+                data-bs-dismiss="modal"
+                aria-label="Close"
+              ></button>
+            </div>
+            <div class="modal-body">
+              <h4>Too bad, something went wrong</h4>
+              <p>
+                <span id="errorDesc"></span>
+              </p>
+            </div>
+            <div class="modal-footer">
+              <button
+                type="button"
+                class="btn btn-secondary"
+                data-bs-dismiss="modal"
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-6 col-sm-3">
+          <div id="joystick-x-y" style="width: 100%">
+            <h4>Move X-Y</h4>
+            <svg width="100%" height="100%" viewBox="0 0 100 100">
+              <defs>
+                <linearGradient id="grad1" x1="0%" y1="0%" x2="0%" y2="100%">
+                  <stop
+                    offset="0%"
+                    style="stop-color: rgb(16, 16, 16); stop-opacity: 1"
+                  />
+                  <stop
+                    offset="100%"
+                    style="stop-color: rgb(240, 240, 240); stop-opacity: 1"
+                  />
+                </linearGradient>
+                <linearGradient id="grad2" x1="0%" y1="0%" x2="0%" y2="100%">
+                  <stop
+                    offset="0%"
+                    style="stop-color: rgb(240, 240, 240); stop-opacity: 1"
+                  />
+                  <stop
+                    offset="100%"
+                    style="stop-color: rgb(16, 16, 16); stop-opacity: 1"
+                  />
+                </linearGradient>
+                <linearGradient id="grad3" x1="0%" y1="0%" x2="0%" y2="100%">
+                  <stop
+                    offset="0%"
+                    style="stop-color: rgb(168, 168, 168); stop-opacity: 1"
+                  />
+                  <stop
+                    offset="100%"
+                    style="stop-color: rgb(239, 239, 239); stop-opacity: 1"
+                  />
+                </linearGradient>
+              </defs>
+              <circle cx="50" cy="50" r="50" fill="url(#grad1)" />
+              <circle
+                cx="50"
+                cy="50"
+                r="47"
+                fill="url(#grad2)"
+                stroke="black"
+                stroke-width="1.5px"
+              />
+              <circle cx="50" cy="50" r="44" fill="url(#grad3)" />
+              <circle
+                cx="50"
+                cy="50"
+                r="20"
+                fill="#cccccc"
+                stroke="black"
+                stroke-width="1px"
+              />
+              <!-- d="M50,14 54,22 46,22Z" -->
+              <path
+                d="M50,7 56,22 44,22Z"
+                fill="rgba(0,0,0,0.8)"
+                id="btnYUp"
+                onmouseout="cleateJoystickInterval()"
+              />
+              <!-- d="M50,86 54,78 46,78Z" -->
+              <path
+                d="M50,93 56,78 44,78Z"
+                fill="rgba(0,0,0,0.8)"
+                id="btnYDown"
+                onmouseout="cleateJoystickInterval()"
+              />
+              <path
+                d="M7,50 22,44 22,56Z"
+                fill="rgba(0,0,0,0.8)"
+                id="btnXLeft"
+                onmouseout="cleateJoystickInterval()"
+              />
+              <!-- d="M86,50 78,54 78,46Z" -->
+              <path
+                d="M93,50 78,56 78,44Z"
+                fill="rgba(0,0,0,0.8)"
+                id="btnXRigth"
+                onmouseout="cleateJoystickInterval()"
+              />
+            </svg>
+          </div>
+        </div>
+        <div class="col-6 col-sm-3">
+          <div id="joystick-z" style="width: 100%">
+            <h4>Move Z</h4>
+            <svg width="100%" height="100%" viewBox="0 0 100 100">
+              <defs>
+                <linearGradient id="grad1" x1="0%" y1="0%" x2="0%" y2="100%">
+                  <stop
+                    offset="0%"
+                    style="stop-color: rgb(16, 16, 16); stop-opacity: 1"
+                  />
+                  <stop
+                    offset="100%"
+                    style="stop-color: rgb(240, 240, 240); stop-opacity: 1"
+                  />
+                </linearGradient>
+                <linearGradient id="grad2" x1="0%" y1="0%" x2="0%" y2="100%">
+                  <stop
+                    offset="0%"
+                    style="stop-color: rgb(240, 240, 240); stop-opacity: 1"
+                  />
+                  <stop
+                    offset="100%"
+                    style="stop-color: rgb(16, 16, 16); stop-opacity: 1"
+                  />
+                </linearGradient>
+                <linearGradient id="grad3" x1="0%" y1="0%" x2="0%" y2="100%">
+                  <stop
+                    offset="0%"
+                    style="stop-color: rgb(168, 168, 168); stop-opacity: 1"
+                  />
+                  <stop
+                    offset="100%"
+                    style="stop-color: rgb(239, 239, 239); stop-opacity: 1"
+                  />
+                </linearGradient>
+              </defs>
+              <circle cx="50" cy="50" r="50" fill="url(#grad1)" />
+              <circle
+                cx="50"
+                cy="50"
+                r="47"
+                fill="url(#grad2)"
+                stroke="black"
+                stroke-width="1.5px"
+              />
+              <circle cx="50" cy="50" r="44" fill="url(#grad3)" />
+              <circle
+                cx="50"
+                cy="50"
+                r="20"
+                fill="#cccccc"
+                stroke="black"
+                stroke-width="1px"
+              />
+              <path
+                d="M50,7 56,22 44,22Z"
+                fill="rgba(0,0,0,0.8)"
+                id="btnZUp"
+                onmouseout="cleateJoystickInterval()"
+              />
+              <!-- d="M50,86 54,78 46,78Z" -->
+              <path
+                id="btnZDow"
+                d="M50,93 56,78 44,78Z"
+                fill="rgba(0,0,0,0.8)"
+                onmouseout="cleateJoystickInterval()"
+              />
+            </svg>
+          </div>
+        </div>
+        <div class="col-12 col-sm-6">
+          <div class="row">
+            <div class="col">
+              <label for="scaleX" class="form-label">Scale X</label>
+              <div class="input-group mb-3">
+                <button
+                  class="btn btn-outline-secondary"
+                  type="button"
+                  id="scaleXDecrease"
+                  onclick="scaleXDecrease()"
+                >
+                  -
+                </button>
+                <input
+                  type="number"
+                  class="form-control text-center"
+                  id="scaleX"
+                  placeholder=""
+                  aria-label="Example text with button addon"
+                  aria-describedby="button-addon1"
+                  value="1"
+                  readonly
+                />
+                <button
+                  class="btn btn-outline-secondary"
+                  type="button"
+                  id="scaleXAdd"
+                  onclick="scaleXAdd()"
+                >
+                  +
+                </button>
+              </div>
+              <label for="scaleY" class="form-label">Scale Y</label>
+              <div class="input-group mb-3">
+                <button
+                  class="btn btn-outline-secondary"
+                  type="button"
+                  id="scaleYDecrease"
+                  onclick="scaleYDecrease()"
+                >
+                  -
+                </button>
+                <input
+                  type="number"
+                  class="form-control text-center"
+                  id="scaleY"
+                  placeholder=""
+                  aria-label="Example text with button addon"
+                  aria-describedby="button-addon1"
+                  value="1"
+                  readonly
+                />
+                <button
+                  class="btn btn-outline-secondary"
+                  type="button"
+                  id="scaleYAdd"
+                  onclick="scaleYAdd()"
+                >
+                  +
+                </button>
+              </div>
+              <label for="scaleZ" class="form-label">Scale Z</label>
+              <div class="input-group mb-3">
+                <button
+                  class="btn btn-outline-secondary"
+                  type="button"
+                  id="scaleZDecrease"
+                  onclick="scaleZDecrease()"
+                >
+                  -
+                </button>
+                <input
+                  type="number"
+                  class="form-control text-center"
+                  id="scaleZ"
+                  placeholder=""
+                  aria-label="Example text with button addon"
+                  aria-describedby="button-addon1"
+                  value="1"
+                  readonly
+                />
+                <button
+                  class="btn btn-outline-secondary"
+                  type="button"
+                  id="scaleZAdd"
+                  onclick="scaleZAdd()"
+                >
+                  +
+                </button>
+              </div>
+            </div>
+            <div class="col">
+              <div>
+                <label for="rotateX" class="form-label">Rotate X</label>
+                <input
+                  type="range"
+                  class="form-range"
+                  min="0"
+                  max="360"
+                  id="rotateX"
+                  oninput="rotateXChange()"
+                  onchange="updateData()"
+                  value="0"
+                />
+              </div>
+              <input
+                id="rotateXInput"
+                class="form-control"
+                value="0"
+                type="number"
+                oninput="rotateXInputChange()"
+                onchange="updateData()"
+              />
+              <div>
+                <label for="rotateY" class="form-label">Rotate Y</label>
+                <input
+                  type="range"
+                  class="form-range"
+                  min="0"
+                  max="360"
+                  id="rotateY"
+                  oninput="rotateYChange()"
+                  onchange="updateData()"
+                  value="0"
+                />
+                <input
+                  id="rotateYInput"
+                  class="form-control"
+                  value="0"
+                  type="number"
+                  oninput="rotateYInputChange()"
+                  onchange="updateData()"
+                />
+              </div>
+              <div>
+                <label for="rotateZ" class="form-label">Rotate Z</label>
+                <input
+                  type="range"
+                  class="form-range"
+                  min="0"
+                  max="360"
+                  id="rotateZ"
+                  oninput="rotateZChange()"
+                  onchange="updateData()"
+                  value="0"
+                />
+                <input
+                  id="rotateZInput"
+                  class="form-control"
+                  value="0"
+                  type="number"
+                  oninput="rotateZInputChange()"
+                  onchange="updateData()"
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-4 col-sm-2">
+          <p>posX:<span id="posX">1</span></p>
+        </div>
+        <div class="col-4 col-sm-2">
+          <p>posY:<span id="posY">1</span></p>
+        </div>
+        <div class="col-4 col-sm-2">
+          <p>posZ:<span id="posZ">1</span></p>
+        </div>
+        <div class="col-6 col-sm-3">
+          <select
+            id="ddlSlotsBanners"
+            class="form-select"
+            aria-label="Default select example"
+            onchange="ddlSlotsBannerChange()"
+          >
+            <option selected disabled id="defaultOption">
+              Select a slot to edit
+            </option>
+          </select>
+        </div>
+        <div class="col-6 col-sm-3">
+          <label for="sensitivityRange" class="form-label">Sensitivity</label>
+          <input
+            type="range"
+            class="form-range"
+            id="sensitivityRange"
+            min="0.1"
+            max="10"
+            step="0.1"
+            value="0.1"
+            oninput="sensitivityChange()"
+          />
+          <span id="sensitivityLabel">0.1</span>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col">
+          <button type="button" class="btn btn-success" onclick="saveData()">
+            Save data
+          </button>
+        </div>
+        <div class="col">
+          <button
+            type="button"
+            class="btn btn-warning"
+            onclick="restorePreviousData()"
+          >
+            Restore values
+          </button>
+        </div>
+        <div class="col">
+          <button type="button" class="btn btn-danger" onclick="resetData()">
+            Reset all
+          </button>
+        </div>
+      </div>
+    </div>
+    <script
+      src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"
+      integrity="sha384-oBqDVmMz9ATKxIep9tiCxS/Z9fNfEXiDAYTujMAeBAsjFuCZSmKbSSUnQlmh/jp3"
+      crossorigin="anonymous"
+    ></script>
+
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"
+      integrity="sha384-kenU1KFdBIe4zVF0s0G1M5b4hcpxyD9F7jL+jjXkk+Q2h455rYXK/7HAuoJl+0I4"
+      crossorigin="anonymous"
+    ></script>
+    <script>
+      // let baseUrl = 'https://ecommerce-api.dglive.org/v1/dashboard/user';
+      let baseUrl = 'http://localhost:8080/v1/dashboard/user';
+      let joystickInterval = '';
+      let datasource = '';
+      let slotId = '';
+      let bannerId = '';
+      let productId = '';
+      let isSlot = true;
+      let key = '';
+      let slots = [];
+      let banners = [];
+      let selectedSlot = {};
+      let selectedBanner = {};
+      let originalData = {};
+      const defaultData = {
+        pos_x: 1,
+        pos_y: 1,
+        pos_z: 1,
+        size_x: 1,
+        size_y: 1,
+        size_z: 1,
+        rot_x: 0,
+        rot_y: 0,
+        rot_z: 0,
+      };
+      const defaultOption = document.getElementById('defaultOption');
+
+      const loader = document.getElementById('loader');
+      const posX = document.getElementById('posX');
+      const posY = document.getElementById('posY');
+      const posZ = document.getElementById('posZ');
+
+      const scaleX = document.getElementById('scaleX');
+      const scaleY = document.getElementById('scaleY');
+      const scaleZ = document.getElementById('scaleZ');
+
+      const rotateX = document.getElementById('rotateX');
+      const rotateY = document.getElementById('rotateY');
+      const rotateZ = document.getElementById('rotateZ');
+      const rotateXInput = document.getElementById('rotateXInput');
+      const rotateYInput = document.getElementById('rotateYInput');
+      const rotateZInput = document.getElementById('rotateZInput');
+
+      const btnYUp = document.getElementById('btnYUp');
+      const btnYDown = document.getElementById('btnYDown');
+      const btnXLeft = document.getElementById('btnXLeft');
+      const btnXRigth = document.getElementById('btnXRigth');
+
+      const btnZUp = document.getElementById('btnZUp');
+      const btnZDow = document.getElementById('btnZDow');
+
+      const slotBannerDropdown = document.getElementById('ddlSlotsBanners');
+      const errorModal = new bootstrap.Modal(
+        document.getElementById('errorModal'),
+        {
+          backdrop: 'static',
+        }
+      );
+      const errorDesc = document.getElementById('errorDesc');
+      errorDesc.innerText = 'This is my test error message :/';
+      const scaleXDecrease = () => {
+        scaleX.value = (Number(scaleX.value) - 0.2).toFixed(1);
+        updateData();
+      };
+
+      const scaleXAdd = () => {
+        scaleX.value = (Number(scaleX.value) + 0.2).toFixed(1);
+        updateData();
+      };
+
+      const scaleYDecrease = () => {
+        scaleY.value = (Number(scaleY.value) - 0.2).toFixed(1);
+        updateData();
+      };
+
+      const scaleYAdd = () => {
+        scaleY.value = (Number(scaleY.value) + 0.2).toFixed(1);
+        updateData();
+      };
+
+      const scaleZDecrease = () => {
+        scaleZ.value = (Number(scaleZ.value) - 0.2).toFixed(1);
+        updateData();
+      };
+
+      const scaleZAdd = () => {
+        scaleZ.value = (Number(scaleZ.value) + 0.2).toFixed(1);
+        updateData();
+      };
+
+      const rotateXChange = () => {
+        rotateXInput.value = rotateX.value;
+      };
+
+      const rotateXInputChange = () => {
+        rotateX.value = rotateXInput.value;
+      };
+
+      const rotateYChange = () => {
+        rotateYInput.value = rotateY.value;
+      };
+
+      const rotateYInputChange = () => {
+        rotateY.value = rotateYInput.value;
+      };
+
+      const rotateZInputChange = () => {
+        rotateZ.value = rotateZInput.value;
+      };
+
+      const rotateZChange = () => {
+        rotateZInput.value = rotateZ.value;
+      };
+
+      const sensitivityChange = () => {
+        sensitivityLabel.innerText = sensitivityRange.value;
+      };
+
+      const cleateJoystickInterval = () => {
+        clearInterval(joystickInterval);
+      };
+
+      const holdit = (btn, action, speed = 50) => {
+        btn.ontouchstart = () => {
+          clearInterval(joystickInterval);
+          action();
+          joystickInterval = setInterval(() => {
+            action();
+          }, speed);
+        };
+
+        btn.onmousedown = () => {
+          clearInterval(joystickInterval);
+          joystickInterval = setInterval(() => {
+            action();
+          }, speed);
+        };
+
+        btn.ontouchend = () => {
+          updateData();
+          clearInterval(joystickInterval);
+        };
+
+        btn.onmouseup = () => {
+          updateData();
+          clearInterval(joystickInterval);
+        };
+      };
+
+      const isInMobile = () => {
+        const ua = navigator.userAgent;
+        if (
+          /Mobile|Android|iP(hone|od)|IEMobile|BlackBerry|Kindle|Silk-Accelerated|(hpw|web)OS|Opera M(obi|ini)/.test(
+            ua
+          )
+        ) {
+          return true;
+        }
+        return false;
+      };
+
+      const checkKey = (e) => {
+        e = e || window.event;
+        if (e.keyCode == '38') {
+          actions.btnYUp();
+        } else if (e.keyCode == '40') {
+          actions.btnYDown();
+        } else if (e.keyCode == '37') {
+          actions.btnXLeft();
+        } else if (e.keyCode == '39') {
+          actions.btnXRigth();
+        } else if (e.keyCode == '65') {
+          actions.btnZUp();
+        } else if (e.keyCode == '90') {
+          actions.btnZDow();
+        }
+      };
+
+      const actions = {
+        btnYUp: () => {
+          posY.innerText = (Number(posY.innerText) + 0.2).toFixed(1);
+          updateData();
+        },
+        btnYDown: () => {
+          posY.innerText = (Number(posY.innerText) - 0.2).toFixed(1);
+          updateData();
+        },
+        btnXLeft: () => {
+          posX.innerText = (Number(posX.innerText) - 0.2).toFixed(1);
+          updateData();
+        },
+        btnXRigth: () => {
+          posX.innerText = (Number(posX.innerText) + 0.2).toFixed(1);
+          updateData();
+        },
+        btnZUp: () => {
+          posZ.innerText = (Number(posZ.innerText) + 0.2).toFixed(1);
+          updateData();
+        },
+        btnZDow: () => {
+          posZ.innerText = (Number(posZ.innerText) - 0.2).toFixed(1);
+          updateData();
+        },
+      };
+
+      const bindButtons = () => {
+        holdit(btnYUp, () => actions.btnYUp());
+        holdit(btnYDown, () => actions.btnYDown());
+        holdit(btnXLeft, () => actions.btnXLeft());
+        holdit(btnXRigth, () => actions.btnXRigth());
+        holdit(btnZUp, () => actions.btnZUp());
+        holdit(btnZDow, () => actions.btnZDow());
+        document.onkeydown = checkKey;
+      };
+
+      const getSlotData = async () => {
+        try {
+          toggleLoader(true);
+          const slotsDataRaw = await fetch(`${baseUrl}/slots/${datasource}`);
+          slots = await slotsDataRaw.json();
+          const foundSlot = slots.find((x) => x.id == slotId);
+          if (foundSlot) {
+            selectedSlot = foundSlot;
+            originalData = { ...foundSlot };
+            setSlotData(selectedSlot);
+          }
+          setDropdownData(slots);
+          return slots;
+        } catch (err) {
+          const errorMessage = err.message || '';
+          errorDesc.innerText = errorMessage;
+          errorModal.show();
+        } finally {
+          toggleLoader(false);
+        }
+      };
+
+      const getBannerData = async () => {
+        try {
+          toggleLoader(true);
+          const bannersDataRaw = await fetch(
+            `https://business.dglive.org/api/getBannersByZoneID/${datasource}`
+          );
+          banners = await bannersDataRaw.json();
+          const foundBanner = banners.find((x) => x.id == bannerId);
+          if (foundBanner) {
+            selectedBanner = foundBanner;
+            originalData = { ...foundBanner };
+            setBannerData(selectedBanner);
+          }
+          setDropdownData(banners);
+          return banners;
+        } catch (err) {
+          console.log(err);
+        } finally {
+          toggleLoader(false);
+        }
+      };
+
+      const setSlotData = (slotData) => {
+        const {
+          pos_x,
+          pos_y,
+          pos_z,
+          size_x,
+          size_y,
+          size_z,
+          rot_x,
+          rot_y,
+          rot_z,
+          id_resource_group,
+          token_id,
+        } = slotData;
+        posX.innerText = pos_x;
+        posY.innerText = pos_y;
+        posZ.innerText = pos_z;
+        scaleX.value = size_x;
+        scaleY.value = size_y;
+        scaleZ.value = size_z;
+        rotateX.value = rot_x;
+        rotateXInput.value = rot_x;
+        rotateY.value = rot_y;
+        rotateYInput.value = rot_y;
+        rotateZ.value = rot_z;
+        rotateZInput.value = rot_z;
+      };
+
+      const setBannerData = (bannerData) => {
+        const {
+          position_x: pos_x,
+          position_y: pos_y,
+          position_z: pos_z,
+          size_x,
+          size_y,
+          size_z,
+          rotation_x: rot_x,
+          rotation_y: rot_y,
+          rotation_z: rot_z,
+          id,
+        } = bannerData;
+        posX.innerText = pos_x;
+        posY.innerText = pos_y;
+        posZ.innerText = pos_z;
+        scaleX.value = size_x;
+        scaleY.value = size_y;
+        scaleZ.value = size_z;
+        rotateX.value = rot_x;
+        rotateXInput.value = rot_x;
+        rotateY.value = rot_y;
+        rotateYInput.value = rot_y;
+        rotateZ.value = rot_z;
+        rotateZInput.value = rot_z;
+        bannerId = id;
+      };
+
+      const ddlSlotsBannerChange = () => {
+        const foundItem = isSlot
+          ? slots.find((x) => x.id === slotBannerDropdown.value)
+          : banners.find((x) => x.id === slotBannerDropdown.value);
+        if (isSlot) {
+          slotId = slotBannerDropdown.value;
+        } else {
+          bannerId = slotBannerDropdown.value;
+        }
+        if (foundItem) {
+          originalData = { ...foundItem };
+          isSlot ? setSlotData(foundItem) : setBannerData(foundItem);
+        }
+      };
+
+      const setDropdownData = (itemData) => {
+        for (const item of itemData) {
+          const option = document.createElement('option');
+          option.value = item.id;
+          option.text = item.name;
+          option.selected = item.id === slotId || item.id === bannerId;
+          slotBannerDropdown.appendChild(option);
+        }
+      };
+
+      const saveData = () => {
+        updateData(true);
+      };
+
+      const restorePreviousData = () => {
+        setSlotData(originalData);
+        updateData(false);
+      };
+
+      const resetData = () => {
+        setSlotData(defaultData);
+        updateData(false);
+      };
+
+      const toggleLoader = (show) => {
+        if (show) {
+          loader.classList.remove('d-none');
+        } else {
+          loader.classList.add('d-none');
+        }
+      };
+
+      const bindLoadEvents = async () => {
+        if (window.location.href.match(/\?.*/)) {
+          const params = new URLSearchParams(
+            window.location.href.match(/\?.*/)[0]
+          );
+          if (params.get('datasource')) {
+            datasource = params.get('datasource');
+          }
+          if (params.get('slotID')) {
+            slotId = params.get('slotID');
+          }
+          if (params.get('bannerId')) {
+            bannerId = params.get('bannerId');
+          }
+          if (params.get('key')) {
+            key = params.get('key');
+          }
+          if (!datasource || !key || (!slotId && !bannerId)) {
+            errorDesc.innerText =
+              'Datasource, key, SlotId or BannerId are required';
+            errorModal.show();
+            toggleLoader(false);
+            return;
+          } else {
+            isSlot = !!slotId;
+            defaultOption.innerText = `Select a ${
+              isSlot ? 'slot' : 'banner'
+            } to edit`;
+            bindButtons();
+            isSlot ? await getSlotData() : await getBannerData();
+            notifyToDashboard();
+          }
+        } else {
+          errorDesc.innerText = 'I think you are missing some params, :/';
+          errorModal.show();
+          toggleLoader(false);
+        }
+      };
+
+      const notifyToDashboard = async () => {
+        try {
+          const res = await fetch(`${baseUrl}/joystick-open/${datasource}`);
+        } catch (err) {
+          console.log(err);
+        }
+      };
+
+      const updateData = (save = false) => {
+        isSlot ? updateSlotData(save) : postBannerData(save);
+      };
+
+      const postBannerData = async (save) => {
+        if (!bannerId) {
+          alert('BannerId is required');
+          return;
+        }
+        if (save) toggleLoader(true);
+        try {
+          const data = {
+            posX: posX.innerText,
+            posY: posY.innerText,
+            posZ: posZ.innerText,
+            scaleX: scaleX.value,
+            scaleY: scaleY.value,
+            scaleZ: scaleZ.value,
+            rotX: rotateX.value,
+            rotY: rotateY.value,
+            rotZ: rotateZ.value,
+            datasource,
+            type: 'banner',
+            key,
+            save,
+          };
+          const rawRes = await fetch(`${baseUrl}/banner-joystick/${bannerId}`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(data),
+          });
+          const res = await rawRes.json();
+          if (res?.data?.error) {
+            errorDesc.innerText = res?.data?.error;
+            errorModal.show();
+          }
+        } catch (err) {
+          console.log(err);
+        } finally {
+          toggleLoader(false);
+        }
+      };
+
+      const updateSlotData = (save) => {
+        if (!isSlot || slotId) {
+          alert('SlotId is required');
+          return;
+        }
+        if (save) toggleLoader(true);
+        try {
+          const data = {
+            posX: posX.innerText,
+            posY: posY.innerText,
+            posZ: posZ.innerText,
+            scaleX: scaleX.value,
+            scaleY: scaleY.value,
+            scaleZ: scaleZ.value,
+            rotX: rotateX.value,
+            rotY: rotateY.value,
+            rotZ: rotateZ.value,
+            productId,
+            key,
+            save,
+            type: 'slot',
+          };
+          return fetch(
+            `${baseUrl}/slot-joystick/${datasource}/${slotId}`,
+            // `http://localhost:8085/v1/world/slot-joystick/${slotId}`,
+            {
+              method: 'PUT',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify(data),
+            }
+          );
+        } catch (err) {
+          console.log(err);
+        } finally {
+          toggleLoader(false);
+        }
+      };
+      document.onload = bindLoadEvents();
+
+      document.addEventListener(
+        'contextmenu',
+        (e) => {
+          e.preventDefault();
+          return false;
+        },
+        false
+      );
+    </script>
+  </body>
+</html>

@@ -37,6 +37,7 @@ export const envConfig = Object.freeze({
   redisPort: parseInt(process.env.REDIS_PORT),
   redisPassword: process.env.REDIS_PASSWORD,
   nodeEnv: process.env.NODE_ENV || 'local',
+  wsPort: parseInt(process.env.WS_PORT),
 });
 
 export default envConfig;

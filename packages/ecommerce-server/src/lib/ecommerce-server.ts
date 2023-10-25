@@ -5,7 +5,7 @@ import express, {
   NextFunction,
 } from 'express';
 import { fileURLToPath } from 'url';
-import { dirname } from 'path';
+import path, { dirname } from 'path';
 import { readFile } from 'fs/promises';
 import { ValidateError } from 'tsoa';
 import swaggerUI from 'swagger-ui-express';
@@ -124,6 +124,16 @@ app.use('/public', express.static('public/images'));
 
 app.use('/docs', swaggerUI.serve, async (_req: ExRequest, res: ExResponse) => {
   return res.send(swaggerUI.generateHTML(swaggerDocument));
+});
+
+app.get('/joystick', (req, res) => {
+  res.setHeader(
+    'Content-Security-Policy',
+    "default-src 'self'; connect-src 'self' *; font-src 'self'; img-src 'self' data:; script-src 'self' blob: https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js 'unsafe-inline'; style-src 'self' https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css 'unsafe-inline'; frame-src 'self';"
+  );
+  return res.sendFile(
+    path.resolve('./packages/ecommerce-server/public/joystick.html')
+  );
 });
 
 const server = app.listen(port, async () => {
