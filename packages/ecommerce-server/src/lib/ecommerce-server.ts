@@ -15,11 +15,13 @@ import url from 'url';
 import http from 'http';
 import https from 'https';
 
+import { RegisterRoutes } from '../routes/routes.js';
+
 import { AppDataSource } from '@dg-live/ecommerce-db';
 import { redisClient } from '@dg-live/ecommerce-cache';
 import { envConfig } from '@dg-live/ecommerce-config';
-import { RegisterRoutes } from '../routes/routes.js';
 import { handleWebhook } from '@dg-live/ecommerce-webhooks';
+import { startGraphPolling } from '@dg-live/ecommerce-web3';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -141,14 +143,16 @@ const server = app.listen(port, async () => {
     await redisClient.connect();
     await AppDataSource.initialize();
     console.log('Connected to database');
+    console.log(
+      `⚡️[server]: Server is running at http://localhost:${port}/docs`
+    );
+    console.log('Starting graph polling');
+    startGraphPolling();
   } catch (error) {
     console.log('Error connecting to database');
     console.log(error);
     // process.exit(1);
   }
-  console.log(
-    `⚡️[server]: Server is running at http://localhost:${port}/docs`
-  );
 });
 
 app.use((_, res: ExResponse) => {
