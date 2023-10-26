@@ -6,9 +6,9 @@
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "lib": ["es5", "es6"],
-    "module": "NodeNext",
+    "module": "esnext",
     "baseUrl": ".",
-    "moduleResolution": "NodeNext",
+    "moduleResolution": "nodenext",
     "sourceMap": true
   },
   "exclude": ["jest.config.ts", "src/**/*.spec.ts", "src/**/*.test.ts"],

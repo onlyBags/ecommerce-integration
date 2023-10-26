@@ -6,6 +6,7 @@ import {
   UpdateDateColumn,
   ManyToOne,
   OneToMany,
+  Relation,
 } from 'typeorm';
 import { encrypt } from '../utils/index.js';
 import { User } from './User.js';
@@ -30,7 +31,7 @@ export class Datasource {
     () => WoocommerceProduct,
     (woocommerceProduct) => woocommerceProduct.datasource
   )
-  woocommerceProduct: WoocommerceProduct[];
+  woocommerceProduct: Relation<WoocommerceProduct[]>;
 
   @OneToMany(() => Slot, (slot) => slot.datasource)
   slot: Slot[];

@@ -6,6 +6,7 @@ import {
   ManyToMany,
   OneToMany,
   ManyToOne,
+  Relation,
 } from 'typeorm';
 import { WoocommerceProduct } from './WoocommerceProduct.js';
 import { AttributeOption } from './AttributeOption.js';
@@ -34,11 +35,11 @@ export class Attribute {
   variation: boolean;
 
   @OneToMany(() => AttributeOption, (option) => option.attribute)
-  options: AttributeOption[];
+  options: Relation<AttributeOption[]>;
 
   @ManyToMany(
     () => WoocommerceProduct,
     (woocommerceProduct) => woocommerceProduct.attributes
   )
-  woocommerceProduct: WoocommerceProduct;
+  woocommerceProduct: Relation<WoocommerceProduct>;
 }

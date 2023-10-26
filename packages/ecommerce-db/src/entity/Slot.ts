@@ -6,6 +6,7 @@ import {
   ManyToOne,
   ManyToMany,
   OneToMany,
+  Relation,
 } from 'typeorm';
 import { Datasource } from './Datasource.js';
 import { WoocommerceProduct } from './WoocommerceProduct.js';
@@ -30,7 +31,7 @@ export class Slot {
     () => WoocommerceProduct,
     (woocommerceProduct) => woocommerceProduct.slot
   )
-  woocommerceProduct: WoocommerceProduct;
+  woocommerceProduct: Relation<WoocommerceProduct>;
 
   @Column()
   posX: number;

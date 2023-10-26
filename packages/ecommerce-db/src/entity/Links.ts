@@ -1,4 +1,4 @@
-import { Entity, PrimaryGeneratedColumn, OneToMany } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, OneToMany, Relation } from 'typeorm';
 import { Self } from './Self.js';
 import { Collection } from './Collection.js';
 
@@ -12,10 +12,10 @@ export class Links {
   @OneToMany((type) => Self, (self) => self.id, {
     nullable: true,
   })
-  self: Self[];
+  self: Relation<Self[]>;
 
   @OneToMany((type) => Collection, (collection) => collection.id, {
     nullable: true,
   })
-  collection: Collection[];
+  collection: Relation<Collection[]>;
 }

@@ -1,4 +1,10 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne } from 'typeorm';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  ManyToOne,
+  Relation,
+} from 'typeorm';
 import { Attribute } from './Attribute.js';
 
 @Entity({
@@ -12,5 +18,5 @@ export class AttributeOption {
   value: string[]; // You can store the value as a string
 
   @ManyToOne(() => Attribute, (attribute) => attribute.options)
-  attribute: Attribute;
+  attribute: Relation<Attribute>;
 }

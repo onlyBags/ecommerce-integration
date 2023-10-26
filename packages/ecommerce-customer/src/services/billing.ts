@@ -1,5 +1,5 @@
 import { AppDataSource, Billing, Customer } from '@dg-live/ecommerce-db';
-import { OrderBilling, OrderShipping } from '@dg-live/ecommerce-data-types';
+import { OrderBilling } from '@dg-live/ecommerce-data-types';
 
 const billingRepository = AppDataSource.getRepository(Billing);
 

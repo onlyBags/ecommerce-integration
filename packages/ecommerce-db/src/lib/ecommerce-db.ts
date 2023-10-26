@@ -1,9 +1,9 @@
 import 'reflect-metadata';
 import * as typeorm from 'typeorm';
+import { envConfig } from '@dg-live/ecommerce-config';
 
 import {
   User,
-  Customer,
   Datasource,
   Dimensions,
   Category,
@@ -20,8 +20,9 @@ import {
   Shipping,
   Order,
   Slot,
+  OrderLog,
+  Customer,
 } from '../entity/index.js';
-import { envConfig } from '@dg-live/ecommerce-config';
 
 const { dbType, dbHost, dbPort, dbUsername, dbPassword, dbDatabase, nodeEnv } =
   envConfig;
@@ -46,7 +47,6 @@ export const AppDataSource = new typeorm.DataSource({
   insecureAuth: true,
   entities: [
     User,
-    Customer,
     Datasource,
     Dimensions,
     Category,
@@ -63,6 +63,8 @@ export const AppDataSource = new typeorm.DataSource({
     Shipping,
     Order,
     Slot,
+    OrderLog,
+    Customer,
   ],
   migrations: [],
   subscribers: [],

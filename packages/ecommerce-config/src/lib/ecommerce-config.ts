@@ -38,6 +38,8 @@ export const envConfig = Object.freeze({
   redisPassword: process.env.REDIS_PASSWORD,
   nodeEnv: process.env.NODE_ENV || 'local',
   wsPort: parseInt(process.env.WS_PORT),
+  subGraphEndpoint: process.env.SUBGRAPH_ENDPOINT,
+  subGraphVersion: process.env.SUBGRAPH_VERSION,
 });
 
 export default envConfig;

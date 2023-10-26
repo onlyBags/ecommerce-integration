@@ -1,11 +1,10 @@
+// packages\ecommerce-db\src\entity\Shipping.ts
 import {
   Entity,
   PrimaryGeneratedColumn,
   Column,
-  Unique,
-  ManyToMany,
-  OneToMany,
   ManyToOne,
+  Relation,
 } from 'typeorm';
 import { Customer } from './Customer.js';
 
@@ -16,11 +15,8 @@ export class Shipping {
   @PrimaryGeneratedColumn()
   id: number;
 
-  // @Column()
-  // shippingId: number;
-
   @ManyToOne(() => Customer, (customer) => customer.shipping)
-  customer: Customer;
+  customer: Relation<Customer>;
 
   @Column()
   firstName: string;

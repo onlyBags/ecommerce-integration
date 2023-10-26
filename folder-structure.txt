@@ -286,7 +286,7 @@ there is one tsconfig.json per package, this is the one for ecommerce-server. th
 {
   "compilerOptions": {
     "target": "es2015",
-    "module": "esnext",
+    "module": "Node16",
     "outDir": "dist",
     "declaration": true,
     "types": ["node"],

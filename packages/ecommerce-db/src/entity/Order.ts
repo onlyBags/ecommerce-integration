@@ -6,6 +6,7 @@ import {
   ManyToMany,
   OneToMany,
   ManyToOne,
+  Relation,
 } from 'typeorm';
 import { Customer } from './Customer.js';
 
@@ -17,7 +18,7 @@ export class Order {
   id: number;
 
   @ManyToOne(() => Customer, (customer) => customer.orders)
-  customer: Customer;
+  customer: Relation<Customer>;
 
   @Column()
   orderId: number;

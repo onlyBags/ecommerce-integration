@@ -5,6 +5,7 @@ import {
   ManyToOne,
   JoinTable,
   ManyToMany,
+  Relation,
 } from 'typeorm';
 import { WoocommerceProduct } from './WoocommerceProduct.js';
 
@@ -28,5 +29,5 @@ export class MetaData {
     () => WoocommerceProduct,
     (woocommerceProduct) => woocommerceProduct.metaData
   )
-  woocommerceProduct: WoocommerceProduct;
+  woocommerceProduct: Relation<WoocommerceProduct>;
 }

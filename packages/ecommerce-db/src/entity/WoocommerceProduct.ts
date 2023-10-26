@@ -8,6 +8,7 @@ import {
   OneToOne,
   ManyToMany,
   JoinTable,
+  Relation,
 } from 'typeorm';
 
 import {
@@ -34,7 +35,7 @@ export class WoocommerceProduct {
   productId: number;
 
   @ManyToOne(() => Datasource, (datasource) => datasource.woocommerceProduct)
-  datasource: Datasource;
+  datasource: Relation<Datasource>;
 
   @Index()
   @Column()
@@ -224,33 +225,33 @@ export class WoocommerceProduct {
   jetpackPublicizeConnections: string;
 
   @OneToOne(() => Dimensions, (dimensions) => dimensions.woocommerceProduct)
-  dimensions: Dimensions;
+  dimensions: Relation<Dimensions>;
 
   @OneToMany(() => Image, (image) => image.woocommerceProduct)
-  images: Image[];
+  images: Relation<Image[]>;
 
   @OneToMany(() => Category, (category) => category.woocommerceProduct)
   // @JoinTable({ name: 'wc_product_x_category' })
-  categories: Category[];
+  categories: Relation<Category[]>;
 
   @OneToMany(() => Tag, (tag) => tag.woocommerceProduct)
   // @JoinTable({
   //   name: 'wc_product_x_tag',
   // })
-  tags: Tag[];
+  tags: Relation<Tag[]>;
 
   @ManyToMany(() => Attribute, (attribute) => attribute.woocommerceProduct)
   @JoinTable({
     name: 'wc_product_x_attribute',
   })
-  attributes: Attribute[];
+  attributes: Relation<Attribute[]>;
 
   @OneToMany(() => MetaData, (metaData) => metaData.woocommerceProduct)
   // @JoinTable({
   //   name: 'wc_product_x_meta_data',
   // })
-  metaData: MetaData[];
+  metaData: Relation<MetaData[]>;
 
   @OneToMany(() => Slot, (slot) => slot.woocommerceProduct)
-  slot: Slot[];
+  slot: Relation<Slot[]>;
 }

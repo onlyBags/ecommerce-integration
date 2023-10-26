@@ -2,10 +2,8 @@ import {
   Entity,
   PrimaryGeneratedColumn,
   Column,
-  Unique,
-  ManyToMany,
-  OneToMany,
   ManyToOne,
+  Relation,
 } from 'typeorm';
 import { Customer } from './Customer.js';
 
@@ -17,7 +15,7 @@ export class Billing {
   id: number;
 
   @ManyToOne(() => Customer, (customer) => customer.billing)
-  customer: Customer;
+  customer: Relation<Customer>;
 
   @Column()
   firstName: string;

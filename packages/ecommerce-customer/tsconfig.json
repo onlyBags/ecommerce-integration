@@ -6,9 +6,9 @@
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "lib": ["es5", "es6"],
-    "module": "NodeNext",
+    "module": "Node16",
     "baseUrl": ".",
-    "moduleResolution": "NodeNext",
+    "moduleResolution": "Node16",
     "sourceMap": true,
     "target": "ESNext"
   },

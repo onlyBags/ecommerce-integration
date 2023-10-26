@@ -6,6 +6,7 @@ import {
   UpdateDateColumn,
   OneToMany,
   Unique,
+  Relation,
 } from 'typeorm';
 import { Datasource } from './Datasource.js';
 
@@ -22,7 +23,7 @@ export class User {
   apiKey: string;
 
   @OneToMany(() => Datasource, (datasource) => datasource.user)
-  datasource: Datasource[];
+  datasource: Relation<Datasource[]>;
 
   @Column()
   isActive: boolean;

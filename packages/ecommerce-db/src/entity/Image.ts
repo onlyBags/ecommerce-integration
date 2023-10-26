@@ -4,6 +4,7 @@ import {
   Column,
   Unique,
   ManyToOne,
+  Relation,
 } from 'typeorm';
 import { WoocommerceProduct } from './WoocommerceProduct.js';
 
@@ -43,5 +44,5 @@ export class Image {
     () => WoocommerceProduct,
     (woocommerceProduct) => woocommerceProduct.images
   )
-  woocommerceProduct: WoocommerceProduct;
+  woocommerceProduct: Relation<WoocommerceProduct>;
 }
