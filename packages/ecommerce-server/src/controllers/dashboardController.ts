@@ -1,20 +1,3 @@
-import {
-  Controller,
-  Route,
-  SuccessResponse,
-  Post,
-  Body,
-  Get,
-  Query,
-  Tags,
-  FieldErrors,
-  ValidateError,
-  Header,
-  Path,
-  Put,
-  Delete,
-} from 'tsoa';
-
 import { envConfig } from '@dg-live/ecommerce-config';
 import { User, Datasource, Slot } from '@dg-live/ecommerce-db';
 import * as dashboardService from '../services/dashboard/index.js';
@@ -24,15 +7,14 @@ import {
   DGLResponse,
   NewSlotReq,
   UpdateSlotReq,
+  ValidateError,
+  FieldErrors,
 } from '@dg-live/ecommerce-data-types';
 import { createWebhooks } from '@dg-live/ecommerce-woocommerce';
-@Route('dashboard')
-@Tags('User')
-export class DashboardController extends Controller {
-  @Post('/user')
-  @SuccessResponse('201', 'Created')
+
+export class DashboardController {
   public async createUser(
-    @Body() requestBody: SaveUserReq
+    requestBody: SaveUserReq
   ): Promise<DGLResponse<User>> {
     if (envConfig.masterKey !== requestBody.masterKey) {
       const fields: FieldErrors = {
@@ -55,11 +37,9 @@ export class DashboardController extends Controller {
     }
   }
 
-  @Post('/user/datasource')
-  @SuccessResponse('201', 'Created')
   public async saveUserDatasource(
-    @Header('api-key') apiKey: string,
-    @Body() requestBody: SaveUserDatasourceReq
+    apiKey: string,
+    requestBody: SaveUserDatasourceReq
   ): Promise<DGLResponse<Datasource>> {
     const fields: FieldErrors = {};
     const {
@@ -133,11 +113,8 @@ export class DashboardController extends Controller {
       throw new ValidateError({}, err.message);
     }
   }
-
-  @Get('/user/datasource')
-  @SuccessResponse('200', 'User')
   public async getUserDatasources(
-    @Header('api-key') apiKey: string
+    apiKey: string
   ): Promise<DGLResponse<Datasource[]>> {
     if (!apiKey) {
       const fields: FieldErrors = {
@@ -160,11 +137,9 @@ export class DashboardController extends Controller {
     }
   }
 
-  @Get('/user/datasource/{datasourceId}')
-  @SuccessResponse('200', 'User')
   public async getUserDatasource(
-    @Header('api-key') apiKey: string,
-    @Path() datasourceId: number
+    apiKey: string,
+    datasourceId: number
   ): Promise<DGLResponse<Datasource>> {
     if (!apiKey) {
       const fields: FieldErrors = {
@@ -187,12 +162,10 @@ export class DashboardController extends Controller {
     }
   }
 
-  @Post('/user/slot/{datasourceId}')
-  @SuccessResponse('201', 'Created')
   public async newSlot(
-    @Header('api-key') apiKey: string,
-    @Path() datasourceId: number,
-    @Body() requestBody: NewSlotReq
+    apiKey: string,
+    datasourceId: number,
+    requestBody: NewSlotReq
   ): Promise<DGLResponse<Slot>> {
     const fields: FieldErrors = {};
     const { name, posX, posY, posZ, sizeX, sizeY, sizeZ, rotX, rotY, rotZ } =
@@ -295,14 +268,11 @@ export class DashboardController extends Controller {
       throw new ValidateError({}, err.message);
     }
   }
-
-  @Put('/user/slot/{datasourceId}/{slotId}')
-  @SuccessResponse('204', 'Resource updated successfully')
   public async updateSlot(
-    @Header('api-key') apiKey: string,
-    @Path() slotId: number,
-    @Path() datasourceId: number,
-    @Body() requestBody: UpdateSlotReq
+    apiKey: string,
+    datasourceId: number,
+    slotId: number,
+    requestBody: UpdateSlotReq
   ): Promise<DGLResponse<Slot>> {
     const fields: FieldErrors = {};
     const {
@@ -435,12 +405,10 @@ export class DashboardController extends Controller {
     }
   }
 
-  @Delete('/user/slot/{datasourceId}/{slotId}')
-  @SuccessResponse('204', 'Resource updated successfully')
   public async deleteSlot(
-    @Header('api-key') apiKey: string,
-    @Path() slotId: number,
-    @Path() datasourceId: number
+    apiKey: string,
+    slotId: number,
+    datasourceId: number
   ): Promise<DGLResponse<void>> {
     const fields: FieldErrors = {};
     if (!apiKey || typeof apiKey !== 'string') {
@@ -462,7 +430,7 @@ export class DashboardController extends Controller {
       };
     }
     if (Object.keys(fields).length > 0) {
-      throw new ValidateError(fields, 'Error creating new slot');
+      throw new ValidateError(fields, 'Error deleting slot');
     }
 
     try {
@@ -476,12 +444,9 @@ export class DashboardController extends Controller {
       throw new ValidateError({}, err.message);
     }
   }
-
-  @Get('/user/slot/{datasourceId}/{slotId}')
-  @SuccessResponse('200', 'Resource fetched successfully')
   public async getSlot(
-    @Path() slotId: number,
-    @Path() datasourceId: number
+    slotId: number,
+    datasourceId: number
   ): Promise<DGLResponse<Slot>> {
     const fields: FieldErrors = {};
     if (typeof datasourceId !== 'number') {
@@ -511,12 +476,7 @@ export class DashboardController extends Controller {
       throw new ValidateError({}, err.message);
     }
   }
-
-  @Get('/user/slots/{datasourceId}')
-  @SuccessResponse('200', 'Resource fetched successfully')
-  public async getSlots(
-    @Path() datasourceId: number
-  ): Promise<DGLResponse<Slot[]>> {
+  public async getSlots(datasourceId: number): Promise<DGLResponse<Slot[]>> {
     const fields: FieldErrors = {};
     if (typeof datasourceId !== 'number') {
       fields.datasourceId = {
@@ -525,12 +485,12 @@ export class DashboardController extends Controller {
       };
     }
     if (Object.keys(fields).length > 0) {
-      throw new ValidateError(fields, 'Error getting the slot');
+      throw new ValidateError(fields, 'Error getting the slots');
     }
 
     try {
       const resp = {
-        message: 'Slot fetched successfully',
+        message: 'Slots fetched successfully',
         status: 200,
         data: await dashboardService.getSlots(datasourceId),
       };

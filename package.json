@@ -52,6 +52,7 @@
     "nx": "16.2.1",
     "prettier": "^2.8.8",
     "supertest": "^6.3.3",
+    "swagger-autogen": "^2.23.6",
     "swagger-ui-express": "^4.6.3",
     "ts-jest": "^29.1.0",
     "ts-node": "^10.9.1",
@@ -74,7 +75,6 @@
     "redis-om": "^0.4.2",
     "reflect-metadata": "^0.1.13",
     "tslib": "^2.3.0",
-    "tsoa": "^5.1.1",
     "typeorm": "^0.3.16",
     "uuid": "^9.0.1",
     "ws": "^8.14.2"

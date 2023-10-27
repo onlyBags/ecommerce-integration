@@ -1,26 +1,12 @@
 import {
-  Controller,
-  Route,
-  SuccessResponse,
-  Post,
-  Body,
-  Get,
-  Query,
-  Tags,
-  FieldErrors,
-  ValidateError,
-  Header,
-  Path,
-  Example,
-} from 'tsoa';
-
-import {
   DGLResponse,
   WoocommerceShippingZone,
   ProductVariation,
   WoocommerceOrderCreatedRes,
   WoocommerceOrder,
   WoocommerceWebhookResponse,
+  FieldErrors,
+  ValidateError,
 } from '@dg-live/ecommerce-data-types';
 
 import {
@@ -37,34 +23,30 @@ import {
 
 import { WoocommerceProduct } from '@dg-live/ecommerce-db';
 
-type OrderExample = {
-  datasourceId: number;
-  wcOrder: WoocommerceOrder;
-};
-@Route('woocommerce')
-@Tags('Woocommerce')
-export class WoocommerceController extends Controller {
-  @Get('/catalog/{datasourceId}')
-  @SuccessResponse('200', 'Created')
+export class WoocommerceController {
   public async getCatalog(
-    @Header('api-key') apiKey: string,
-    @Path() datasourceId: number
+    apiKey: string,
+    datasourceId: number
   ): Promise<DGLResponse<WoocommerceProduct[]>> {
     const errorFields: FieldErrors = {};
+
     if (!apiKey) {
       errorFields.apiKey = {
         message: 'Invalid apiKey',
         value: apiKey,
       };
     }
-    if (!datasourceId) {
+
+    if (typeof datasourceId !== 'number') {
       errorFields.datasourceId = {
-        message: 'Invalid datasourceId',
+        message: 'Invalid datasourceId, it should be a number',
         value: datasourceId,
       };
     }
-    if (Object.keys(errorFields).length > 0)
-      throw new ValidateError(errorFields, 'Error geting product catalog');
+
+    if (Object.keys(errorFields).length > 0) {
+      throw new ValidateError(errorFields, 'Error getting product catalog');
+    }
 
     try {
       const wProducts = await getAllProducts({
@@ -82,27 +64,29 @@ export class WoocommerceController extends Controller {
     }
   }
 
-  @Get('/catalog/sync/{datasourceId}')
-  @SuccessResponse('200', 'Created')
   public async syncCatalog(
-    @Header('api-key') apiKey: string,
-    @Path() datasourceId: number
+    apiKey: string,
+    datasourceId: number
   ): Promise<DGLResponse<any>> {
     const errorFields: FieldErrors = {};
+
     if (!apiKey) {
       errorFields.apiKey = {
         message: 'Invalid apiKey',
         value: apiKey,
       };
     }
-    if (!datasourceId) {
+
+    if (typeof datasourceId !== 'number') {
       errorFields.datasourceId = {
-        message: 'Invalid datasourceId',
+        message: 'Invalid datasourceId, it should be a number',
         value: datasourceId,
       };
     }
-    if (Object.keys(errorFields).length > 0)
-      throw new ValidateError(errorFields, 'Error geting product catalog');
+
+    if (Object.keys(errorFields).length > 0) {
+      throw new ValidateError(errorFields, 'Error syncing product catalog');
+    }
 
     try {
       const resp = {
@@ -116,65 +100,74 @@ export class WoocommerceController extends Controller {
     }
   }
 
-  @Get('/shipping/{datasourceId}')
-  @SuccessResponse('200', 'Fetch Shipping Zones')
   public async getShippings(
-    @Header('api-key') apiKey: string,
-    @Path() datasourceId: number
+    apiKey: string,
+    datasourceId: number
   ): Promise<DGLResponse<WoocommerceShippingZone[]>> {
     const errorFields: FieldErrors = {};
+
     if (!apiKey) {
       errorFields.apiKey = {
         message: 'Invalid apiKey',
         value: apiKey,
       };
     }
-    if (!datasourceId) {
+
+    if (typeof datasourceId !== 'number') {
       errorFields.datasourceId = {
-        message: 'Invalid datasourceId',
+        message: 'Invalid datasourceId, it should be a number',
         value: datasourceId,
       };
     }
-    if (Object.keys(errorFields).length > 0)
-      throw new ValidateError(errorFields, 'Error geting shipping zones');
+
+    if (Object.keys(errorFields).length > 0) {
+      throw new ValidateError(errorFields, 'Error getting shipping zones');
+    }
 
     try {
-      const wProducts = await getShippingZones({
+      const wZones = await getShippingZones({
         apiKey,
         datasourceId,
       });
       const resp = {
         message: 'Shipping Zones fetched successfully',
         status: 200,
-        data: wProducts,
+        data: wZones,
       };
       return resp;
     } catch (err) {
       throw new ValidateError({}, err.message);
     }
   }
-  @Get('/shipping/{datasourceId}/locations/{shippingZoneId}')
-  @SuccessResponse('200', 'Fetch Shipping Locations')
+
   public async getShippingLocations(
-    @Header('api-key') apiKey: string,
-    @Path() datasourceId: number,
-    @Path() shippingZoneId: number
+    apiKey: string,
+    datasourceId: number,
+    shippingZoneId: number
   ): Promise<DGLResponse<WoocommerceShippingZone[]>> {
     const errorFields: FieldErrors = {};
+
     if (!apiKey) {
       errorFields.apiKey = {
         message: 'Invalid apiKey',
         value: apiKey,
       };
     }
-    if (!datasourceId) {
+
+    if (
+      typeof datasourceId !== 'number' ||
+      typeof shippingZoneId !== 'number'
+    ) {
       errorFields.datasourceId = {
-        message: 'Invalid datasourceId',
+        message:
+          'Invalid datasourceId or shippingZoneId, they should be numbers',
         value: datasourceId,
       };
     }
-    if (Object.keys(errorFields).length > 0)
-      throw new ValidateError(errorFields, 'Error geting shipping zones');
+
+    if (Object.keys(errorFields).length > 0) {
+      throw new ValidateError(errorFields, 'Error getting shipping locations');
+    }
 
     try {
       const locations = await shippingLocations({
@@ -192,32 +185,37 @@ export class WoocommerceController extends Controller {
       throw new ValidateError({}, err.message);
     }
   }
-
-  @Get('/shipping/{datasourceId}/methods/{shippingZoneId}')
-  @SuccessResponse('200', 'Fetch Shipping Methods')
   public async getShippingMethods(
-    @Header('api-key') apiKey: string,
-    @Path() datasourceId: number,
-    @Path() shippingZoneId: number
+    apiKey: string,
+    datasourceId: number,
+    shippingZoneId: number
   ): Promise<DGLResponse<WoocommerceShippingZone[]>> {
     const errorFields: FieldErrors = {};
+
     if (!apiKey) {
       errorFields.apiKey = {
         message: 'Invalid apiKey',
         value: apiKey,
       };
     }
-    if (!datasourceId) {
+
+    if (
+      typeof datasourceId !== 'number' ||
+      typeof shippingZoneId !== 'number'
+    ) {
       errorFields.datasourceId = {
-        message: 'Invalid datasourceId',
+        message:
+          'Invalid datasourceId or shippingZoneId, they should be numbers',
         value: datasourceId,
       };
     }
-    if (Object.keys(errorFields).length > 0)
-      throw new ValidateError(errorFields, 'Error geting shipping zones');
+
+    if (Object.keys(errorFields).length > 0) {
+      throw new ValidateError(errorFields, 'Error getting shipping methods');
+    }
 
     try {
-      const locations = await shippingMethods({
+      const methods = await shippingMethods({
         apiKey,
         datasourceId,
         shippingZoneId,
@@ -225,7 +223,7 @@ export class WoocommerceController extends Controller {
       const resp = {
         message: 'Shipping Methods fetched successfully',
         status: 200,
-        data: locations,
+        data: methods,
       };
       return resp;
     } catch (err) {
@@ -233,42 +231,39 @@ export class WoocommerceController extends Controller {
     }
   }
 
-  @Get('/variation/{datasourceId}/{productId}')
-  @SuccessResponse('200', 'Fetch product variation')
   public async getProductVariation(
-    @Header('api-key') apiKey: string,
-    @Path() productId: number,
-    @Path() datasourceId: number,
-    @Query() attributes: string[],
-    @Query() values: string[]
+    apiKey: string,
+    productId: number,
+    datasourceId: number,
+    attributes: string[],
+    values: string[]
   ): Promise<DGLResponse<ProductVariation | false>> {
     const errorFields: FieldErrors = {};
+
     if (!apiKey) {
       errorFields.apiKey = {
         message: 'Invalid apiKey',
         value: apiKey,
       };
     }
-    if (!productId) {
+
+    if (typeof productId !== 'number' || typeof datasourceId !== 'number') {
       errorFields.id = {
-        message: 'Invalid product id',
+        message: 'Invalid product id or datasourceId, they should be numbers',
         value: productId,
       };
     }
-    if (!datasourceId) {
-      errorFields.datasourceId = {
-        message: 'Invalid datasourceId',
-        value: datasourceId,
-      };
-    }
+
     if (attributes.length !== values.length) {
       errorFields.attributesVariations = {
         message: 'Attributes and values must be equal length',
         value: `attributes: ${attributes.length} | values: ${values.length}`,
       };
     }
-    if (Object.keys(errorFields).length > 0)
+
+    if (Object.keys(errorFields).length > 0) {
       throw new ValidateError(errorFields, 'Error getting product variation');
+    }
 
     try {
       const productVariation = await getProductVariation({
@@ -288,71 +283,74 @@ export class WoocommerceController extends Controller {
       throw new ValidateError({}, err.message);
     }
   }
-  @Post('/order')
-  @SuccessResponse('200', 'Order Created')
-  @Example<OrderExample>({
-    datasourceId: 1,
-    wcOrder: {
-      paymentMethod: 'bacs',
-      paymentMethodTitle: 'Testing DGL-E',
-      setPaid: false,
-      wallet: '0x355A93EE3781CCF6084C86DAD7921e5e731ad519',
-      billing: {
-        firstName: 'Maiki',
-        lastName: 'Prueba',
-        address1: 'E. Costa',
-        address2: '1068',
-        city: 'Buenos Aires',
-        state: 'BSAS',
-        postcode: '1068',
-        country: 'AR',
-      },
-      shipping: {
-        firstName: 'Maiki',
-        lastName: 'Prueba',
-        address1: 'E. Costa',
-        address2: '1068',
-        city: 'Buenos Aires',
-        state: 'BSAS',
-        postcode: '1068',
-        country: 'AR',
-      },
-      lineItems: [
-        {
-          productId: 4518,
-          quantity: 1,
-        },
-      ],
-      shippingLines: [
-        {
-          methodId: 'oca_wanderlust',
-          methodTitle: 'Oca',
-          // total: "10.00"
-        },
-      ],
-    },
-  })
+
+  //   @Post('/order')
+  //   @SuccessResponse('200', 'Order Created')
+  //   @Example<OrderExample>({
+  //     datasourceId: 1,
+  //     wcOrder: {
+  //       paymentMethod: 'bacs',
+  //       paymentMethodTitle: 'Testing DGL-E',
+  //       setPaid: false,
+  //       wallet: '0x355A93EE3781CCF6084C86DAD7921e5e731ad519',
+  //       billing: {
+  //         firstName: 'Maiki',
+  //         lastName: 'Prueba',
+  //         address1: 'E. Costa',
+  //         address2: '1068',
+  //         city: 'Buenos Aires',
+  //         state: 'BSAS',
+  //         postcode: '1068',
+  //         country: 'AR',
+  //       },
+  //       shipping: {
+  //         firstName: 'Maiki',
+  //         lastName: 'Prueba',
+  //         address1: 'E. Costa',
+  //         address2: '1068',
+  //         city: 'Buenos Aires',
+  //         state: 'BSAS',
+  //         postcode: '1068',
+  //         country: 'AR',
+  //       },
+  //       lineItems: [
+  //         {
+  //           productId: 4518,
+  //           quantity: 1,
+  //         },
+  //       ],
+  //       shippingLines: [
+  //         {
+  //           methodId: 'oca_wanderlust',
+  //           methodTitle: 'Oca',
+  //           // total: "10.00"
+  //         },
+  //       ],
+  //     },
+  //   })
   public async wcCreateOrder(
-    @Header('api-key') apiKey: string,
-    @Body()
+    apiKey: string,
     body: {
       datasourceId: number;
       wcOrder: WoocommerceOrder;
     }
   ): Promise<DGLResponse<WoocommerceOrderCreatedRes>> {
     const errorFields: FieldErrors = {};
+
     if (!apiKey) {
       errorFields.apiKey = {
         message: 'Invalid apiKey',
         value: apiKey,
       };
     }
-    if (!body.datasourceId) {
+
+    if (typeof body.datasourceId !== 'number') {
       errorFields.datasourceId = {
-        message: 'Invalid datasourceId',
+        message: 'Invalid datasourceId, it should be a number',
         value: body.datasourceId,
       };
     }
+
     if (!body.wcOrder.wallet) {
       errorFields.wallet = {
         message: 'Invalid wallet',
@@ -360,8 +358,10 @@ export class WoocommerceController extends Controller {
       };
     }
 
-    if (Object.keys(errorFields).length > 0)
+    if (Object.keys(errorFields).length > 0) {
       throw new ValidateError(errorFields, 'Error creating order');
+    }
+
     try {
       const wcOrderRes = await createOrder({
         apiKey,
@@ -379,48 +379,58 @@ export class WoocommerceController extends Controller {
     }
   }
 
-  @Get('/webhooks/{datasourceId}')
-  @SuccessResponse('200', 'Webhook')
   public async getWebhooks(
-    @Header('api-key') apiKey: string,
-    @Path() datasourceId: number
+    apiKey: string,
+    datasourceId: number
   ): Promise<DGLResponse<WoocommerceWebhookResponse[]>> {
-    if (!apiKey) throw new Error('Invalid apiKey');
-    if (!datasourceId) throw new Error('Invalid datasourceId');
+    if (!apiKey) {
+      throw new Error('Invalid apiKey');
+    }
+
+    if (typeof datasourceId !== 'number') {
+      throw new Error('Invalid datasourceId, it should be a number');
+    }
+
     try {
       const webhooks = await getWebhooks({ apiKey, datasourceId });
-      return {
+      const resp = {
         message: 'Webhooks fetched successfully',
         status: 200,
         data: webhooks,
       };
-    } catch (error) {
+      return resp;
+    } catch (err) {
       throw new ValidateError(
         {},
-        'Error getting webhooks: ' + error.message || ''
+        'Error getting webhooks: ' + err.message || ''
       );
     }
   }
 
-  @Post('/webhooks/{datasourceId}')
-  @SuccessResponse('200', 'Webhook')
   public async createWebhooks(
-    @Header('api-key') apiKey: string,
-    @Path() datasourceId: number
+    apiKey: string,
+    datasourceId: number
   ): Promise<DGLResponse<WoocommerceWebhookResponse[]>> {
-    if (!apiKey) throw new Error('Invalid apiKey');
-    if (!datasourceId) throw new Error('Invalid datasourceId');
+    if (!apiKey) {
+      throw new Error('Invalid apiKey');
+    }
+
+    if (typeof datasourceId !== 'number') {
+      throw new Error('Invalid datasourceId, it should be a number');
+    }
+
     try {
       const webhooks = await createWebhooks({ apiKey, datasourceId });
-      return {
+      const resp = {
         message: 'Webhooks created successfully',
         status: 200,
         data: webhooks,
       };
-    } catch (error) {
+      return resp;
+    } catch (err) {
       throw new ValidateError(
         {},
-        'Error getting webhooks: ' + error.message || ''
+        'Error getting webhooks: ' + err.message || ''
       );
     }
   }

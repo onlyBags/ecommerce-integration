@@ -127,12 +127,10 @@ export const fetchTransactionCount = async (): Promise<number> => {
       count
     }
   }`;
-  debugger;
   const res = await http.post<
     AxiosResponse<{ transactionCounter: { count: number } }>
   >('', {
     query,
   });
-  debugger;
   return +res.data.data.transactionCounter.count;
 };

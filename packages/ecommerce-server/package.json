@@ -4,8 +4,7 @@
   "type": "module",
   "main": "./dist/src/index.js",
   "scripts": {
-    "postbuild": "echo I run before the build script",
-    "prebuild": "npm run swagger",
+    "prebuild": "npm run swagger-autogen",
     "build": "tsc -p tsconfig.json",
     "dev1": "cross-env NODE_ENV=development tsc-watch -p tsconfig.json --onSuccess \"node ./dist/src/index.js\"",
     "dev2": "nodemon --watch packages/ecommerce-server --exec npm run start",
@@ -15,7 +14,8 @@
     "start:dev": "nodemon --watch 'src/**/*.ts' --exec 'node -r ts-node/register' src/index.ts",
     "swagger": "tsoa spec-and-routes -c ./tsoa.json",
     "prod": "npm run swagger && tsc -p tsconfig.json && node ./dist/src/index.js",
-    "debug": "tsc -p tsconfig.json && node --inspect ./dist/src/index.js"
+    "debug": "tsc -p tsconfig.json && node --inspect ./dist/src/index.js",
+    "swagger-autogen": "node ./docs/swagger.js"
   },
   "copyFiles": [
     {

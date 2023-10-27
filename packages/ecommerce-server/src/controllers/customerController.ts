@@ -1,27 +1,12 @@
-import {
-  Controller,
-  Route,
-  SuccessResponse,
-  Get,
-  Tags,
-  FieldErrors,
-  ValidateError,
-  Path,
-} from 'tsoa';
-
 import { DGLResponse } from '@dg-live/ecommerce-data-types';
 import { Shipping } from '@dg-live/ecommerce-db';
 import { getBilling, getShippings } from '@dg-live/ecommerce-customer';
 
-@Route('customer')
-@Tags('Customer')
-export class CustomerController extends Controller {
-  @Get('/shipping/{wallet}')
-  @SuccessResponse('200', 'Shipping fetched successfully')
+export class CustomerController {
   public async getCustomerShipping(
-    @Path() wallet: string
+    wallet: string
   ): Promise<DGLResponse<Shipping[]>> {
-    const errorFields: FieldErrors = {};
+    const errorFields: any = {};
     if (!wallet) {
       errorFields.wallet = {
         message: 'Invalid wallet',
@@ -29,7 +14,7 @@ export class CustomerController extends Controller {
       };
     }
     if (Object.keys(errorFields).length > 0)
-      throw new ValidateError(errorFields, 'Error geting customer shipping');
+      throw new Error('Error geting customer shipping: ' + errorFields);
 
     try {
       const customerShippingAddress = await getShippings(wallet);
@@ -39,24 +24,20 @@ export class CustomerController extends Controller {
         data: customerShippingAddress,
       };
     } catch (err) {
-      throw new ValidateError({}, err.message);
+      throw new Error(err.message);
     }
   }
-
-  @Get('/billing/{wallet}')
-  @SuccessResponse('200', 'Billing fetched successfully')
   public async getCustomerBilling(
-    @Path() wallet: string
+    wallet: string
   ): Promise<DGLResponse<Shipping[]>> {
-    const errorFields: FieldErrors = {};
+    const errorFields: any = {};
     if (!wallet) {
       errorFields.wallet = {
         message: 'Invalid wallet',
         value: wallet,
       };
     }
-    if (Object.keys(errorFields).length > 0)
-      throw new ValidateError(errorFields, 'Error geting customer billing');
+    if (Object.keys(errorFields).length > 0) throw new Error(errorFields);
 
     try {
       const customerBillingAddress = await getBilling(wallet);
@@ -66,7 +47,7 @@ export class CustomerController extends Controller {
         data: customerBillingAddress,
       };
     } catch (err) {
-      throw new ValidateError({}, err.message);
+      throw new Error(err.message);
     }
   }
 }

@@ -22,7 +22,7 @@ export class Slot {
   name: string;
 
   @ManyToOne(() => Datasource, (datasource) => datasource.slot)
-  datasource: Datasource;
+  datasource: Relation<Datasource>;
 
   @Column({ default: true })
   enabled: boolean;
