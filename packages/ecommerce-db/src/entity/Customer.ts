@@ -18,7 +18,7 @@ export class Customer {
   @PrimaryGeneratedColumn()
   id: string;
 
-  @Column()
+  @Column({ type: 'varchar', length: 42 })
   wallet: string;
 
   @OneToMany(() => Order, (order) => order.customer)

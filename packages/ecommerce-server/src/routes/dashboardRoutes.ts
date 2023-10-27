@@ -9,36 +9,36 @@ import {
 
 const dashboardRouter = Router();
 const dashboardController = new DashboardController();
-
-/**
- * @swagger
- * /user:
- *   post:
- *     tags: [Dashboard]
- *     description: Create a new user
- *     parameters:
- *       - name: masterKey
- *         in: body
- *         required: true
- *         schema:
- *           $ref: '#/definitions/SaveUserReq'
- *     responses:
- *       200:
- *         description: Successfully created a new user
- *         schema:
- *           $ref: '#/definitions/DGLResponseUser'
- *       400:
- *         description: Invalid masterKey or other error
- *         schema:
- *           type: object
- *           properties:
- *             message:
- *               type: string
- */
 dashboardRouter.post(
   '/user',
   async (req: Request<{}, {}, SaveUserReq>, res: Response) => {
-    // #swagger.tags = ['Dashboard']
+    /*
+    #swagger.tags = ['Dashboard'] 
+    #swagger.requestBody = {
+      required: true,
+      content: {
+        "application/json": {
+          schema: {
+            $ref: "#/components/schemas/SaveUserReq"
+          }
+        }
+      }
+    }
+     #swagger.responses[201] = {
+      description: "User created successfully",
+      content: {
+        "application/json": {
+          schema:{
+            $ref: "#/components/schemas/DGLResponse_User"
+          }
+        }           
+      }
+    }
+    #swagger.responses[400] = {
+      description: 'Invalid parameters',
+      schema: { message: 'Invalid masterKey' }
+    }
+  */
     try {
       const requestBody = req.body;
       if (
@@ -60,16 +60,33 @@ dashboardRouter.post(
     req: Request<{ datasourceId: string }, {}, NewSlotReq>,
     res: Response
   ) => {
-    /* #swagger.tags = ['Dashboard']
-       #swagger.responses[200] = {
-            description: 'Successfully created a new slot',
-            schema: { $ref: '#/definitions/DGLResponseSlot' }
-       }
-       #swagger.responses[400] = {
-            description: 'Invalid parameters',
-            schema: { message: 'Invalid parameters' }
-       }
-    */
+    /*
+    #swagger.tags = ['Dashboard'] 
+    #swagger.requestBody = {
+      required: true,
+      content: {
+        "application/json": {
+          schema: {
+            $ref: "#/components/schemas/NewSlotReq"
+          }
+        }
+      }
+    }
+     #swagger.responses[201] = {
+      description: "User created successfully",
+      content: {
+        "application/json": {
+          schema:{
+            $ref: "#/components/schemas/DGLResponse_User"
+          }
+        }           
+      }
+    }
+    #swagger.responses[400] = {
+      description: 'Invalid parameters',
+      schema: { message: 'Invalid datasourceId, it should be a number' }
+    }
+  */
     try {
       const { datasourceId } = req.params;
       const { apiKey } = req.headers;
@@ -99,16 +116,33 @@ dashboardRouter.put(
     req: Request<{ datasourceId: string; slotId: string }, {}, UpdateSlotReq>,
     res: Response
   ) => {
-    /* #swagger.tags = ['Dashboard']
-       #swagger.responses[204] = {
-            description: 'Successfully updated the slot',
-            schema: { $ref: '#/definitions/DGLResponseSlot' }
-       }
-       #swagger.responses[400] = {
-            description: 'Invalid parameters',
-            schema: { message: 'Invalid parameters' }
-       }
-    */
+    /*
+    #swagger.tags = ['Dashboard'] 
+    #swagger.requestBody = {
+      required: true,
+      content: {
+        "application/json": {
+          schema: {
+            $ref: "#/components/schemas/UpdateSlotReq"
+          }
+        }
+      }
+    }
+     #swagger.responses[204] = {
+      description: 'Successfully updated the slot',
+      content: {
+        "application/json": {
+          schema:{
+            $ref: "#/components/schemas/DGLResponse_Slot"
+          }
+        }           
+      }
+    }
+    #swagger.responses[400] = {
+      description: 'Invalid Ids',
+      schema: { message: 'Invalid datasourceId, it should be a number' }
+    }
+  */
     try {
       const { datasourceId, slotId } = req.params;
       const { apiKey } = req.headers;
@@ -138,16 +172,23 @@ dashboardRouter.put(
 dashboardRouter.delete(
   '/user/slot/:datasourceId/:slotId',
   async (req: Request, res: Response, next: NextFunction) => {
-    /* #swagger.tags = ['Dashboard']
-       #swagger.responses[204] = {
-            description: 'Successfully deleted the slot',
-            schema: { $ref: '#/definitions/DGLResponse' }
-       }
-       #swagger.responses[400] = {
-            description: 'Invalid parameters',
-            schema: { message: 'Invalid parameters' }
-       }
-    */
+    /*
+    #swagger.tags = ['Dashboard'] 
+     #swagger.responses[204] = {
+      description: 'Successfully deleted the slot',
+      content: {
+        "application/json": {
+          schema:{
+            $ref: "#/components/schemas/DGLResponse_Slot"
+          }
+        }           
+      }
+    }
+    #swagger.responses[400] = {
+      description: 'Invalid Ids',
+      schema: { message: 'Invalid datasourceId, it should be a number' }
+    }
+  */
     try {
       const { apiKey } = req.headers;
       const { datasourceId, slotId } = req.params;
@@ -166,16 +207,23 @@ dashboardRouter.delete(
 dashboardRouter.get(
   '/user/slot/:datasourceId/:slotId',
   async (req: Request, res: Response, next: NextFunction) => {
-    /* #swagger.tags = ['Dashboard']
-       #swagger.responses[200] = {
-            description: 'Successfully fetched the slot',
-            schema: { $ref: '#/definitions/DGLResponseSlot' }
-       }
-       #swagger.responses[400] = {
-            description: 'Invalid parameters',
-            schema: { message: 'Invalid parameters' }
-       }
-    */
+    /*
+    #swagger.tags = ['Dashboard'] 
+     #swagger.responses[204] = {
+      description: 'Successfully fetched the slot',
+      content: {
+        "application/json": {
+          schema:{
+            $ref: "#/components/schemas/DGLResponse_Slot"
+          }
+        }           
+      }
+    }
+    #swagger.responses[400] = {
+      description: 'Invalid Ids',
+      schema: { message: 'Invalid datasourceId, it should be a number' }
+    }
+  */
     try {
       const { datasourceId, slotId } = req.params;
       const result = await dashboardController.getSlot(
@@ -192,16 +240,23 @@ dashboardRouter.get(
 dashboardRouter.get(
   '/user/slots/:datasourceId',
   async (req: Request, res: Response, next: NextFunction) => {
-    /* #swagger.tags = ['Dashboard']
-       #swagger.responses[200] = {
-            description: 'Successfully fetched the slots',
-            schema: { $ref: '#/definitions/DGLResponseSlots' }
-       }
-       #swagger.responses[400] = {
-            description: 'Invalid parameters',
-            schema: { message: 'Invalid parameters' }
-       }
-    */
+    /*
+    #swagger.tags = ['Dashboard'] 
+     #swagger.responses[204] = {
+      description: 'Successfully fetched the slots',
+      content: {
+        "application/json": {
+          schema:{
+            $ref: "#/components/schemas/DGLResponse_Slots"
+          }
+        }           
+      }
+    }
+    #swagger.responses[400] = {
+      description: 'Invalid Ids',
+      schema: { message: 'Invalid datasourceId, it should be a number' }
+    }
+  */
     try {
       const { datasourceId } = req.params;
       const result = await dashboardController.getSlots(Number(datasourceId));
@@ -217,12 +272,12 @@ dashboardRouter.get(
   async (req: Request, res: Response, next: NextFunction) => {
     /* #swagger.tags = ['Dashboard']
        #swagger.responses[204] = {
-            description: 'Successfully updated the slot',
-            schema: { $ref: '#/definitions/DGLResponseSlot' }
+            description: 'Successfully fetched the datasources',
+            schema: { $ref: '#/definitions/DGLResponse_Datasources' }
        }
        #swagger.responses[400] = {
             description: 'Invalid parameters',
-            schema: { message: 'Invalid parameters' }
+            schema: { message: 'Invalid apikey' }
        }
     */
     try {
@@ -241,13 +296,13 @@ dashboardRouter.get(
   '/user/datasource/:datasourceId',
   async (req: Request, res: Response, next: NextFunction) => {
     /* #swagger.tags = ['Dashboard']
-       #swagger.responses[200] = {
-            description: 'User datasources fetched successfully',
-            schema: { $ref: '#/definitions/DGLResponseDatasource' }
+       #swagger.responses[204] = {
+            description: 'Successfully fetched the datasource',
+            schema: { $ref: '#/definitions/DGLResponse_Datasource' }
        }
        #swagger.responses[400] = {
             description: 'Invalid parameters',
-            schema: { message: 'Invalid parameters' }
+            schema: { message: 'Invalid apikey' }
        }
     */
     try {

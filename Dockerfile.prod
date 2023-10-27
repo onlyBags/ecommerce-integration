@@ -13,7 +13,6 @@ RUN rm ./packages/ecommerce-webhooks/dist -rf
 RUN rm ./packages/ecommerce-woocommerce/dist -rf
 RUN rm ./packages/ecommerce-server/dist -rf
 RUN rm ./packages/ecommerce-server/public/swagger.json -f
-RUN rm ./packages/ecommerce-server/src/routes/routes.ts -f
 RUN apt-get update && apt-get install -y nano
 
 RUN npm i

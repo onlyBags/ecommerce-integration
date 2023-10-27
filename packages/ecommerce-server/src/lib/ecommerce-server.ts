@@ -13,7 +13,7 @@ import { AppDataSource } from '@dg-live/ecommerce-db';
 import { redisClient } from '@dg-live/ecommerce-cache';
 import { envConfig } from '@dg-live/ecommerce-config';
 import { handleWebhook } from '@dg-live/ecommerce-webhooks';
-// import { startGraphPolling } from '@dg-live/ecommerce-web3';
+import { startGraphPolling } from '@dg-live/ecommerce-web3';
 import { ValidateError } from '@dg-live/ecommerce-data-types';
 import router from '../routes/routes.js';
 
@@ -137,8 +137,8 @@ const server = app.listen(port, async () => {
     console.log(
       `⚡️[server]: Server is running at http://localhost:${port}/docs`
     );
-    // console.log('Starting graph polling');
-    // startGraphPolling();
+    console.log('Starting graph polling');
+    startGraphPolling();
   } catch (error) {
     console.log('Error connecting to database');
     console.log(error);

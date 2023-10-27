@@ -8,16 +8,23 @@ const woocommerceController = new WoocommerceController();
 woocommerceRouter.get(
   '/catalog/:datasourceId',
   async (req: Request, res: Response, next: NextFunction) => {
-    /* #swagger.tags = ['Woocommerce']
-     #swagger.responses[200] = {
-          description: 'Successfully fetched the products',
-          schema: { $ref: '#/definitions/DGLResponseWoocommerceProducts' }
-     }
-     #swagger.responses[400] = {
-          description: 'Invalid parameters',
-          schema: { message: 'Invalid parameters' }
-     }
-  */
+    /* 
+      #swagger.tags = ['Woocommerce']
+      #swagger.responses[200] = {
+        description: 'Successfully fetched the products',
+        content: {
+          "application/json": {
+            schema:{
+              $ref: "#/components/schemas/DGLResponse_WoocommerceProducts"
+            }
+          }           
+        }
+      }
+      #swagger.responses[400] = {
+        description: 'Invalid parameters',
+        schema: { message: 'Invalid parameters' }
+      }
+   */
     try {
       const { datasourceId } = req.params;
       const apiKey = req.headers['api-key'] as string;
@@ -35,16 +42,23 @@ woocommerceRouter.get(
 woocommerceRouter.get(
   '/catalog/sync/:datasourceId',
   async (req: Request, res: Response, next: NextFunction) => {
-    /* #swagger.tags = ['Woocommerce']
-     #swagger.responses[200] = {
-          description: 'Successfully synced the catalog',
-          schema: { $ref: '#/definitions/DGLResponseAny' }
-     }
-     #swagger.responses[400] = {
-          description: 'Invalid parameters',
-          schema: { message: 'Invalid parameters' }
-     }
-  */
+    /* 
+      #swagger.tags = ['Woocommerce']
+      #swagger.responses[200] = {
+        description: 'Successfully synced the catalog',
+        content: {
+          "application/json": {
+            schema:{
+              $ref: "#/components/schemas/DGLResponse_WoocommerceSyncCatalog"
+            }
+          }           
+        }
+      }
+      #swagger.responses[400] = {
+        description: 'Invalid parameters',
+        schema: { message: 'Invalid parameters' }
+      }
+   */
     try {
       const { datasourceId } = req.params;
       const apiKey = req.headers['api-key'] as string;
@@ -62,16 +76,23 @@ woocommerceRouter.get(
 woocommerceRouter.get(
   '/shipping/:datasourceId',
   async (req: Request, res: Response, next: NextFunction) => {
-    /* #swagger.tags = ['Woocommerce']
-     #swagger.responses[200] = {
-          description: 'Successfully fetched the shipping zones',
-          schema: { $ref: '#/definitions/DGLResponseWoocommerceShippingZones' }
-     }
-     #swagger.responses[400] = {
-          description: 'Invalid parameters',
-          schema: { message: 'Invalid parameters' }
-     }
-  */
+    /* 
+      #swagger.tags = ['Woocommerce']
+      #swagger.responses[200] = {
+        description: 'Successfully fetched the shipping zones',
+        content: {
+          "application/json": {
+            schema:{
+              $ref: "#/components/schemas/DGLResponse_WoocommerceShippingZones"
+            }
+          }           
+        }
+      }
+      #swagger.responses[400] = {
+        description: 'Invalid parameters',
+        schema: { message: 'Invalid parameters' }
+      }
+   */
     try {
       const { datasourceId } = req.params;
       const apiKey = req.headers['api-key'] as string;
@@ -89,16 +110,23 @@ woocommerceRouter.get(
 woocommerceRouter.get(
   '/shipping/:datasourceId/locations/:shippingZoneId',
   async (req: Request, res: Response, next: NextFunction) => {
-    /* #swagger.tags = ['Woocommerce']
-     #swagger.responses[200] = {
-          description: 'Successfully fetched the shipping locations',
-          schema: { $ref: '#/definitions/DGLResponseWoocommerceShippingLocations' }
-     }
-     #swagger.responses[400] = {
-          description: 'Invalid parameters',
-          schema: { message: 'Invalid parameters' }
-     }
-  */
+    /* 
+      #swagger.tags = ['Woocommerce']
+      #swagger.responses[200] = {
+        description: 'Successfully fetched the shipping locations',
+        content: {
+          "application/json": {
+            schema:{
+              $ref: "#/components/schemas/DGLResponse_WoocommerceShippingZones"
+            }
+          }           
+        }
+      }
+      #swagger.responses[400] = {
+        description: 'Invalid parameters',
+        schema: { message: 'Invalid parameters' }
+      }
+   */
     try {
       const { datasourceId, shippingZoneId } = req.params;
       const apiKey = req.headers['api-key'] as string;
@@ -117,16 +145,23 @@ woocommerceRouter.get(
 woocommerceRouter.get(
   '/shipping/:datasourceId/methods/:shippingZoneId',
   async (req: Request, res: Response, next: NextFunction) => {
-    /* #swagger.tags = ['Woocommerce']
-     #swagger.responses[200] = {
-          description: 'Successfully fetched the shipping methods',
-          schema: { $ref: '#/definitions/DGLResponseWoocommerceShippingMethods' }
-     }
-     #swagger.responses[400] = {
-          description: 'Invalid parameters',
-          schema: { message: 'Invalid parameters' }
-     }
-  */
+    /* 
+      #swagger.tags = ['Woocommerce']
+      #swagger.responses[200] = {
+        description: 'Successfully fetched the shipping methods',
+        content: {
+          "application/json": {
+            schema:{
+              $ref: "#/components/schemas/DGLResponse_WoocommerceShippingZones"
+            }
+          }           
+        }
+      }
+      #swagger.responses[400] = {
+        description: 'Invalid parameters',
+        schema: { message: 'Invalid parameters' }
+      }
+   */
     try {
       const { datasourceId, shippingZoneId } = req.params;
       const apiKey = req.headers['api-key'] as string;
@@ -145,16 +180,23 @@ woocommerceRouter.get(
 woocommerceRouter.get(
   '/variation/:datasourceId/:productId',
   async (req: Request, res: Response, next: NextFunction) => {
-    /* #swagger.tags = ['Woocommerce']
-     #swagger.responses[200] = {
-          description: 'Successfully fetched the product variation',
-          schema: { $ref: '#/definitions/DGLResponseProductVariation' }
-     }
-     #swagger.responses[400] = {
-          description: 'Invalid parameters',
-          schema: { message: 'Invalid parameters' }
-     }
-  */
+    /* 
+      #swagger.tags = ['Woocommerce']
+      #swagger.responses[200] = {
+        description: 'Successfully fetched the product variation',
+        content: {
+          "application/json": {
+            schema:{
+              $ref: "#/components/schemas/DGLResponse_WoocommerceProductVariation"
+            }
+          }           
+        }
+      }
+      #swagger.responses[400] = {
+        description: 'Invalid parameters',
+        schema: { message: 'Invalid parameters' }
+      }
+   */
     try {
       const { datasourceId, productId } = req.params;
       const apiKey = req.headers['api-key'] as string;
@@ -180,16 +222,33 @@ woocommerceRouter.post(
     res: Response,
     next: NextFunction
   ) => {
-    /* #swagger.tags = ['Woocommerce']
-       #swagger.responses[200] = {
-            description: 'Successfully created the order',
-            schema: { $ref: '#/definitions/DGLResponseWoocommerceOrderCreatedRes' }
-       }
-       #swagger.responses[400] = {
-            description: 'Invalid parameters',
-            schema: { message: 'Invalid parameters' }
-       }
-    */
+    /* 
+      #swagger.tags = ['Woocommerce']
+      #swagger.requestBody = {
+        required: true,
+        content: {
+          "application/json": {
+            schema: {
+              $ref: "#/components/schemas/WoocommerceOrderReq"
+            }  
+          }
+        }
+      }
+      #swagger.responses[200] = {
+        description: 'Successfully created the order',
+        content: {
+          "application/json": {
+            schema:{
+              $ref: "#/components/schemas/DGLResponse_WoocommerceOrderCreatedRes"
+            }
+          }           
+        }
+      }
+      #swagger.responses[400] = {
+        description: 'Invalid parameters',
+        schema: { message: 'Invalid parameters' }
+      }
+   */
     try {
       const apiKey = req.headers['api-key'] as string;
       const body = req.body;
@@ -204,16 +263,23 @@ woocommerceRouter.post(
 woocommerceRouter.get(
   '/webhooks/:datasourceId',
   async (req: Request, res: Response, next: NextFunction) => {
-    /* #swagger.tags = ['Woocommerce']
-     #swagger.responses[200] = {
-          description: 'Successfully fetched the webhooks',
-          schema: { $ref: '#/definitions/DGLResponseWoocommerceWebhookResponse' }
-     }
-     #swagger.responses[400] = {
-          description: 'Invalid parameters',
-          schema: { message: 'Invalid parameters' }
-     }
-  */
+    /* 
+      #swagger.tags = ['Woocommerce']
+      #swagger.responses[200] = {
+        description: 'Successfully fetched the webhooks',
+        content: {
+          "application/json": {
+            schema:{
+              $ref: "#/components/schemas/DGLResponse_WoocommerceWebhookResponse"
+            }
+          }           
+        }
+      }
+      #swagger.responses[400] = {
+        description: 'Invalid parameters',
+        schema: { message: 'Invalid parameters' }
+      }
+   */
     try {
       const { datasourceId } = req.params;
       const apiKey = req.headers['api-key'] as string;

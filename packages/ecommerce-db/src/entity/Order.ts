@@ -7,8 +7,9 @@ import {
   OneToMany,
   ManyToOne,
   Relation,
+  OneToOne,
 } from 'typeorm';
-import { Customer } from './Customer.js';
+import { Customer, OrderLog } from './index.js';
 
 @Entity({
   name: 'order',
@@ -16,6 +17,9 @@ import { Customer } from './Customer.js';
 export class Order {
   @PrimaryGeneratedColumn()
   id: number;
+
+  @OneToOne(() => OrderLog, (orderLog) => orderLog.id)
+  orderLog: Relation<OrderLog>;
 
   @ManyToOne(() => Customer, (customer) => customer.orders)
   customer: Relation<Customer>;

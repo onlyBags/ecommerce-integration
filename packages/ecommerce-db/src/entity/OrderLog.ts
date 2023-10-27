@@ -5,9 +5,10 @@ import {
   ManyToOne,
   CreateDateColumn,
   Relation,
+  OneToOne,
 } from 'typeorm';
 
-import { Customer, User } from './index.js';
+import { Customer, User, Order } from './index.js';
 import { stringToBool } from '../utils/index.js';
 
 @Entity()
@@ -21,6 +22,9 @@ export class OrderLog {
   @Column()
   blockNumber: number;
 
+  @OneToOne(() => Order, (order) => order.id)
+  order: Relation<Order>;
+
   @Column({ type: 'varchar', length: 20 })
   orderStatus: string;
 
@@ -29,9 +33,6 @@ export class OrderLog {
 
   @ManyToOne(() => User, (user) => user.id)
   user: Relation<User>;
-
-  @Column({ type: 'varchar', length: 255 })
-  tokenId: string;
 
   @Column({ type: 'double', nullable: true })
   amount: string;

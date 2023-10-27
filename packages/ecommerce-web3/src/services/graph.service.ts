@@ -6,22 +6,16 @@ const http = axios.create({
   baseURL: `${subGraphEndpoint}/${subGraphVersion}`,
 });
 
-interface GraphTransactionData {
-  blockId: string;
-  buyerId: string;
-  hash: string;
-  nftAddress: string;
-  price: string;
-  recipientId: string;
-  sellerId: string;
-  timestamp: string;
-  tokenId: string;
-  transactionId: string;
-  type: string;
+interface Payment {
+  id: string;
+  orderID: string;
+  amount: string;
+  beneficiary: string;
+  buyer: string;
+  transactionHash: string;
 }
-
-interface GraphTransactionsCount {
-  count: string;
+interface GraphPaymentData {
+  payments: Payment[];
 }
 
 const fetchTransactions = async ({
@@ -34,57 +28,23 @@ const fetchTransactions = async ({
   count: number;
   order: string;
   orderBy?: string;
-}): Promise<any> => {
+}): Promise<Payment[]> => {
   const query = `
     {
-      transactions(first: ${count}, skip: ${start}, orderBy: ${orderBy}, orderDirection: ${order}) {
+      payments(first: ${count}, skip: ${start}, orderBy: id, orderDirection: ${order}) {
         id
-        hash
-        timestamp
-        type
-        blockNumber
-        buyer {
-          id
-        }
-        recipient {
-          id
-        }
-        seller {
-          id
-        }
-        price
-        nft {
-          id
-          nftAddress {
-            id
-          }
-          tokenId
-          tokenURI
-        }
+        orderID
+        amount
+        beneficiary
+        buyer
+        transactionHash
       }
     }`;
   try {
-    const res = await http.post<
-      AxiosResponse<{ transactions: GraphTransactionData[] }>
-    >('', {
+    const res = await http.post<AxiosResponse<GraphPaymentData>>('', {
       query,
     });
-    return res.data.data.transactions.map((transaction: any) => {
-      return {
-        transactionId: transaction.id,
-        hash: transaction.hash,
-        timestamp: transaction.timestamp,
-        type: transaction.type,
-        blockId: transaction.blockNumber,
-        sellerId: transaction.seller.id,
-        price: transaction.price,
-        nftAddress: transaction.nft.id.split('-')[0],
-        tokenId: transaction.nft.tokenId,
-        tokenURI: transaction.nft.tokenURI,
-        buyerId: transaction.buyer ? transaction.buyer.id : 'None',
-        recipientId: transaction.recipient ? transaction.recipient.id : 'None',
-      };
-    }) as any;
+    return res.data.data.payments;
   } catch (err) {
     console.log(err);
     debugger;
@@ -100,30 +60,27 @@ export const fetchAllTransactions = async ({
   start: number;
   count?: number;
   order?: string;
-}) => {
-  debugger;
-  const transactions: any = await fetchTransactions({ start, count, order });
-  // If the number of transactions is equal to the limit
-  // then there might be more transactions
+}): Promise<Payment[]> => {
+  const transactions: Payment[] = await fetchTransactions({
+    start,
+    count,
+    order,
+  });
   if (transactions.length === count) {
-    // Fetch more transactions
     const nextTransactions = await fetchAllTransactions({
       start: start + count,
       count,
       order,
     });
-
-    // Append the transactions fetched in the next request
     transactions.push(...nextTransactions);
   }
-  debugger;
   return transactions;
 };
 
 export const fetchTransactionCount = async (): Promise<number> => {
   const query = `
   {
-    transactionCounter(id:"global") {
+    transactionCounter(id: "1") {
       count
     }
   }`;

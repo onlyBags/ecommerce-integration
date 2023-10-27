@@ -1,6 +1,18 @@
 {
   "tasks": [
     {
+      "label": "Generate Swagger",
+      "type": "shell",
+      "command": "cd packages/ecommerce-server && npm run swagger-autogen",
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "presentation": {
+        "reveal": "always"
+      }
+    },
+    {
       "label": "BuildServer",
       "type": "shell",
       "command": "npm run build",
@@ -10,7 +22,8 @@
       },
       "presentation": {
         "reveal": "always"
-      }
+      },
+      "dependsOn": ["Generate Swagger"]
     },
     {
       "label": "Build",

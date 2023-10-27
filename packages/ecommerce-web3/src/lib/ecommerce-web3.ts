@@ -1,64 +1,66 @@
-import { AppDataSource, OrderLog } from '@dg-live/ecommerce-db';
+import {
+  AppDataSource,
+  Customer,
+  Order,
+  OrderLog,
+  User,
+} from '@dg-live/ecommerce-db';
 import {
   fetchTransactionCount,
   fetchAllTransactions,
 } from '../services/graph.service.js';
 
+const orderRepository = AppDataSource.getRepository(Order);
 const orderLogRepository = AppDataSource.getRepository(OrderLog);
+const customerRepository = AppDataSource.getRepository(Customer);
+const userRepository = AppDataSource.getRepository(User);
 
-export const rebuildLostOrders = async (isPolling = false): Promise<void> => {
+export const buildOrders = async (isPolling = false): Promise<void> => {
   try {
     await orderLogRepository.delete({
       isValidated: false,
     });
     const localTransactionsCount = await orderLogRepository.count();
-    const allTx = await fetchAllTransactions({
+    const allPayments = await fetchAllTransactions({
       start: localTransactionsCount || 0,
     });
     await fetchTransactionCount();
-    let currentTx = 0;
-    const totalTx = allTx.length;
-    debugger;
-    return null;
-    for (const tx of allTx) {
-      currentTx++;
-      const {
-        blockId,
-        buyerId,
-        hash,
-        nftAddress,
-        price,
-        recipientId,
-        sellerId,
-        timestamp,
-        tokenId,
-        transactionId,
-        type,
-        tokenURI,
-      } = tx;
-      const lowerType = type.toLowerCase();
-      const transactionData: any = {
-        transactionHash: hash,
-        blockNumber: +blockId,
-        type: lowerType,
-        timestamp: new Date(+timestamp * 1000),
-        tokenId: tokenId,
-        price: price,
-        from: sellerId,
-        to:
-          buyerId !== '0x0000000000000000000000000000000000000000'
-            ? buyerId
-            : '',
-        recipient:
-          recipientId !== '0x0000000000000000000000000000000000000000'
-            ? recipientId
-            : '',
-      };
+    for (const payment of allPayments) {
+      const customer = await customerRepository.findOne({
+        where: {
+          wallet: payment.buyer,
+        },
+      });
+
+      const user = await userRepository.findOne({
+        where: {
+          wallet: payment.beneficiary,
+        },
+      });
+
+      const order = await orderRepository.findOne({
+        where: {
+          orderId: +payment.orderID,
+        },
+      });
+      if (!order || !customer || !user) continue;
+      if (user.wallet.toLowerCase() !== payment.beneficiary.toLowerCase())
+        continue;
+      const orderLog = new OrderLog();
+      orderLog.order = order;
+      orderLog.transactionHash = payment.transactionHash;
+      orderLog.amount = payment.amount;
+      orderLog.customer = customer;
+      orderLog.user = user;
+      orderLog.orderStatus = 'pending';
+      orderLog.isValidated = false;
+      await orderLogRepository.save(orderLog);
     }
   } catch (err) {
     throw console.error('rebuildLostTransactions::error: ', err);
   }
 };
+
 export const startGraphPolling = () => {
   let isPolling = false;
   setInterval(async () => {
@@ -66,7 +68,7 @@ export const startGraphPolling = () => {
       isPolling = !isPolling;
       const localOrdersCount = await orderLogRepository.count();
       const graphOrdersCount = await fetchTransactionCount();
-      if (localOrdersCount < graphOrdersCount) await rebuildLostOrders(true);
+      if (localOrdersCount < graphOrdersCount) await buildOrders(true);
       isPolling = !isPolling;
     }
   }, 15000);
