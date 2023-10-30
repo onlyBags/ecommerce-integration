@@ -14,8 +14,8 @@ export const OrderBilling = {
   phone: 'string?',
 };
 export const LineItem = {
-  productId: 'number',
-  quantity: 'number',
+  productId: 66,
+  quantity: 1,
   variationId: 'number?',
 };
 export const ShippingLine = {
@@ -25,33 +25,31 @@ export const ShippingLine = {
 };
 
 export const WoocommerceOrderReq = {
+  datasourceId: 1,
   wcOrder: {
-    paymentMethod: 'string',
-    paymentMethodTitle: 'string',
-    setPaid: 'boolean',
-    wallet: 'string',
+    paymentMethod: 'ICE',
+    paymentMethodTitle: 'crypto',
+    wallet: '0x123',
     billing: {
       $ref: '#/components/schemas/OrderBilling',
     },
     shipping: {
       $ref: '#/components/schemas/OrderShipping',
     },
-    lineItems: {
-      type: 'array',
-      items: {
+    lineItems: [
+      {
         $ref: '#/components/schemas/LineItem',
       },
-    },
-    shippingLines: {
-      type: 'array',
-      items: {
+    ],
+    shippingLines: [
+      {
         $ref: '#/components/schemas/ShippingLine',
       },
-    },
-    shippingId: 'number',
-    billingId: 'number',
-    saveBilling: 'boolean',
-    saveShipping: 'boolean',
+    ],
+    shippingId: 0,
+    billingId: 0,
+    saveBilling: true,
+    saveShipping: true,
   },
 };
 

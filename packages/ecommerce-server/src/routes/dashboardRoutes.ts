@@ -3,6 +3,7 @@ import { DashboardController } from '../controllers/dashboardController.js';
 import { envConfig } from '@dg-live/ecommerce-config';
 import {
   NewSlotReq,
+  SaveUserDatasourceReq,
   SaveUserReq,
   UpdateSlotReq,
 } from '@dg-live/ecommerce-data-types';
@@ -54,6 +55,56 @@ dashboardRouter.post(
     }
   }
 );
+
+dashboardRouter.post(
+  '/user/datasource',
+  async (req: Request<{}, {}, SaveUserDatasourceReq>, res: Response) => {
+    /*
+    #swagger.tags = ['Dashboard']
+    #swagger.parameters['api-key'] = {
+      in: header,
+      description: the apy key,
+      required: true
+    }
+    #swagger.requestBody = {
+      required: true,
+      content: {
+        "application/json": {
+          schema: {
+            $ref: "#/components/schemas/SaveUserDatasourceReq"
+          }
+        }
+      }
+    }
+     #swagger.responses[201] = {
+      description: "Datasource created successfully",
+      content: {
+        "application/json": {
+          schema:{
+            $ref: "#/components/schemas/DGLResponse_User"
+          }
+        }           
+      }
+    }
+    #swagger.responses[400] = {
+      description: 'Invalid parameters',
+      schema: { message: 'Invalid masterKey' }
+    }
+  */
+    try {
+      const apiKey = req.headers['api-key'];
+      const requestBody = req.body;
+      const result = await dashboardController.saveUserDatasource(
+        apiKey as string,
+        requestBody
+      );
+      res.status(result.status).json(result);
+    } catch (error) {
+      res.status(400).json({ message: error.message });
+    }
+  }
+);
+
 dashboardRouter.post(
   '/user/slot/:datasourceId',
   async (
@@ -89,7 +140,7 @@ dashboardRouter.post(
   */
     try {
       const { datasourceId } = req.params;
-      const { apiKey } = req.headers;
+      const apiKey = req.headers['api-key'];
       const requestBody = req.body;
 
       if (!datasourceId || isNaN(Number(datasourceId))) {

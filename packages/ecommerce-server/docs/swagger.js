@@ -24,6 +24,7 @@ import {
 import {
   SaveUserReq,
   NewSlotReq,
+  SaveUserDatasourceReq,
   UpdateSlotReq,
   WoocommerceShippingZone,
   ProductVariation,
@@ -95,6 +96,7 @@ const doc = {
       WoocommerceProduct,
       SaveUserReq,
       NewSlotReq,
+      SaveUserDatasourceReq,
       UpdateSlotReq,
       WoocommerceShippingZone,
       ProductVariation,

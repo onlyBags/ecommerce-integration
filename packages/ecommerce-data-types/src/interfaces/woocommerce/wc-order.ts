@@ -37,7 +37,7 @@ export interface WoocommerceOrderCreatedRes {
 export interface WoocommerceOrder {
   paymentMethod: string;
   paymentMethodTitle: string;
-  setPaid: boolean;
+  datasourceId: number;
   wallet: string;
   billing: OrderBilling;
   shipping: OrderShipping;

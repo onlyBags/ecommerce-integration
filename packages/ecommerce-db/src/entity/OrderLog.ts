@@ -19,12 +19,6 @@ export class OrderLog {
   @Column({ type: 'varchar', length: 255 })
   transactionHash: string;
 
-  @Column()
-  blockNumber: number;
-
-  @OneToOne(() => Order, (order) => order.id)
-  order: Relation<Order>;
-
   @Column({ type: 'varchar', length: 20 })
   orderStatus: string;
 

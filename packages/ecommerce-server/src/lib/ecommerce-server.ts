@@ -121,8 +121,14 @@ app.use(
       });
     }
     if (err instanceof Error) {
+      err.stack = '';
+      err.message = err.message ?? '';
       return res.status(500).json({
         message: 'Internal Server Error',
+        details: {
+          stack: err.stack,
+          message: err.message,
+        },
       });
     }
     next();

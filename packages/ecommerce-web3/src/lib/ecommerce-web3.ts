@@ -24,7 +24,6 @@ export const buildOrders = async (isPolling = false): Promise<void> => {
     const allPayments = await fetchAllTransactions({
       start: localTransactionsCount || 0,
     });
-    await fetchTransactionCount();
     for (const payment of allPayments) {
       const customer = await customerRepository.findOne({
         where: {
@@ -40,24 +39,24 @@ export const buildOrders = async (isPolling = false): Promise<void> => {
 
       const order = await orderRepository.findOne({
         where: {
-          orderId: +payment.orderID,
+          orderId: 97, // +payment.orderID,
         },
       });
       if (!order || !customer || !user) continue;
       if (user.wallet.toLowerCase() !== payment.beneficiary.toLowerCase())
         continue;
       const orderLog = new OrderLog();
-      orderLog.order = order;
       orderLog.transactionHash = payment.transactionHash;
       orderLog.amount = payment.amount;
       orderLog.customer = customer;
       orderLog.user = user;
       orderLog.orderStatus = 'pending';
       orderLog.isValidated = false;
+      order.orderLog = orderLog;
       await orderLogRepository.save(orderLog);
     }
   } catch (err) {
-    throw console.error('rebuildLostTransactions::error: ', err);
+    throw new Error('buildOrders::error: ' + err.message);
   }
 };
 
@@ -71,5 +70,5 @@ export const startGraphPolling = () => {
       if (localOrdersCount < graphOrdersCount) await buildOrders(true);
       isPolling = !isPolling;
     }
-  }, 15000);
+  }, 1000);
 };

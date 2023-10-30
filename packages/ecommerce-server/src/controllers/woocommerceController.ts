@@ -286,63 +286,55 @@ export class WoocommerceController {
 
   //   @Post('/order')
   //   @SuccessResponse('200', 'Order Created')
-  //   @Example<OrderExample>({
-  //     datasourceId: 1,
-  //     wcOrder: {
-  //       paymentMethod: 'bacs',
-  //       paymentMethodTitle: 'Testing DGL-E',
-  //       setPaid: false,
-  //       wallet: '0x355A93EE3781CCF6084C86DAD7921e5e731ad519',
-  //       billing: {
-  //         firstName: 'Maiki',
-  //         lastName: 'Prueba',
-  //         address1: 'E. Costa',
-  //         address2: '1068',
-  //         city: 'Buenos Aires',
-  //         state: 'BSAS',
-  //         postcode: '1068',
-  //         country: 'AR',
-  //       },
-  //       shipping: {
-  //         firstName: 'Maiki',
-  //         lastName: 'Prueba',
-  //         address1: 'E. Costa',
-  //         address2: '1068',
-  //         city: 'Buenos Aires',
-  //         state: 'BSAS',
-  //         postcode: '1068',
-  //         country: 'AR',
-  //       },
-  //       lineItems: [
-  //         {
-  //           productId: 4518,
-  //           quantity: 1,
-  //         },
-  //       ],
-  //       shippingLines: [
-  //         {
-  //           methodId: 'oca_wanderlust',
-  //           methodTitle: 'Oca',
-  //           // total: "10.00"
-  //         },
-  //       ],
+  //   @Example<OrderExample>(
+  //  {
+  //   datasourceId: 1,
+  //   wcOrder: {
+  //     paymentMethod: 'bacs',
+  //     paymentMethodTitle: 'Testing DGL-E',
+  //     setPaid: false,
+  //     wallet: '0x355A93EE3781CCF6084C86DAD7921e5e731ad519',
+  //     billing: {
+  //       firstName: 'Maiki',
+  //       lastName: 'Prueba',
+  //       address1: 'E. Costa',
+  //       address2: '1068',
+  //       city: 'Buenos Aires',
+  //       state: 'BSAS',
+  //       postcode: '1068',
+  //       country: 'AR',
   //     },
-  //   })
-  public async wcCreateOrder(
-    apiKey: string,
-    body: {
-      datasourceId: number;
-      wcOrder: WoocommerceOrder;
-    }
-  ): Promise<DGLResponse<WoocommerceOrderCreatedRes>> {
+  //     shipping: {
+  //       firstName: 'Maiki',
+  //       lastName: 'Prueba',
+  //       address1: 'E. Costa',
+  //       address2: '1068',
+  //       city: 'Buenos Aires',
+  //       state: 'BSAS',
+  //       postcode: '1068',
+  //       country: 'AR',
+  //     },
+  //     lineItems: [
+  //       {
+  //         productId: 4518,
+  //         quantity: 1,
+  //       },
+  //     ],
+  //     shippingLines: [
+  //       {
+  //         methodId: 'oca_wanderlust',
+  //         methodTitle: 'Oca',
+  //         // total: "10.00"
+  //       },
+  //     ],
+  //   },
+  // }
+  // )
+  public async wcCreateOrder(body: {
+    datasourceId: number;
+    wcOrder: WoocommerceOrder;
+  }): Promise<DGLResponse<WoocommerceOrderCreatedRes>> {
     const errorFields: FieldErrors = {};
-
-    if (!apiKey) {
-      errorFields.apiKey = {
-        message: 'Invalid apiKey',
-        value: apiKey,
-      };
-    }
 
     if (typeof body.datasourceId !== 'number') {
       errorFields.datasourceId = {
@@ -351,7 +343,7 @@ export class WoocommerceController {
       };
     }
 
-    if (!body.wcOrder.wallet) {
+    if (!body.wcOrder?.wallet) {
       errorFields.wallet = {
         message: 'Invalid wallet',
         value: body.wcOrder.wallet,
@@ -364,7 +356,6 @@ export class WoocommerceController {
 
     try {
       const wcOrderRes = await createOrder({
-        apiKey,
         datasourceId: body.datasourceId,
         order: body.wcOrder,
       });

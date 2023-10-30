@@ -252,7 +252,7 @@ woocommerceRouter.post(
     try {
       const apiKey = req.headers['api-key'] as string;
       const body = req.body;
-      const result = await woocommerceController.wcCreateOrder(apiKey, body);
+      const result = await woocommerceController.wcCreateOrder(body);
       res.status(result.status).json(result);
     } catch (err) {
       next(err);

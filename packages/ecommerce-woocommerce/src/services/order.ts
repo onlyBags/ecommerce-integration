@@ -18,19 +18,21 @@ import {
   Shipping,
   Order,
   Customer,
+  User,
+  Datasource,
 } from '@dg-live/ecommerce-db';
 
 import { saveBilling, saveShipping } from '@dg-live/ecommerce-customer';
 
+const userRepository = AppDataSource.getRepository(User);
+const datasourceRepository = AppDataSource.getRepository(Datasource);
 const orderRepository = AppDataSource.getRepository(Order);
 const customerRepository = AppDataSource.getRepository(Customer);
 
 export const createOrder = async ({
-  apiKey,
   datasourceId,
   order,
 }: {
-  apiKey: string;
   datasourceId: number;
   order: WoocommerceOrder;
 }): Promise<WoocommerceOrderCreatedRes> => {
@@ -124,7 +126,21 @@ export const createOrder = async ({
     ],
   };
   try {
-    const wc = await createNewWoocommerceInstance({ apiKey, datasourceId });
+    const foundUser = await userRepository.findOne({
+      where: {
+        wallet: order.wallet,
+      },
+      relations: {
+        datasource: true,
+      },
+    });
+    if (!foundUser) {
+      throw new Error(`User with wallet ${order.wallet} not found`);
+    }
+    const wc = await createNewWoocommerceInstance({
+      apiKey: foundUser.apiKey,
+      datasourceId,
+    });
     const res = (await wc.post(
       'orders',
       orderReq
@@ -196,7 +212,9 @@ const mapBillingWCBilling = (billing: Billing | OrderBilling) => {
 
 const getIcePrice = async (): Promise<IcePriceResponse> => {
   try {
-    const res = await axios.get<IcePriceResponse>('myUrl'); // Axios will infer the type for AxiosResponse
+    const res = await axios.get<IcePriceResponse>(
+      'https://api.dglive.org/v1/stripe/ice-price'
+    ); // Axios will infer the type for AxiosResponse
     return res.data;
   } catch (error) {
     console.error('An error occurred:', error);

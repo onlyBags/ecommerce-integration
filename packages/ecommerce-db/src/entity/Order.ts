@@ -8,6 +8,7 @@ import {
   ManyToOne,
   Relation,
   OneToOne,
+  JoinColumn,
 } from 'typeorm';
 import { Customer, OrderLog } from './index.js';
 
@@ -19,6 +20,7 @@ export class Order {
   id: number;
 
   @OneToOne(() => OrderLog, (orderLog) => orderLog.id)
+  @JoinColumn()
   orderLog: Relation<OrderLog>;
 
   @ManyToOne(() => Customer, (customer) => customer.orders)

@@ -18,6 +18,17 @@ export const NewSlotReq = {
   rotZ: 'number',
 };
 
+export const SaveUserDatasourceReq = {
+  name: 'Datasource-name',
+  wallet: '0x123',
+  platform: 'woocommerce | magento',
+  consumerKey: 'string',
+  consumerSecret: 'string',
+  accessToken: 'string',
+  accessTokenSecret: 'string',
+  baseUrl: 'string',
+};
+
 export const UpdateSlotReq = {
   name: 'string',
   enabled: 'boolean',
