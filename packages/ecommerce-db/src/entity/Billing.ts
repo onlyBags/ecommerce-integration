@@ -17,8 +17,8 @@ export class Billing {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @ManyToOne(() => Customer, (customer) => customer.id)
-  customer: Relation<Customer>;
+  // @ManyToOne(() => Customer, (customer) => customer.id)
+  // customer: Relation<Customer>;
 
   @Column()
   firstName: string;

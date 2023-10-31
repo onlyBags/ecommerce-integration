@@ -20,7 +20,7 @@ export class CustomerController extends Controller {
   @SuccessResponse('200', 'Shipping fetched successfully')
   public async getCustomerShipping(
     @Path() wallet: string
-  ): Promise<DGLResponse<any[]>> {
+  ): Promise<DGLResponse<Shipping[]>> {
     const errorFields: FieldErrors = {};
     if (!wallet) {
       errorFields.wallet = {
@@ -47,7 +47,7 @@ export class CustomerController extends Controller {
   @SuccessResponse('200', 'Billing fetched successfully')
   public async getCustomerBilling(
     @Path() wallet: string
-  ): Promise<DGLResponse<any[]>> {
+  ): Promise<DGLResponse<Shipping[]>> {
     const errorFields: FieldErrors = {};
     if (!wallet) {
       errorFields.wallet = {

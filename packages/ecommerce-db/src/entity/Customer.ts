@@ -21,8 +21,8 @@ export class Customer {
   @Column()
   wallet: string;
 
-  @OneToMany(() => Order, (order) => order.id)
-  orders: Relation<Order[]>;
+  // @OneToMany(() => Order, (order) => order.id)
+  // orders: Relation<Order[]>;
 
   @OneToMany(() => Shipping, (shipping) => shipping.id)
   shipping: Relation<Shipping[]>;

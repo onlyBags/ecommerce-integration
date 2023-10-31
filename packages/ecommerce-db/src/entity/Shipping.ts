@@ -20,8 +20,8 @@ export class Shipping {
   // @Column()
   // shippingId: number;
 
-  @ManyToOne(() => Customer, (customer) => customer.id)
-  customer: Relation<Customer>;
+  // @ManyToOne(() => Customer, (customer) => customer.id)
+  // customer: Relation<Customer>;
 
   @Column()
   firstName: string;
