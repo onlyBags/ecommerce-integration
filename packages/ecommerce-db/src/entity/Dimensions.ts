@@ -4,6 +4,7 @@ import {
   PrimaryGeneratedColumn,
   OneToOne,
   JoinColumn,
+  Relation,
 } from 'typeorm';
 import { WoocommerceProduct } from './WoocommerceProduct.js';
 
@@ -25,5 +26,5 @@ export class Dimensions {
 
   @OneToOne(() => WoocommerceProduct)
   @JoinColumn()
-  woocommerceProduct: WoocommerceProduct;
+  woocommerceProduct: Relation<WoocommerceProduct>;
 }

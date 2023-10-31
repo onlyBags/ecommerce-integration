@@ -6,6 +6,7 @@ import {
   UpdateDateColumn,
   OneToMany,
   Unique,
+  Relation,
 } from 'typeorm';
 import { Shipping } from './Shipping.js';
 import { Billing } from './Billing.js';
@@ -20,14 +21,14 @@ export class Customer {
   @Column()
   wallet: string;
 
-  @OneToMany(() => Order, (order) => order.customer)
-  orders: Order[];
+  @OneToMany(() => Order, (order) => order.id)
+  orders: Relation<Order[]>;
 
-  @OneToMany(() => Shipping, (shipping) => shipping.customer)
-  shipping: Shipping[];
+  @OneToMany(() => Shipping, (shipping) => shipping.id)
+  shipping: Relation<Shipping[]>;
 
-  @OneToMany(() => Billing, (billing) => billing.customer)
-  billing: Billing[];
+  @OneToMany(() => Billing, (billing) => billing.id)
+  billing: Relation<Billing[]>;
 
   @Column({ default: true })
   isActive: boolean;

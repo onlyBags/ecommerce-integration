@@ -4,8 +4,7 @@ import {
   PrimaryGeneratedColumn,
   Unique,
   ManyToOne,
-  JoinTable,
-  ManyToMany,
+  Relation,
 } from 'typeorm';
 import { WoocommerceProduct } from './WoocommerceProduct.js';
 
@@ -30,5 +29,5 @@ export class Tag {
     () => WoocommerceProduct,
     (woocommerceProduct) => woocommerceProduct.tags
   )
-  woocommerceProduct: WoocommerceProduct;
+  woocommerceProduct: Relation<WoocommerceProduct>;
 }

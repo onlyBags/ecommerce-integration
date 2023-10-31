@@ -5,7 +5,7 @@ import {
   Unique,
   ManyToMany,
   OneToMany,
-  ManyToOne,
+  Relation,
 } from 'typeorm';
 import { WoocommerceProduct } from './WoocommerceProduct.js';
 import { AttributeOption } from './AttributeOption.js';
@@ -40,5 +40,5 @@ export class Attribute {
     () => WoocommerceProduct,
     (woocommerceProduct) => woocommerceProduct.attributes
   )
-  woocommerceProduct: WoocommerceProduct;
+  woocommerceProduct: Relation<WoocommerceProduct>;
 }
