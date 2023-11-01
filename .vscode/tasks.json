@@ -15,7 +15,7 @@
     {
       "label": "BuildServer",
       "type": "shell",
-      "command": "yarn run build:server",
+      "command": "npm run build:server",
       "group": {
         "kind": "build",
         "isDefault": true

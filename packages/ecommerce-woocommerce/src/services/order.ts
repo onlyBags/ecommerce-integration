@@ -247,7 +247,7 @@ const saveOrder = async (order: WCOrderCreated, customer: Customer) => {
   try {
     const savedOrder = new Order();
     const icePrice = await getIcePrice();
-    savedOrder.orderId = order.id;
+    savedOrder.storeOrderId = order.id;
     savedOrder.orderKey = order.order_key;
     savedOrder.status = order.status;
     savedOrder.customer = customer;

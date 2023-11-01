@@ -2,13 +2,12 @@ import {
   Entity,
   PrimaryGeneratedColumn,
   Column,
-  Unique,
-  ManyToMany,
-  OneToMany,
   ManyToOne,
+  OneToOne,
+  JoinColumn,
   Relation,
 } from 'typeorm';
-import { Customer } from './Customer.js';
+import { Customer, OrderLog } from './index.js';
 
 @Entity({
   name: 'order',
@@ -20,8 +19,12 @@ export class Order {
   @ManyToOne(() => Customer, (customer) => customer.id)
   customer: Relation<Customer>;
 
+  @OneToOne(() => OrderLog, (orderLog) => orderLog.id)
+  @JoinColumn()
+  orderLog: Relation<OrderLog>;
+
   @Column()
-  orderId: number;
+  storeOrderId: number;
 
   @Column()
   status: string;

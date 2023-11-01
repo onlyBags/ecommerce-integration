@@ -19,6 +19,9 @@ export class User {
   @Column()
   username: string;
 
+  @Column({ type: 'varchar', length: 42 })
+  wallet: string;
+
   @Column({ length: 1000 })
   apiKey: string;
 
