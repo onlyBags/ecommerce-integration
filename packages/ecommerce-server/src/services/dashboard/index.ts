@@ -13,6 +13,21 @@ import {
 } from '@dg-live/ecommerce-data-types';
 
 import { getPassword } from '../../util/index.js';
+import { getSettings } from '@dg-live/ecommerce-woocommerce';
+interface WooCommerceCurrencySettings {
+  id: string;
+  label: string;
+  description: string;
+  type: string;
+  default: string;
+  options: Record<string, string>;
+  tip: string;
+  value: string;
+  _links: {
+    self: { href: string[] };
+    collection: { href: string[] };
+  };
+}
 
 const userRepository = AppDataSource.getRepository(User);
 const datasourceRepository = AppDataSource.getRepository(Datasource);
@@ -32,7 +47,7 @@ export const saveUserDatasource = async (
   clientReq: SaveUserDatasourceReq
 ): Promise<Datasource> => {
   const user = await userRepository.findOneBy({
-    apiKey: apiKey,
+    apiKey,
     isActive: true,
   });
 
@@ -51,7 +66,19 @@ export const saveUserDatasource = async (
   datasource.webhookSecret = getPassword();
   datasource.isActive = true;
   try {
-    return await datasourceRepository.save(datasource);
+    const savedDatasource = await datasourceRepository.save(datasource);
+    const storeSettings = await getSettings({
+      apiKey,
+      datasourceId: savedDatasource.id,
+    });
+    const foundCurrencySetting: WooCommerceCurrencySettings[] =
+      storeSettings.filter((x) => x.id === 'woocommerce_currency');
+    if (foundCurrencySetting.length) {
+      const currencySettings = foundCurrencySetting[0];
+      savedDatasource.currencyCode = currencySettings.value;
+      await datasourceRepository.save(savedDatasource);
+    }
+    return savedDatasource;
   } catch (err) {
     console.log(err);
     throw err;

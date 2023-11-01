@@ -33,6 +33,7 @@ import {
   shippingMethods,
   getWebhooks,
   createWebhooks,
+  getSettings,
 } from '@dg-live/ecommerce-woocommerce';
 
 import { WoocommerceProduct } from '@dg-live/ecommerce-db';
@@ -288,6 +289,53 @@ export class WoocommerceController extends Controller {
       throw new ValidateError({}, err.message);
     }
   }
+
+  @Get('/webhooks/{datasourceId}')
+  @SuccessResponse('200', 'Webhook')
+  public async getWebhooks(
+    @Header('api-key') apiKey: string,
+    @Path() datasourceId: number
+  ): Promise<DGLResponse<WoocommerceWebhookResponse[]>> {
+    if (!apiKey) throw new Error('Invalid apiKey');
+    if (!datasourceId) throw new Error('Invalid datasourceId');
+    try {
+      const webhooks = await getWebhooks({ apiKey, datasourceId });
+      return {
+        message: 'Webhooks fetched successfully',
+        status: 200,
+        data: webhooks,
+      };
+    } catch (error) {
+      throw new ValidateError(
+        {},
+        'Error getting webhooks: ' + error.message || ''
+      );
+    }
+  }
+
+  @Get('/settings/{datasourceId}')
+  @SuccessResponse('200', 'Webhook')
+  public async getSettings(
+    @Header('api-key') apiKey: string,
+    @Path() datasourceId: number
+  ): Promise<DGLResponse<any>> {
+    if (!apiKey) throw new Error('Invalid apiKey');
+    if (!datasourceId) throw new Error('Invalid datasourceId');
+    try {
+      const settings = await getSettings({ apiKey, datasourceId });
+      return {
+        message: 'settings fetched successfully',
+        status: 200,
+        data: settings,
+      };
+    } catch (error) {
+      throw new ValidateError(
+        {},
+        'Error getting webhooks: ' + error.message || ''
+      );
+    }
+  }
+
   @Post('/order')
   @SuccessResponse('200', 'Order Created')
   @Example<OrderExample>({
@@ -378,30 +426,6 @@ export class WoocommerceController extends Controller {
       throw new ValidateError({}, err.message);
     }
   }
-
-  @Get('/webhooks/{datasourceId}')
-  @SuccessResponse('200', 'Webhook')
-  public async getWebhooks(
-    @Header('api-key') apiKey: string,
-    @Path() datasourceId: number
-  ): Promise<DGLResponse<WoocommerceWebhookResponse[]>> {
-    if (!apiKey) throw new Error('Invalid apiKey');
-    if (!datasourceId) throw new Error('Invalid datasourceId');
-    try {
-      const webhooks = await getWebhooks({ apiKey, datasourceId });
-      return {
-        message: 'Webhooks fetched successfully',
-        status: 200,
-        data: webhooks,
-      };
-    } catch (error) {
-      throw new ValidateError(
-        {},
-        'Error getting webhooks: ' + error.message || ''
-      );
-    }
-  }
-
   @Post('/webhooks/{datasourceId}')
   @SuccessResponse('200', 'Webhook')
   public async createWebhooks(

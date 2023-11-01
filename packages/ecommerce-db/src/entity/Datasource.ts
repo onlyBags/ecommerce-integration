@@ -72,6 +72,9 @@ export class Datasource {
   @Column()
   isActive: boolean;
 
+  @Column({ length: 3, default: 'USD' })
+  currencyCode: string;
+
   @CreateDateColumn()
   createdAt: Date;
 
