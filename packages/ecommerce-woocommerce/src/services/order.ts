@@ -196,7 +196,9 @@ const mapBillingWCBilling = (billing: Billing | OrderBilling) => {
 
 const getIcePrice = async (): Promise<IcePriceResponse> => {
   try {
-    const res = await axios.get<IcePriceResponse>('myUrl'); // Axios will infer the type for AxiosResponse
+    const res = await axios.get<IcePriceResponse>(
+      'https://api.dglive.org/v1/stripe/ice-price'
+    );
     return res.data;
   } catch (error) {
     console.error('An error occurred:', error);
@@ -253,6 +255,8 @@ const saveOrder = async (order: WCOrderCreated, customer: Customer) => {
     savedOrder.customer = customer;
     savedOrder.total = +order.total;
     savedOrder.currency = order.currency;
+    // savedOrder.totalIce = +order.total / icePrice.data.quote.USD.price;
+    savedOrder.totalIce = 0;
     savedOrder.iceValue = icePrice.data.quote.USD.price;
     savedOrder.iceValueTimestamp = new Date(icePrice.data.last_updated);
     return await orderRepository.save(savedOrder);

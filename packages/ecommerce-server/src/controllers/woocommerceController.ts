@@ -343,7 +343,6 @@ export class WoocommerceController extends Controller {
     wcOrder: {
       paymentMethod: 'bacs',
       paymentMethodTitle: 'Testing DGL-E',
-      setPaid: false,
       wallet: '0x355A93EE3781CCF6084C86DAD7921e5e731ad519',
       billing: {
         firstName: 'Maiki',

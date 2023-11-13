@@ -207,7 +207,7 @@ export const updateSlot = async (
       );
     foundSlot.woocommerceProduct = foundProduct;
     try {
-      await slotRepository.save(foundSlot);
+      await slotRepository.save({ ...foundSlot, ...slotReq });
     } catch (error) {
       console.log(error);
       throw error;

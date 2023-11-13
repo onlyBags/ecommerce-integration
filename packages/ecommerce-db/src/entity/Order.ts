@@ -38,7 +38,10 @@ export class Order {
   @Column()
   orderKey: string;
 
-  @Column({ default: 0 })
+  @Column({ type: 'decimal', default: 0, precision: 10, scale: 8 })
+  totalIce: number;
+
+  @Column({ type: 'decimal', default: 0, precision: 10, scale: 8 })
   iceValue: number;
 
   @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })

@@ -39,7 +39,7 @@ export const buildOrders = async (isPolling = false): Promise<void> => {
 
       const order = await orderRepository.findOne({
         where: {
-          storeOrderId: 97, // +payment.orderID,
+          storeOrderId: +payment.orderID,
         },
       });
       if (!order || !customer || !user) continue;
@@ -60,6 +60,8 @@ export const buildOrders = async (isPolling = false): Promise<void> => {
   }
 };
 
+const validateOrdersVsWoocommerce = () => {};
+
 export const startGraphPolling = () => {
   let isPolling = false;
   setInterval(async () => {
@@ -70,5 +72,5 @@ export const startGraphPolling = () => {
       if (localOrdersCount < graphOrdersCount) await buildOrders(true);
       isPolling = !isPolling;
     }
-  }, 1000);
+  }, 15000);
 };

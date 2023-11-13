@@ -20,6 +20,7 @@ import { redisClient } from '@dg-live/ecommerce-cache';
 import { envConfig } from '@dg-live/ecommerce-config';
 import { RegisterRoutes } from '../routes/routes.js';
 import { handleWebhook } from '@dg-live/ecommerce-webhooks';
+import { startGraphPolling } from '@dg-live/ecommerce-web3';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -140,6 +141,7 @@ const server = app.listen(port, async () => {
   try {
     await redisClient.connect();
     await AppDataSource.initialize();
+    startGraphPolling();
     console.log('Connected to database');
   } catch (error) {
     console.log('Error connecting to database');

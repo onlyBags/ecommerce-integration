@@ -36,7 +36,6 @@ export const getAllProducts = async ({
       },
     });
     console.log(foundUser);
-    debugger;
     if (
       !foundUser ||
       !foundUser.datasource.length ||
