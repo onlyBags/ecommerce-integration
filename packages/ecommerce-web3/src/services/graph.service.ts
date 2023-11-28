@@ -89,5 +89,5 @@ export const fetchTransactionCount = async (): Promise<number> => {
   >('', {
     query,
   });
-  return +res.data.data.transactionCounter.count;
+  return +res.data.data.transactionCounter?.count || 0;
 };

@@ -1,0 +1,5 @@
+Flask
+rembg
+Pillow
+python-dotenv
+boto3

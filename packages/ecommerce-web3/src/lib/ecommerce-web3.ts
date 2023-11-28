@@ -37,10 +37,8 @@ export const buildOrders = async (isPolling = false): Promise<void> => {
         },
       });
 
-      const order = await orderRepository.findOne({
-        where: {
-          storeOrderId: +payment.orderID,
-        },
+      const order = await orderRepository.findOneBy({
+        id: +payment.orderID,
       });
       if (!order || !customer || !user) continue;
       if (user.wallet.toLowerCase() !== payment.beneficiary.toLowerCase())

@@ -39,6 +39,7 @@ export const saveClient = async (clientReq: SaveUserReq): Promise<User> => {
   user.username = clientReq.username;
   user.apiKey = clientReq.apiKey;
   user.isActive = true;
+  user.wallet = clientReq.wallet;
   return await userRepository.save(user);
 };
 

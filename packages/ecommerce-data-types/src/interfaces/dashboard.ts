@@ -8,6 +8,7 @@ export interface SaveUserReq {
   username: string;
   apiKey: string;
   masterKey: string;
+  wallet: string;
 }
 export interface NewSlotReq {
   name: string;

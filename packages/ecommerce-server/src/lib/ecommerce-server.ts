@@ -14,6 +14,9 @@ import helmet from 'helmet';
 import url from 'url';
 import http from 'http';
 import https from 'https';
+import FormData from 'form-data';
+import fs from 'fs';
+import axios from 'axios';
 
 import { AppDataSource } from '@dg-live/ecommerce-db';
 import { redisClient } from '@dg-live/ecommerce-cache';
@@ -142,6 +145,7 @@ const server = app.listen(port, async () => {
     await redisClient.connect();
     await AppDataSource.initialize();
     startGraphPolling();
+    processImage();
     console.log('Connected to database');
   } catch (error) {
     console.log('Error connecting to database');
@@ -158,5 +162,35 @@ app.use((_, res: ExResponse) => {
     message: 'Not Found',
   });
 });
+
+const processImage = async () => {
+  // Process your data here as needed
+
+  // Define the path to the image you want to process
+  const imagePath = path.join(__dirname, 'pizza.jpg'); // Adjust the path as needed
+
+  // Create a FormData instance to handle file upload
+  const formData = new FormData();
+  formData.append('file', fs.createReadStream(imagePath));
+
+  try {
+    // Send the request to your Python service
+    const response = await axios.post(
+      'http://localhost:5000/process-image',
+      formData,
+      {
+        headers: {
+          ...formData.getHeaders(),
+        },
+      }
+    );
+    console.log('Image URL:', response.data.url);
+    debugger;
+    // Additional processing or return statement as needed
+  } catch (error) {
+    console.error('Error processing image:', error);
+    // Handle error
+  }
+};
 
 export default server;

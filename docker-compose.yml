@@ -57,7 +57,18 @@ services:
       - /usr/ecommerce-monorepo/node_modules
     networks:
       - ecommerce-network
-
+  python-service:
+    build:
+      context: .
+      dockerfile: Dockerfile.py
+    env_file:
+      - .env.prod
+    volumes:
+      - ./process-image:/usr/src/app
+    ports:
+      - '${PYTHON_PORT}:${PYTHON_PORT}' # Ensure PYTHON_PORT is defined in your .env.prod
+    networks:
+      - ecommerce-network
 volumes:
   db:
   server_code:
