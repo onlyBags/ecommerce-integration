@@ -145,7 +145,7 @@ const server = app.listen(port, async () => {
     await redisClient.connect();
     await AppDataSource.initialize();
     startGraphPolling();
-    processImage();
+    // processImage();
     console.log('Connected to database');
   } catch (error) {
     console.log('Error connecting to database');
@@ -175,15 +175,12 @@ const processImage = async () => {
 
   try {
     // Send the request to your Python service
-    const response = await axios.post(
-      'http://localhost:5000/process-image',
-      formData,
-      {
-        headers: {
-          ...formData.getHeaders(),
-        },
-      }
-    );
+    const imageUrl =
+      'https://demostore.unversed.org/wp-content/uploads/2023/07/iphone14.png';
+    const response = await axios.post('http://localhost:5000/process-image', {
+      url: imageUrl,
+    });
+
     console.log('Image URL:', response.data.url);
     debugger;
     // Additional processing or return statement as needed

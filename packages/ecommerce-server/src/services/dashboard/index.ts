@@ -14,6 +14,7 @@ import {
 
 import { getPassword } from '../../util/index.js';
 import { getSettings } from '@dg-live/ecommerce-woocommerce';
+import axios from 'axios';
 interface WooCommerceCurrencySettings {
   id: string;
   label: string;
@@ -33,6 +34,14 @@ const userRepository = AppDataSource.getRepository(User);
 const datasourceRepository = AppDataSource.getRepository(Datasource);
 const slotRepository = AppDataSource.getRepository(Slot);
 const woocommerceProduct = AppDataSource.getRepository(WoocommerceProduct);
+
+const proccesImage = async (imageUrl: string): Promise<string> => {
+  const response = await axios.post('http://localhost:5000/process-image', {
+    url: imageUrl,
+  });
+
+  return response.data.url;
+};
 
 export const saveClient = async (clientReq: SaveUserReq): Promise<User> => {
   const user = new User();
@@ -198,6 +207,9 @@ export const updateSlot = async (
     if (datasource.platform === 'woocommerce') {
       foundProduct = await woocommerceProduct.findOne({
         where: { productId: productId, datasourceId },
+        relations: {
+          images: true,
+        },
       });
     } else if (datasource.platform === 'magento') {
       throw new Error('Magento platform not supported yet');
@@ -207,6 +219,9 @@ export const updateSlot = async (
         `Product ${productId} not found in datasource ${datasourceId} and platform ${datasource.platform}`
       );
     foundSlot.woocommerceProduct = foundProduct;
+    foundSlot.image = await proccesImage(
+      foundSlot.woocommerceProduct.images[0].src
+    );
     try {
       await slotRepository.save({ ...foundSlot, ...slotReq });
     } catch (error) {

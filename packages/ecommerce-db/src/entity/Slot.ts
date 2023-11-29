@@ -57,4 +57,7 @@ export class Slot {
 
   @Column()
   rotZ: number;
+
+  @Column({ nullable: true })
+  image: string;
 }

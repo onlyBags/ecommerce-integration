@@ -1,4 +1,5 @@
-from flask import Flask, request
+from flask import Flask, request, jsonify
+import requests
 from rembg import remove
 from io import BytesIO
 import boto3
@@ -41,29 +42,28 @@ def upload_to_s3(file_object, bucket, object_name):
 
 @app.route('/process-image', methods=['POST'])
 def process_image():
-    if 'file' not in request.files:
-        return 'No file part', 400
+    data = request.json
+    image_url = data.get('url')
+    if not image_url:
+        return 'No image URL provided', 400
 
-    file = request.files['file']
-    if file.filename == '':
-        return 'No selected file', 400
+    response = requests.get(image_url)
+    if response.status_code != 200:
+        return 'Failed to download image', 400
 
-    if file:
-        input_image = file.read()
-        output_image = remove_background(input_image)
+    input_image = response.content
+    output_image = remove_background(input_image)
 
-        # Convert the processed image to a BytesIO object for uploading
-        output_io = BytesIO(output_image)
+    # Convert the processed image to a BytesIO object for uploading
+    output_io = BytesIO(output_image)
+    object_name = "processed_images/" + generate_image_hash(output_image)
 
-        # Generate a unique hash for the image name
-        object_name = "processed_images/" + generate_image_hash(output_image)
+    # Upload to S3 and get the URL
+    bucket_name = os.getenv('S3_BUCKET_NAME')
+    image_url = upload_to_s3(output_io, bucket_name, object_name)
 
-        # Upload to S3 and get the URL
-        bucket_name = os.getenv('S3_BUCKET_NAME')
-        image_url = upload_to_s3(output_io, bucket_name, object_name)
-
-        # Return the URL
-        return {'url': image_url}
+    # Return the URL
+    return jsonify({'url': image_url})
 
 if __name__ == "__main__":
     port = int(os.getenv('PYTHON_PORT', 5000))  # Default to 5000 if not set
