@@ -17,7 +17,6 @@ import {
   getOrderById,
   saveOrder,
   setOrderAsPayed,
-  validateOrderStock,
 } from '@dg-live/ecommerce-woocommerce';
 import { Payment, WCValidateOrderData } from '@dg-live/ecommerce-data-types';
 

@@ -31,6 +31,7 @@
     "@dg-live/ecommerce-webhooks": "*",
     "@dg-live/ecommerce-cache": "*",
     "@dg-live/ecommerce-data-types": "*",
-    "@dg-live/ecommerce-websocket": "*"
+    "@dg-live/ecommerce-websocket": "*",
+    "@dg-live/ecommerce-web3": "*"
   }
 }
