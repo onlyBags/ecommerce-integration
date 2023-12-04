@@ -23,6 +23,11 @@
       "to": "dist/public/swagger.json"
     }
   ],
+  "nx": {
+    "implicitDependencies": [
+      "@dg-live/ecommerce-web3"
+    ]
+  },
   "dependencies": {
     "@dg-live/ecommerce-db": "*",
     "@dg-live/ecommerce-config": "*",
