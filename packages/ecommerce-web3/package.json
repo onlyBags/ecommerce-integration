@@ -10,7 +10,8 @@
   "nx": {
     "implicitDependencies": [
       "@dg-live/ecommerce-db",
-      "@dg-live/ecommerce-config"
+      "@dg-live/ecommerce-config",
+      "@dg-live/ecommerce-websocket"
     ]
   },
   "dependencies": {
