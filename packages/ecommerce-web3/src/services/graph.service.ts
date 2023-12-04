@@ -1,22 +1,12 @@
 import axios, { AxiosResponse } from 'axios';
 import { envConfig } from '@dg-live/ecommerce-config';
 
+import { GraphPaymentData, Payment } from '@dg-live/ecommerce-data-types';
+
 const { subGraphEndpoint, subGraphVersion } = envConfig;
 const http = axios.create({
   baseURL: `${subGraphEndpoint}/${subGraphVersion}`,
 });
-
-interface Payment {
-  id: string;
-  orderID: string;
-  amount: string;
-  beneficiary: string;
-  buyer: string;
-  transactionHash: string;
-}
-interface GraphPaymentData {
-  payments: Payment[];
-}
 
 const fetchTransactions = async ({
   start,
@@ -38,13 +28,15 @@ const fetchTransactions = async ({
         beneficiary
         buyer
         transactionHash
+        dataSource
       }
     }`;
   try {
     const res = await http.post<AxiosResponse<GraphPaymentData>>('', {
       query,
     });
-    return res.data.data.payments;
+    const { payments } = res.data.data;
+    return payments;
   } catch (err) {
     console.log(err);
     debugger;

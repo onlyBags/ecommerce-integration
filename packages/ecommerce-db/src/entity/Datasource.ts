@@ -12,6 +12,7 @@ import { encrypt } from '../utils/index.js';
 import { User } from './User.js';
 import { WoocommerceProduct } from './WoocommerceProduct.js';
 import { Slot } from './Slot.js';
+import { Order } from './Order.js';
 
 @Entity()
 export class Datasource {
@@ -33,8 +34,11 @@ export class Datasource {
   )
   woocommerceProduct: Relation<WoocommerceProduct[]>;
 
+  @OneToMany(() => Order, (order) => order.id)
+  orders: Relation<Order[]>;
+
   @OneToMany(() => Slot, (slot) => slot.datasource)
-  slot: Slot[];
+  slot: Relation<Slot[]>;
 
   @Column()
   platform: 'woocommerce' | 'magento';

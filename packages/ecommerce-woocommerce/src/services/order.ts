@@ -9,6 +9,7 @@ import {
   ShippingReq,
   WoocommerceOrderCreatedRes,
   IcePriceResponse,
+  WCValidateOrderData,
 } from '@dg-live/ecommerce-data-types';
 
 import axios, { AxiosResponse } from 'axios';
@@ -18,12 +19,148 @@ import {
   Shipping,
   Order,
   Customer,
+  User,
+  Datasource,
+  OrderLog,
 } from '@dg-live/ecommerce-db';
 
 import { saveBilling, saveShipping } from '@dg-live/ecommerce-customer';
 
 const orderRepository = AppDataSource.getRepository(Order);
 const customerRepository = AppDataSource.getRepository(Customer);
+const userRepository = AppDataSource.getRepository(User);
+const datasourceRepository = AppDataSource.getRepository(Datasource);
+
+export const getCustomer = async (wallet: string) => {
+  const foundCustomer = await customerRepository.findOne({
+    where: {
+      wallet,
+    },
+  });
+  if (foundCustomer) return foundCustomer;
+  const newCustomer = new Customer();
+  newCustomer.wallet = wallet;
+  return await customerRepository.save(newCustomer);
+};
+
+const mapShippingWCShipping = (shipping: Shipping | OrderShipping) => {
+  return {
+    first_name: shipping.firstName,
+    last_name: shipping.lastName,
+    address_1: shipping.address1,
+    address_2: shipping.address2,
+    city: shipping.city,
+    state: shipping.state,
+    postcode: shipping.postcode,
+    country: shipping.country,
+  };
+};
+
+const mapBillingWCBilling = (billing: Billing | OrderBilling) => {
+  const mappedBilling: BillingReq = {
+    first_name: billing.firstName,
+    last_name: billing.lastName,
+    address_1: billing.address1,
+    city: billing.city,
+    state: billing.state,
+    postcode: billing.postcode,
+    country: billing.country,
+    email: '',
+    phone: '',
+    address_2: '',
+  };
+  if (billing.email) mappedBilling.email = billing.email;
+  else delete mappedBilling.email;
+  if (billing.phone) mappedBilling.phone = billing.phone;
+  else delete mappedBilling.phone;
+  if (billing.address2) mappedBilling.address_2 = billing.address2;
+  else delete mappedBilling.address_2;
+  return mappedBilling;
+};
+
+const getIcePrice = async (): Promise<IcePriceResponse> => {
+  try {
+    const res = await axios.get<IcePriceResponse>(
+      'https://api.dglive.org/v1/stripe/ice-price'
+    );
+    return res.data;
+  } catch (error) {
+    console.error('An error occurred:', error);
+    throw new Error('Failed to fetch ICE price');
+  }
+};
+
+export const saveOrder = async (
+  order: WCOrderCreated,
+  customer: Customer,
+  datasourceId: number
+) => {
+  const mockData = {
+    id: 131,
+    parent_id: 0,
+    status: 'processing',
+    currency: 'USD',
+    version: '7.8.1',
+    prices_include_tax: false,
+    date_created: '2023-07-20T15:20:23',
+    date_modified: '2023-07-20T15:20:23',
+    discount_total: '0.00',
+    discount_tax: '0.00',
+    shipping_total: '10.00',
+    shipping_tax: '0.00',
+    cart_tax: '0.00',
+    total: '15148.00',
+    total_tax: '0.00',
+    customer_id: 0,
+    order_key: 'wc_order_PKMfHz2cMUUPv',
+    payment_method: 'bacs',
+    payment_method_title: 'Direct Bank Transfer',
+    transaction_id: '',
+    customer_ip_address: '',
+    customer_user_agent: '',
+    created_via: 'rest-api',
+    customer_note: '',
+    date_completed: null,
+    date_paid: '2023-07-20T15:20:23',
+    cart_hash: '',
+    number: '131',
+    payment_url:
+      'https://demostore.unversed.org/checkout/order-pay/131/?pay_for_order=true&key=wc_order_PKMfHz2cMUUPv',
+    is_editable: false,
+    needs_payment: false,
+    needs_processing: true,
+    date_created_gmt: '2023-07-20T15:20:23',
+    date_modified_gmt: '2023-07-20T15:20:23',
+    date_completed_gmt: null,
+    date_paid_gmt: '2023-07-20T15:20:23',
+    currency_symbol: '$',
+  };
+  const datasource = await datasourceRepository.findOneBy({
+    id: datasourceId,
+  });
+  if (!datasource) throw new Error('Datasource not found');
+  try {
+    const orderToSave = new Order();
+    const icePrice = await getIcePrice();
+    orderToSave.storeOrderId = order.id;
+    orderToSave.orderKey = order.order_key;
+    orderToSave.status = order.status;
+    orderToSave.customer = customer;
+    orderToSave.total = +order.total;
+    orderToSave.currency = order.currency;
+    orderToSave.datasource = datasource;
+    // orderToSave.totalIce = +order.total / icePrice.data.quote.USD.price;
+    orderToSave.totalIce = 0;
+    orderToSave.iceValue = icePrice.data.quote.USD.price;
+    orderToSave.iceValueTimestamp = new Date(icePrice.data.last_updated);
+    const savedOrder = await orderRepository.save(orderToSave);
+    return savedOrder;
+  } catch (error) {
+    console.log('error', error);
+    debugger;
+    throw error;
+  }
+};
 
 export const createOrder = async ({
   apiKey,
@@ -53,7 +190,6 @@ export const createOrder = async ({
         billing: billingWhere,
       },
     });
-    debugger;
     if (!foundCustomer) {
       throw new Error(`Customer with wallet ${order.wallet} not found`);
     }
@@ -118,8 +254,12 @@ export const createOrder = async ({
         value: datasourceId,
       },
       {
-        key: 'Generated by',
+        key: 'generated_by',
         value: 'DG-Live',
+      },
+      {
+        key: 'customer_wallet',
+        value: customer.wallet,
       },
     ],
   };
@@ -129,7 +269,7 @@ export const createOrder = async ({
       'orders',
       orderReq
     )) as AxiosResponse<WCOrderCreated>;
-    const savedOrder = await saveOrder(res.data, customer);
+    const savedOrder = await saveOrder(res.data, customer, datasourceId);
     return {
       dgLiveOrder: savedOrder,
       raw: res.data,
@@ -147,376 +287,88 @@ export const createOrder = async ({
   }
 };
 
-const getCustomer = async (wallet: string) => {
-  const foundCustomer = await customerRepository.findOne({
+export const getOrderById = async ({
+  orderId,
+  datasourceId,
+}: WCValidateOrderData) => {
+  const foundUser = await userRepository.find({
     where: {
-      wallet,
+      datasource: {
+        id: datasourceId,
+      },
+    },
+    relations: {
+      datasource: true,
     },
   });
-  if (foundCustomer) return foundCustomer;
-  const newCustomer = new Customer();
-  newCustomer.wallet = wallet;
-  return await customerRepository.save(newCustomer);
-};
-
-const mapShippingWCShipping = (shipping: Shipping | OrderShipping) => {
-  return {
-    first_name: shipping.firstName,
-    last_name: shipping.lastName,
-    address_1: shipping.address1,
-    address_2: shipping.address2,
-    city: shipping.city,
-    state: shipping.state,
-    postcode: shipping.postcode,
-    country: shipping.country,
-  };
-};
-
-const mapBillingWCBilling = (billing: Billing | OrderBilling) => {
-  const mappedBilling: BillingReq = {
-    first_name: billing.firstName,
-    last_name: billing.lastName,
-    address_1: billing.address1,
-    city: billing.city,
-    state: billing.state,
-    postcode: billing.postcode,
-    country: billing.country,
-    email: '',
-    phone: '',
-    address_2: '',
-  };
-  if (billing.email) mappedBilling.email = billing.email;
-  else delete mappedBilling.email;
-  if (billing.phone) mappedBilling.phone = billing.phone;
-  else delete mappedBilling.phone;
-  if (billing.address2) mappedBilling.address_2 = billing.address2;
-  else delete mappedBilling.address_2;
-  return mappedBilling;
-};
-
-const getIcePrice = async (): Promise<IcePriceResponse> => {
-  try {
-    const res = await axios.get<IcePriceResponse>(
-      'https://api.dglive.org/v1/stripe/ice-price'
+  if (!foundUser || foundUser.length > 1)
+    throw new Error(
+      'User not found | or more than one user found with the same datasource'
     );
+  const wc = await createNewWoocommerceInstance({
+    apiKey: foundUser[0].apiKey,
+    datasourceId,
+  });
+  try {
+    const order = (await wc.get(
+      `orders/${orderId}`
+    )) as AxiosResponse<WCOrderCreated>;
+    return order.data;
+  } catch (error) {
+    throw new Error('Failed to validate order stock');
+  }
+};
+
+export const validateOrderStock = async (order: Order) => {
+  try {
+    console.log(order);
+    debugger;
+  } catch (error) {
+    throw new Error('Failed to validate order stock');
+  }
+};
+
+export const setOrderAsPayed = async (order: Order) => {
+  try {
+    const orderData = await orderRepository.findOne({
+      relations: {
+        datasource: {
+          user: true,
+        },
+        orderLog: true,
+      },
+      where: {
+        id: order.id,
+      },
+    });
+    // const datasourceData = await datasourceRepository.findOne({
+    //   relations: {
+    //     user: true,
+    //     orders: {
+    //       orderLog: true,
+    //     },
+    //   },
+    //   where: {
+    //     orders: {
+    //       orderLog: {
+    //         id: order.orderLog.id,
+    //       },
+    //     },
+    //   },
+    // });
+    const wc = await createNewWoocommerceInstance({
+      apiKey: orderData.datasource.user.apiKey,
+      datasourceId: orderData.datasource.id,
+    });
+
+    const data = {
+      status: 'processing',
+    };
+
+    const res = await wc.put(`orders/${order.storeOrderId}`, data);
+    console.log(res.data);
     return res.data;
   } catch (error) {
-    console.error('An error occurred:', error);
-    throw new Error('Failed to fetch ICE price');
+    throw new Error('Failed to set order as payed');
   }
 };
-const saveOrder = async (order: WCOrderCreated, customer: Customer) => {
-  const mockData = {
-    id: 131,
-    parent_id: 0,
-    status: 'processing',
-    currency: 'USD',
-    version: '7.8.1',
-    prices_include_tax: false,
-    date_created: '2023-07-20T15:20:23',
-    date_modified: '2023-07-20T15:20:23',
-    discount_total: '0.00',
-    discount_tax: '0.00',
-    shipping_total: '10.00',
-    shipping_tax: '0.00',
-    cart_tax: '0.00',
-    total: '15148.00',
-    total_tax: '0.00',
-    customer_id: 0,
-    order_key: 'wc_order_PKMfHz2cMUUPv',
-    payment_method: 'bacs',
-    payment_method_title: 'Direct Bank Transfer',
-    transaction_id: '',
-    customer_ip_address: '',
-    customer_user_agent: '',
-    created_via: 'rest-api',
-    customer_note: '',
-    date_completed: null,
-    date_paid: '2023-07-20T15:20:23',
-    cart_hash: '',
-    number: '131',
-    payment_url:
-      'https://demostore.unversed.org/checkout/order-pay/131/?pay_for_order=true&key=wc_order_PKMfHz2cMUUPv',
-    is_editable: false,
-    needs_payment: false,
-    needs_processing: true,
-    date_created_gmt: '2023-07-20T15:20:23',
-    date_modified_gmt: '2023-07-20T15:20:23',
-    date_completed_gmt: null,
-    date_paid_gmt: '2023-07-20T15:20:23',
-    currency_symbol: '$',
-  };
-  try {
-    const savedOrder = new Order();
-    const icePrice = await getIcePrice();
-    savedOrder.storeOrderId = order.id;
-    savedOrder.orderKey = order.order_key;
-    savedOrder.status = order.status;
-    savedOrder.customer = customer;
-    savedOrder.total = +order.total;
-    savedOrder.currency = order.currency;
-    // savedOrder.totalIce = +order.total / icePrice.data.quote.USD.price;
-    savedOrder.totalIce = 0;
-    savedOrder.iceValue = icePrice.data.quote.USD.price;
-    savedOrder.iceValueTimestamp = new Date(icePrice.data.last_updated);
-    return await orderRepository.save(savedOrder);
-  } catch (error) {
-    console.log('error', error);
-    debugger;
-    throw error;
-  }
-};
-
-/*
-{
-  id: 131,
-  parent_id: 0,
-  status: "processing",
-  currency: "USD",
-  version: "7.8.1",
-  prices_include_tax: false,
-  date_created: "2023-07-20T15:20:23",
-  date_modified: "2023-07-20T15:20:23",
-  discount_total: "0.00",
-  discount_tax: "0.00",
-  shipping_total: "10.00",
-  shipping_tax: "0.00",
-  cart_tax: "0.00",
-  total: "15148.00",
-  total_tax: "0.00",
-  customer_id: 0,
-  order_key: "wc_order_PKMfHz2cMUUPv",
-  billing: {
-    first_name: "John",
-    last_name: "Doe",
-    company: "",
-    address_1: "969 Market",
-    address_2: "",
-    city: "San Francisco",
-    state: "CA",
-    postcode: "94103",
-    country: "US",
-    email: "",
-    phone: "(555) 555-5555",
-  },
-  shipping: {
-    first_name: "John",
-    last_name: "Doe",
-    company: "",
-    address_1: "969 Market",
-    address_2: "",
-    city: "San Francisco",
-    state: "CA",
-    postcode: "94103",
-    country: "US",
-    phone: "",
-  },
-  payment_method: "bacs",
-  payment_method_title: "Direct Bank Transfer",
-  transaction_id: "",
-  customer_ip_address: "",
-  customer_user_agent: "",
-  created_via: "rest-api",
-  customer_note: "",
-  date_completed: null,
-  date_paid: "2023-07-20T15:20:23",
-  cart_hash: "",
-  number: "131",
-  meta_data: [
-    {
-      id: 2401,
-      key: "datasourceId",
-      value: "1",
-    },
-    {
-      id: 2402,
-      key: "Generated by",
-      value: "DG-Live",
-    },
-  ],
-  line_items: [
-    {
-      id: 5,
-      name: "Pizza",
-      product_id: 68,
-      variation_id: 0,
-      quantity: 2,
-      tax_class: "",
-      subtotal: "138.00",
-      subtotal_tax: "0.00",
-      total: "138.00",
-      total_tax: "0.00",
-      taxes: [
-      ],
-      meta_data: [
-      ],
-      sku: "",
-      price: 69,
-      image: {
-        id: "69",
-        src: "https://demostore.unversed.org/wp-content/uploads/2023/07/pizza.jpg",
-      },
-      parent_name: null,
-    },
-    {
-      id: 6,
-      name: "iPhone 14",
-      product_id: 63,
-      variation_id: 80,
-      quantity: 15,
-      tax_class: "",
-      subtotal: "15000.00",
-      subtotal_tax: "0.00",
-      total: "15000.00",
-      total_tax: "0.00",
-      taxes: [
-      ],
-      meta_data: [
-        {
-          id: 56,
-          key: "color",
-          value: "Black",
-          display_key: "Color",
-          display_value: "Black",
-        },
-        {
-          id: 57,
-          key: "size",
-          value: "256gb",
-          display_key: "Size",
-          display_value: "256gb",
-        },
-        {
-          id: 58,
-          key: "model",
-          value: "Pro",
-          display_key: "Model",
-          display_value: "Pro",
-        },
-        {
-          id: 59,
-          key: "storage",
-          value: "128gb",
-          display_key: "Storage",
-          display_value: "128gb",
-        },
-        {
-          id: 65,
-          key: "_reduced_stock",
-          value: "15",
-          display_key: "_reduced_stock",
-          display_value: "15",
-        },
-      ],
-      sku: "",
-      price: 1000,
-      image: {
-        id: 64,
-        src: "https://demostore.unversed.org/wp-content/uploads/2023/07/iphone14.png",
-      },
-      parent_name: "iPhone 14",
-    },
-  ],
-  tax_lines: [
-  ],
-  shipping_lines: [
-    {
-      id: 7,
-      method_title: "Flat Rate",
-      method_id: "flat_rate",
-      instance_id: "",
-      total: "10.00",
-      total_tax: "0.00",
-      taxes: [
-      ],
-      meta_data: [
-      ],
-    },
-  ],
-  fee_lines: [
-  ],
-  coupon_lines: [
-  ],
-  refunds: [
-  ],
-  payment_url: "https://demostore.unversed.org/checkout/order-pay/131/?pay_for_order=true&key=wc_order_PKMfHz2cMUUPv",
-  is_editable: false,
-  needs_payment: false,
-  needs_processing: true,
-  date_created_gmt: "2023-07-20T15:20:23",
-  date_modified_gmt: "2023-07-20T15:20:23",
-  date_completed_gmt: null,
-  date_paid_gmt: "2023-07-20T15:20:23",
-  currency_symbol: "$",
-  _links: {
-    self: [
-      {
-        href: "https://demostore.unversed.org/wp-json/wc/v3/orders/131",
-      },
-    ],
-    collection: [
-      {
-        href: "https://demostore.unversed.org/wp-json/wc/v3/orders",
-      },
-    ],
-  },
-}
-*/
-/*  : string;
-  : string;
-  : boolean;
-  wallet: string;
-  billing: OrderBilling;
-  shipping: OrderShipping;
-  lineItems: LineItem[];
-  shippingLines: ShippingLine[];
-  shippingId?: number;
-  billingId?: number;
-  saveBilling?: boolean;
-  saveShipping?: boolean;
-const mockOrderData: WoocommerceOrder = {
-  paymentMethod: 'bacs',
-  paymentMethodTitle: 'Direct Bank Transfer',
-  setPaid: false,
-  billing: {
-    firstName: 'John',
-    lastName: 'Doe',
-    address1: '969 Market',
-    address2: '',
-    city: 'San Francisco',
-    state: 'CA',
-    postcode: '94103',
-    country: 'US',
-    email: '',
-    phone: '(555) 555-5555',
-  },
-  shipping: {
-    firstName: 'John',
-    lastName: 'Doe',
-    address1: '969 Market',
-    address2: '',
-    city: 'San Francisco',
-    state: 'CA',
-    postcode: '94103',
-    country: 'US',
-  },
-  lineItems: [
-    {
-      productId: 68,
-      quantity: 2,
-    },
-    {
-      productId: 63,
-      variationId: 86,
-      quantity: 10,
-    },
-  ],
-  shippingLines: [
-    {
-      methodId: 'flat_rate',
-      methodTitle: 'Flat Rate',
-      total: '10.00',
-    },
-  ],
-};
-*/

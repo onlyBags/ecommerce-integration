@@ -18,6 +18,7 @@ import FormData from 'form-data';
 import fs from 'fs';
 import axios from 'axios';
 
+import '@dg-live/ecommerce-websocket';
 import { AppDataSource } from '@dg-live/ecommerce-db';
 import { redisClient } from '@dg-live/ecommerce-cache';
 import { envConfig } from '@dg-live/ecommerce-config';

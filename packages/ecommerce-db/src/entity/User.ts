@@ -14,7 +14,7 @@ import { Datasource } from './Datasource.js';
 @Unique(['username'])
 export class User {
   @PrimaryGeneratedColumn()
-  id: string;
+  id: number;
 
   @Column()
   username: string;
