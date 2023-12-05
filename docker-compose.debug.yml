@@ -11,6 +11,8 @@ services:
       - '3306:3306'
     volumes:
       - db:/var/lib/mysql
+    networks:
+      - ecommerce-network
   redis-debug:
     image: redis/redis-stack-server
     restart: unless-stopped
@@ -45,12 +47,15 @@ services:
     env_file: ./.env.dev
     ports:
       - $PORT:$PORT
+      - $WS_PORT:$WS_PORT
       - 9229:9229
     stdin_open: true
     tty: true
     volumes:
       - server_code:/usr/ecommerce-monorepo/packages/ecommerce-server
       - /usr/ecommerce-monorepo/node_modules
+    networks:
+      - ecommerce-network
 
 volumes:
   db:
@@ -60,3 +65,7 @@ volumes:
       type: none
       device: ${PWD}/packages/ecommerce-server
       o: bind
+
+networks:
+  ecommerce-network:
+    driver: bridge
