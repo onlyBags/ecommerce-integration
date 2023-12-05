@@ -44,7 +44,7 @@
       "address": "localhost",
       "port": 9229,
       "localRoot": "${workspaceFolder}",
-      "remoteRoot": "/path/to/your/app/in/docker"
+      "remoteRoot": "/usr/ecommerce-monorepo"
     }
   ]
 }
