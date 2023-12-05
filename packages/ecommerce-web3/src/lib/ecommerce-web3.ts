@@ -19,6 +19,7 @@ import {
   setOrderAsPayed,
 } from '@dg-live/ecommerce-woocommerce';
 import { Payment, WCValidateOrderData } from '@dg-live/ecommerce-data-types';
+import { Not } from 'typeorm';
 
 const orderRepository = AppDataSource.getRepository(Order);
 const orderLogRepository = AppDataSource.getRepository(OrderLog);
@@ -108,7 +109,7 @@ const validateOrdersVsWoocommerce = async () => {
       orderLog: true,
     },
     where: {
-      status: 'pending',
+      status: Not('completed'),
     },
   });
   if (orders.length) {

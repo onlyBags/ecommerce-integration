@@ -19,7 +19,8 @@
     "build:wc": "cd packages/ecommerce-woocommerce && npm run build",
     "affected:graph": "nx affected:graph",
     "affected:apps:json": "nx affected:graph --base=main --head=HEAD --file=affected-graph.json",
-    "docker:prune:volume": "docker volume prune -a --force --filter \"label!=dg-live-monorepo_db\""
+    "docker:prune:volume": "docker volume prune -a --force --filter \"label!=dg-live-monorepo_db\"",
+    "docker:kill:all": "docker kill $(docker ps -q)"
   },
   "workspaces": [
     "packages/*"
