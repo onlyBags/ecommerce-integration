@@ -6,7 +6,7 @@
     "start": "docker-compose --env-file .env.prod -f docker-compose.yml up --build",
     "start:d": "docker-compose --env-file .env.prod -f docker-compose.yml up --build -d",
     "start:linux": "docker compose --env-file .env.prod -f docker-compose.yml up --build -d",
-    "start:debug": "docker-compose -env-file .env -f docker-compose.debug.yml up --build",
+    "start:debug": "docker-compose --env-file .env -f docker-compose.debug.yml up --build",
     "start:dev": "docker-compose --env-file .env.dev -f docker-compose.dev.yml up --build",
     "build:server": "nx run-many -t build",
     "build": "nx run-many -t build",
