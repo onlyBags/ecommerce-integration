@@ -21,7 +21,7 @@ const fetchTransactions = async ({
 }): Promise<Payment[]> => {
   const query = `
     {
-      payments(first: ${count}, skip: ${start}, orderBy: id, orderDirection: ${order}) {
+      payments(first: ${count}, skip: ${start}, orderBy: orderID, orderDirection: ${order}) {
         id
         orderID
         amount
