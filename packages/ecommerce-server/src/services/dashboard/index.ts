@@ -36,10 +36,13 @@ const slotRepository = AppDataSource.getRepository(Slot);
 const woocommerceProduct = AppDataSource.getRepository(WoocommerceProduct);
 
 const proccesImage = async (imageUrl: string): Promise<string> => {
-  const response = await axios.post('http://localhost:5000/process-image', {
-    url: imageUrl,
-  });
-
+  // const response = await axios.post('http://localhost:5000/process-image', {
+  const response = await axios.post(
+    'http://python-service:5000/process-image',
+    {
+      url: imageUrl,
+    }
+  );
   return response.data.url;
 };
 
