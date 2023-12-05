@@ -36,6 +36,15 @@
       "program": "NODE_ENV=development ${workspaceFolder}\\packages\\ecommerce-server\\src\\index.ts",
       "outFiles": ["${workspaceFolder}/**/*.js"],
       "preLaunchTask": "BuildAll"
+    },
+    {
+      "type": "node",
+      "request": "attach",
+      "name": "Attach to Remote via SSH",
+      "address": "localhost",
+      "port": 9229,
+      "localRoot": "${workspaceFolder}",
+      "remoteRoot": "/path/to/your/app/in/docker"
     }
   ]
 }
