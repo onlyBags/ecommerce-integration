@@ -50,6 +50,7 @@ services:
       - ./.env.prod
     ports:
       - $PORT:$PORT
+      - $WS_PORT:$WS_PORT
     stdin_open: true
     tty: true
     volumes:
