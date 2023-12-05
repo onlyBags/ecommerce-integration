@@ -17,11 +17,11 @@ services:
       - db:/var/lib/mysql
     networks:
       - ecommerce-network
-  redis:
+  redis-prod:
     image: redis/redis-stack-server
     restart: unless-stopped
     env_file:
-      - ./.env
+      - ./.env.prod
     ports:
       - target: 6379
         published: ${REDIS_PORT}
