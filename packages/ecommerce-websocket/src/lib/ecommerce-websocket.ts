@@ -128,7 +128,6 @@ const interval = setInterval(function ping() {
   } else {
     wss.clients.forEach(function each(ws: IDCGWebSocket) {
       if (ws.isAlive === false && ws.datasource) {
-        console.log(channels.joystick.clients[ws.datasource]);
         delete channels.joystick.clients[ws.datasource];
         return ws.close();
       }

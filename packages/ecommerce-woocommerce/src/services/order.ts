@@ -366,7 +366,6 @@ export const setOrderAsPayed = async (order: Order) => {
     };
 
     const res = await wc.put(`orders/${order.storeOrderId}`, data);
-    console.log(res.data);
     return res.data;
   } catch (error) {
     throw new Error('Failed to set order as payed');

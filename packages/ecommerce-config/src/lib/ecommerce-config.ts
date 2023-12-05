@@ -2,17 +2,17 @@ import { config } from 'dotenv';
 import { DatabaseType } from 'typeorm';
 
 if (process.env.NODE_ENV === 'local') {
-  console.log('**using local env MYSQL_PASSWORD' + process.env.MYSQL_PASSWORD);
+  // console.log('**using local env MYSQL_PASSWORD: ' + process.env.MYSQL_PASSWORD);
   config({ path: '.env' });
 } else if (process.env.NODE_ENV === 'development') {
-  console.log('**using dev env MYSQL_PASSWORD' + process.env.MYSQL_PASSWORD);
+  // console.log('**using dev env MYSQL_PASSWORD: ' + process.env.MYSQL_PASSWORD);
   config({ path: '.env.dev' });
 } else {
-  console.log('**using prod env');
-  console.log('path:' + '.env.prod');
+  // console.log('**using prod env');
+  // console.log('path:' + '.env.prod');
   config({ path: '.env.prod' });
 }
-console.log('**process.env.MYSQL_DB_TYPE ' + process.env.MYSQL_DB_TYPE);
+// console.log('**process.env.MYSQL_DB_TYPE ' + process.env.MYSQL_DB_TYPE);
 
 export const envConfig = Object.freeze({
   port: parseInt(process.env.PORT),

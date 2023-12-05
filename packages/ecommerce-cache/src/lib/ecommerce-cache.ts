@@ -5,7 +5,7 @@ import { envConfig } from '@dg-live/ecommerce-config';
 
 const { redisHost, redisPassword, redisPort } = envConfig;
 
-const redisUrl = `redis://${redisPassword}@${redisHost}:${redisPort}`;
+const redisUrl = `redis://default:${redisPassword}@${redisHost}:${redisPort}`;
 const datasourceSchema = new Schema(
   'datasource',
   {

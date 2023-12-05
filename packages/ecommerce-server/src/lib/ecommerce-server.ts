@@ -34,7 +34,6 @@ let swaggerDocument: any;
 if (process.env.NODE_ENV !== 'test') {
   readFile(`${__dirname}/../../public/swagger.json`, 'utf8').then((data) => {
     swaggerDocument = JSON.parse(data);
-    console.log('12');
   });
 }
 
@@ -181,8 +180,6 @@ const processImage = async () => {
     const response = await axios.post('http://localhost:5000/process-image', {
       url: imageUrl,
     });
-
-    console.log('Image URL:', response.data.url);
     debugger;
     // Additional processing or return statement as needed
   } catch (error) {

@@ -67,7 +67,7 @@ services:
     volumes:
       - ./process-image:/usr/src/app
     ports:
-      - '${PYTHON_PORT}:${PYTHON_PORT}' # Ensure PYTHON_PORT is defined in your .env.prod
+      - '${PYTHON_PORT}:${PYTHON_PORT}'
     networks:
       - ecommerce-network
 volumes:

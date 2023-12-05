@@ -27,10 +27,6 @@ import { envConfig } from '@dg-live/ecommerce-config';
 const { dbType, dbHost, dbPort, dbUsername, dbPassword, dbDatabase, nodeEnv } =
   envConfig;
 
-console.log(
-  '********************nodeEnv !== production: ',
-  nodeEnv !== 'production'
-);
 export const AppDataSource = new typeorm.DataSource({
   type: dbType as 'mysql' | 'mariadb', // 'mysql', // dbType as 'mysql',
   host: dbHost,

@@ -53,7 +53,6 @@ export const createNewWoocommerceInstance = async ({
     console.log('error in cache search', error);
   }
   if (foundCached.length) {
-    console.log(foundCached[0]);
     const { consumerKey, consumerSecret, baseUrl } = foundCached[0] as {
       consumerKey: string;
       consumerSecret: string;
