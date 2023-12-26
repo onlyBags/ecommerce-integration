@@ -143,10 +143,11 @@ app.get('/joystick', (req, res) => {
 const server = app.listen(port, async () => {
   try {
     await redisClient.connect();
+    console.log('Connected to redis');
     await AppDataSource.initialize();
-    startGraphPolling();
-    // processImage();
     console.log('Connected to database');
+    startGraphPolling();
+    console.log('Started graph polling');
   } catch (error) {
     console.log('Error connecting to database');
     console.log(error);

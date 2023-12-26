@@ -3,7 +3,7 @@ import { DatabaseType } from 'typeorm';
 
 if (process.env.NODE_ENV === 'local') {
   // console.log('**using local env MYSQL_PASSWORD: ' + process.env.MYSQL_PASSWORD);
-  config({ path: '.env' });
+  config({ path: '.env.local' });
 } else if (process.env.NODE_ENV === 'development') {
   // console.log('**using dev env MYSQL_PASSWORD: ' + process.env.MYSQL_PASSWORD);
   config({ path: '.env.dev' });
@@ -13,7 +13,7 @@ if (process.env.NODE_ENV === 'local') {
   config({ path: '.env.prod' });
 }
 // console.log('**process.env.MYSQL_DB_TYPE ' + process.env.MYSQL_DB_TYPE);
-
+console.log('process.env.NODE_ENV: ', process.env.NODE_ENV);
 export const envConfig = Object.freeze({
   port: parseInt(process.env.PORT),
   cypherKey: process.env.CYPHER_KEY,

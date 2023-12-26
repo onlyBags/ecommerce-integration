@@ -1,0 +1,10 @@
+actividad
+
+widgets:
+
+- total de ventas
+- total de unidades vendidas
+
+tabla: (sku precio cantidad total mail fecha)
+- ultimas ventas, paginado 
+- venta total - filtrado por fecha

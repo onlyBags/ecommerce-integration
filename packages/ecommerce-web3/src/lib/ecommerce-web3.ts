@@ -181,5 +181,5 @@ export const startGraphPolling = () => {
       }
       isPolling = !isPolling;
     }
-  }, 1500);
+  }, 30000);
 };

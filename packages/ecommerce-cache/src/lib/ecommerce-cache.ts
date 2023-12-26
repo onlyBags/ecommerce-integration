@@ -5,7 +5,9 @@ import { envConfig } from '@dg-live/ecommerce-config';
 
 const { redisHost, redisPassword, redisPort } = envConfig;
 
+// const redisUrl = `redis://default:${redisPassword}@${redisHost}:${redisPort}`;
 const redisUrl = `redis://default:${redisPassword}@${redisHost}:${redisPort}`;
+
 const datasourceSchema = new Schema(
   'datasource',
   {
@@ -20,7 +22,19 @@ const datasourceSchema = new Schema(
   }
 );
 
-// redis[s]://[[username][:password]@][host][:port][/db-number]
+const analyticsSchema = new Schema(
+  'analytics',
+  {
+    datasourceId: { type: 'number' },
+    totalSales: { type: 'string' },
+    totalUnitSales: { type: 'string' },
+    totalSalesDetails: { type: 'string' }, // Storing as JSON string
+  },
+  {
+    dataStructure: 'JSON',
+  }
+);
+
 export const redisClient = createClient({
   // password: redisPassword,
   url: redisUrl,
@@ -31,10 +45,17 @@ export const datasourceCacheRepository = new Repository(
   redisClient
 );
 
+export const analyticsCacheRepository = new Repository(
+  analyticsSchema,
+  redisClient
+);
+
+analyticsCacheRepository;
 redisClient.on('connect', async () => {
   console.log('Redis client connected');
   try {
     await datasourceCacheRepository.createIndex();
+    await analyticsCacheRepository.createIndex();
     console.log('Redis Index created');
   } catch (error) {
     console.log('Error creating index: ', error);
@@ -47,5 +68,4 @@ redisClient.on('error', (err) => {
   console.log('redisUrl ', redisUrl);
   if (err.message)
     console.log('Error message: ', JSON.stringify(err.message, null, 2));
-  debugger;
 });

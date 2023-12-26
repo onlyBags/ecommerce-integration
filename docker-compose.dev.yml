@@ -1,36 +1,43 @@
-version: '3.8'
-
 services:
-  mysqldb:
+  mysql-prod:
     image: mysql:8.0.33
     restart: unless-stopped
-    env_file: ./.env.dev
+    env_file:
+      - ./.env.prod
     environment:
       - MYSQL_ALLOW_PUBLIC_KEY_RETRIEVAL=true
-      - MYSQL_ALLOW_EMPTY_PASSWORD=true
-      - MYSQL_DATABASE=ecommerce
-      - MYSQL_USER=ecommerce-user
-      - MYSQL_PASSWORD=ecommerce-user-pwd
+      - MYSQL_ALLOW_EMPTY_PASSWORD=false
+      - MYSQL_DATABASE=${MYSQL_DATABASE}
+      - MYSQL_USER=${MYSQL_USERNAME}
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
     ports:
-      - 3306:3306
+      - target: 3306
+        published: ${MYSQL_PORT}
     volumes:
       - db:/var/lib/mysql
     networks:
       - ecommerce-network
-  cache:
-    image: redis/redis-stack
+  redis-prod:
+    image: redis/redis-stack-server
     restart: unless-stopped
-    env_file: ./.env.dev
+    env_file:
+      - ./.env.prod
     ports:
-      - 6379:6379
+      - target: 6379
+        published: ${REDIS_PORT}
     command: redis-server --loglevel warning --requirepass ${REDIS_PASSWORD} --loadmodule /opt/redis-stack/lib/rejson.so --loadmodule /opt/redis-stack/lib/redisearch.so
     networks:
       - ecommerce-network
   app:
+    build:
+      context: .
+      dockerfile: Dockerfile.prod
     command:
       [
         './wait-for-it.sh',
-        'mysqldb:3306',
+        '-t',
+        '120',
+        'mysql-prod:3306',
         '--',
         'nodemon',
         '--watch',
@@ -41,24 +48,40 @@ services:
         'dev',
       ]
     depends_on:
-      mysqldb:
-        condition: service_started
-    build:
-      context: .
-      dockerfile: Dockerfile.dev
+      - mysql-prod
     restart: unless-stopped
-    env_file: ./.env.dev
+    env_file:
+      - ./.env.prod
     ports:
-      - 8080:8080
-    volumes:
-      - ./packages/ecommerce-server:/usr/ecommerce-monorepo/packages/ecommerce-server
+      - $PORT:$PORT
+      - $WS_PORT:$WS_PORT
     stdin_open: true
     tty: true
+    volumes:
+      - server_code:/usr/ecommerce-monorepo/packages/ecommerce-server
+      - /usr/ecommerce-monorepo/node_modules
     networks:
       - ecommerce-network
-
+  python-service:
+    build:
+      context: .
+      dockerfile: Dockerfile.py
+    env_file:
+      - .env.prod
+    volumes:
+      - ./process-image:/usr/src/app
+    ports:
+      - '${PYTHON_PORT}:${PYTHON_PORT}'
+    networks:
+      - ecommerce-network
 volumes:
   db:
+  server_code:
+    driver: local
+    driver_opts:
+      type: none
+      device: ${PWD}/packages/ecommerce-server
+      o: bind
 
 networks:
   ecommerce-network:

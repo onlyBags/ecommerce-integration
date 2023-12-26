@@ -37,6 +37,7 @@ export const AppDataSource = new typeorm.DataSource({
   // synchronize: nodeEnv !== 'production',
   synchronize: true,
   // poolSize: 10,
+  // logging: nodeEnv !== 'production',
   logging: nodeEnv !== 'production',
   // debug: true,
   // trace: true,

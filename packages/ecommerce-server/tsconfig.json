@@ -20,6 +20,7 @@
   "include": [
     "src/**/*.ts",
     "public/swagger.json",
+    "public/joystick.html",
     "packages/ecommerce-server/**/*.ts"
   ]
 }
