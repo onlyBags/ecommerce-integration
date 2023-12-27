@@ -125,9 +125,6 @@ export const getAnalyticsData = async (
   const storeOrderIds = orders.map((order) => order.storeOrderId);
 
   const wc = await createNewWoocommerceInstance({ apiKey, datasourceId });
-  const wcOrderResponse: AxiosResponse = await wc.get(`orders`, {
-    include: storeOrderIds,
-  });
   const wcOrders = await fetchAllWcOrders(wc, storeOrderIds);
 
   for (const wcOrder of wcOrders) {
@@ -137,9 +134,11 @@ export const getAnalyticsData = async (
       if (order) {
         totalSales += parseFloat(item.price);
         totalUnitSales += item.quantity;
+        const custometId = order?.orderLog?.customer?.id ?? '0';
+        let customer: Customer | undefined;
 
-        const customer = await customerRepository.findOne({
-          where: { id: order.orderLog.customer.id },
+        customer = await customerRepository.findOne({
+          where: { id: custometId },
         });
 
         totalSalesDetails.push({
@@ -147,7 +146,7 @@ export const getAnalyticsData = async (
           sku: item.sku,
           price: item.price,
           amount: item.quantity,
-          wallet: customer.wallet,
+          wallet: customer?.wallet || 'no customer found',
           date: order.orderLog.createdAt,
         });
       }
