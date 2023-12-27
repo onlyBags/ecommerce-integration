@@ -4,8 +4,8 @@
   "type": "module",
   "main": "./dist/src/index.js",
   "scripts": {
-    "postbuild": "echo I run before the build script",
-    "prebuild": "npm run swagger",
+    "copy-assets": "node copy-assets.js",
+    "prebuild": "npm run swagger && npm run copy-assets",
     "build": "tsc -p tsconfig.json",
     "dev1": "cross-env NODE_ENV=development tsc-watch -p tsconfig.json --onSuccess \"node ./dist/src/index.js\"",
     "dev2": "nodemon --watch packages/ecommerce-server --exec npm run start",
