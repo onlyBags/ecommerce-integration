@@ -135,9 +135,17 @@ app.get('/joystick', (req, res) => {
     'Content-Security-Policy',
     "default-src 'self'; connect-src 'self' *; font-src 'self'; img-src 'self' data:; script-src 'self' blob: https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js 'unsafe-inline'; style-src 'self' https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css 'unsafe-inline'; frame-src 'self';"
   );
-  return res.sendFile(
-    path.resolve('./packages/ecommerce-server/public/joystick.html')
-  );
+  let filePath;
+
+  if (process.env.NODE_ENV === 'production') {
+    // Path for production
+    filePath = path.resolve(__dirname, '../../public/joystick.html');
+  } else {
+    // Path for development
+    filePath = path.resolve('./packages/ecommerce-server/public/joystick.html');
+  }
+
+  return res.sendFile(filePath);
 });
 
 const server = app.listen(port, async () => {

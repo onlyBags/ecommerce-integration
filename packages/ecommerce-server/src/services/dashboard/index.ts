@@ -6,6 +6,8 @@ import {
   WoocommerceProduct,
 } from '@dg-live/ecommerce-db';
 import {
+  JoystickBaseData,
+  JoystickSlotData,
   NewSlotReq,
   SaveUserDatasourceReq,
   SaveUserReq,
@@ -15,6 +17,9 @@ import {
 import { getPassword } from '../../util/index.js';
 import { getSettings } from '@dg-live/ecommerce-woocommerce';
 import axios from 'axios';
+import { envConfig } from '@dg-live/ecommerce-config';
+
+const { nodeEnv } = envConfig;
 interface WooCommerceCurrencySettings {
   id: string;
   label: string;
@@ -35,14 +40,20 @@ const datasourceRepository = AppDataSource.getRepository(Datasource);
 const slotRepository = AppDataSource.getRepository(Slot);
 const woocommerceProduct = AppDataSource.getRepository(WoocommerceProduct);
 
+const dashboardConfig = {
+  baseURL: 'https://business.dglive.org/api',
+};
+const dashboardApi = axios.create(dashboardConfig);
+
 const proccesImage = async (imageUrl: string): Promise<string> => {
   // const response = await axios.post('http://localhost:5000/process-image', {
-  const response = await axios.post(
-    'http://python-service:5000/process-image',
-    {
-      url: imageUrl,
-    }
-  );
+  const url =
+    nodeEnv === 'production'
+      ? 'http://python-service:5000/process-image'
+      : 'http://localhost:5000/process-image';
+  const response = await axios.post(url, {
+    url: imageUrl,
+  });
   return response.data.url;
 };
 
@@ -387,3 +398,41 @@ async function getUserAndCheckDatasource(apiKey: string, datasourceId: number) {
 
   return foundUser;
 }
+
+export const updateSlotJoystick = async ({
+  payload,
+  slotId,
+}: {
+  payload: JoystickBaseData;
+  slotId: number;
+  datasourceId: number;
+}): Promise<any> => {
+  try {
+    delete payload.key;
+    delete payload.save;
+    const res = await slotRepository.update({ id: slotId }, payload);
+    return res;
+  } catch (err) {
+    throw err;
+  }
+};
+
+export const validateUserKey = async ({
+  apiKey,
+  datasourceId,
+}: {
+  apiKey: string;
+  datasourceId: number;
+}): Promise<boolean> => {
+  try {
+    const foundUser = await userRepository.findOne({
+      where: { apiKey, datasource: { id: datasourceId } },
+      relations: {
+        datasource: true,
+      },
+    });
+    return !!foundUser;
+  } catch (err) {
+    throw err;
+  }
+};

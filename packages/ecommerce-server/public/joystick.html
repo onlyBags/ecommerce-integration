@@ -543,8 +543,8 @@
       crossorigin="anonymous"
     ></script>
     <script>
-      // let baseUrl = 'https://ecommerce-api.dglive.org/v1/dashboard/user';
-      let baseUrl = 'http://localhost:8080/v1/dashboard/user';
+      let baseUrl = 'https://ecommerce-api.dglive.org/v1/dashboard/user';
+      // let baseUrl = 'http://localhost:8080/v1/dashboard/user';
       let joystickInterval = '';
       let datasource = '';
       let slotId = '';
@@ -762,7 +762,8 @@
         try {
           toggleLoader(true);
           const slotsDataRaw = await fetch(`${baseUrl}/slots/${datasource}`);
-          slots = await slotsDataRaw.json();
+          const slotsJson = await slotsDataRaw.json();
+          slots = slotsJson?.data || { data: {} };
           const foundSlot = slots.find((x) => x.id == slotId);
           if (foundSlot) {
             selectedSlot = foundSlot;
@@ -803,31 +804,20 @@
       };
 
       const setSlotData = (slotData) => {
-        const {
-          pos_x,
-          pos_y,
-          pos_z,
-          size_x,
-          size_y,
-          size_z,
-          rot_x,
-          rot_y,
-          rot_z,
-          id_resource_group,
-          token_id,
-        } = slotData;
-        posX.innerText = pos_x;
-        posY.innerText = pos_y;
-        posZ.innerText = pos_z;
-        scaleX.value = size_x;
-        scaleY.value = size_y;
-        scaleZ.value = size_z;
-        rotateX.value = rot_x;
-        rotateXInput.value = rot_x;
-        rotateY.value = rot_y;
-        rotateYInput.value = rot_y;
-        rotateZ.value = rot_z;
-        rotateZInput.value = rot_z;
+        const { posX, posY, posZ, sizeX, sizeY, sizeZ, rotX, rotY, rotZ, id } =
+          slotData;
+        posX.innerText = posX;
+        posY.innerText = posY;
+        posZ.innerText = posZ;
+        scaleX.value = sizeX;
+        scaleY.value = sizeY;
+        scaleZ.value = sizeZ;
+        rotateX.value = rotX;
+        rotateXInput.value = rotX;
+        rotateY.value = rotY;
+        rotateYInput.value = rotY;
+        rotateZ.value = rotZ;
+        rotateZInput.value = rotZ;
       };
 
       const setBannerData = (bannerData) => {
@@ -875,10 +865,11 @@
 
       const setDropdownData = (itemData) => {
         for (const item of itemData) {
+          debugger;
           const option = document.createElement('option');
           option.value = item.id;
           option.text = item.name;
-          option.selected = item.id === slotId || item.id === bannerId;
+          option.selected = item.id === +slotId || item.id === +bannerId;
           slotBannerDropdown.appendChild(option);
         }
       };
@@ -935,7 +926,7 @@
             } to edit`;
             bindButtons();
             isSlot ? await getSlotData() : await getBannerData();
-            notifyToDashboard();
+            // notifyToDashboard();
           }
         } else {
           errorDesc.innerText = 'I think you are missing some params, :/';
@@ -998,7 +989,7 @@
       };
 
       const updateSlotData = (save) => {
-        if (!isSlot || slotId) {
+        if (isSlot && !slotId) {
           alert('SlotId is required');
           return;
         }
@@ -1008,16 +999,16 @@
             posX: posX.innerText,
             posY: posY.innerText,
             posZ: posZ.innerText,
-            scaleX: scaleX.value,
-            scaleY: scaleY.value,
-            scaleZ: scaleZ.value,
+            sizeX: scaleX.value,
+            sizeY: scaleY.value,
+            sizeZ: scaleZ.value,
             rotX: rotateX.value,
             rotY: rotateY.value,
             rotZ: rotateZ.value,
-            productId,
+            // productId,
             key,
             save,
-            type: 'slot',
+            // type: 'slot',
           };
           return fetch(
             `${baseUrl}/slot-joystick/${datasource}/${slotId}`,

@@ -6,7 +6,7 @@ import {
   OrderLog,
   User,
 } from '@dg-live/ecommerce-db';
-import { EcommerceWsData, notifyPurschase } from '@dg-live/ecommerce-websocket';
+import { notifyPurschase } from '@dg-live/ecommerce-websocket';
 import {
   fetchTransactionCount,
   fetchAllTransactions,
@@ -18,7 +18,11 @@ import {
   saveOrder,
   setOrderAsPayed,
 } from '@dg-live/ecommerce-woocommerce';
-import { Payment, WCValidateOrderData } from '@dg-live/ecommerce-data-types';
+import {
+  Payment,
+  WCValidateOrderData,
+  EcommerceWsData,
+} from '@dg-live/ecommerce-data-types';
 import { Not } from 'typeorm';
 
 const orderRepository = AppDataSource.getRepository(Order);

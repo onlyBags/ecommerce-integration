@@ -24,8 +24,10 @@ import {
   DGLResponse,
   NewSlotReq,
   UpdateSlotReq,
+  JoystickBaseData,
 } from '@dg-live/ecommerce-data-types';
 import { createWebhooks } from '@dg-live/ecommerce-woocommerce';
+import { notifyToWorldJoystick } from '@dg-live/ecommerce-websocket';
 @Route('dashboard')
 @Tags('User')
 export class DashboardController extends Controller {
@@ -539,4 +541,69 @@ export class DashboardController extends Controller {
       throw new ValidateError({}, err.message);
     }
   }
+
+  @Put('/user/slot-joystick/{datasourceId}/{slotId}')
+  @SuccessResponse('200', 'Slot updated')
+  public async updateSlotJoystick(
+    @Path() datasourceId: number,
+    @Path() slotId: number,
+    @Body() requestBody: JoystickBaseData
+  ): Promise<DGLResponse<Slot>> {
+    try {
+      const { key: apiKey } = requestBody;
+      if (!(await dashboardService.validateUserKey({ apiKey, datasourceId }))) {
+        throw new Error('Invalid user key');
+      }
+      notifyToWorldJoystick({
+        ...requestBody,
+        type: 'joystick',
+        datasource: datasourceId,
+      });
+      let resp;
+      if (requestBody.save) {
+        resp = {
+          message: 'Slot updated successfully',
+          status: 200,
+          data: await dashboardService.updateSlotJoystick({
+            slotId,
+            payload: requestBody,
+            datasourceId,
+          }),
+        };
+      }
+      // dashboardService.notifyToDashboardSlotData({ payload: requestBody, slotId });
+      return resp;
+    } catch (err) {
+      throw new ValidateError({}, err.message);
+    }
+  }
+
+  // @Get('joystick-open/{zoneId}')
+  // public async joystickOpened(
+  //   @Path() zoneId: string
+  // ): Promise<DGLResponse<any>> {
+  //   try {
+  //     if (!zoneId) {
+  //       const fields: FieldErrors = {
+  //         sellerAddress: {
+  //           message: 'ZoneId its required',
+  //           value: zoneId,
+  //         },
+  //       };
+  //       throw new ValidateError(fields, 'Error notifying joystick opened');
+  //     }
+  //     const payload: IWSNotifyDashboard = {
+  //       status: 'success',
+  //       type: 'joystickOpened',
+  //     };
+  //     webSocketService.notifyToDashboardv2(payload);
+  //     return {
+  //       status: 201,
+  //       data: '',
+  //       message: 'Succesfully notified joystick opened',
+  //     };
+  //   } catch (e) {
+  //     throw new ValidateError({}, e.message);
+  //   }
+  // }
 }

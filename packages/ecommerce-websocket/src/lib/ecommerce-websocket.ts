@@ -17,6 +17,13 @@ import { URL, URLSearchParams } from 'url';
 import { v4 as uuidv4 } from 'uuid';
 import _ from 'lodash';
 import { envConfig } from '@dg-live/ecommerce-config';
+import {
+  JoystickSlotData,
+  WSEventType,
+  WSChannels,
+  DCGWebSocket,
+  EcommerceWsData,
+} from '@dg-live/ecommerce-data-types';
 
 const { forOwn, each } = _;
 const { wsPort } = envConfig;
@@ -37,55 +44,7 @@ const channels: WSChannels = {
   },
 };
 
-export type WSEventType = 'joystick' | 'ecommerce';
-
-export interface JoystickBaseData {
-  posX: number;
-  posY: number;
-  posZ: number;
-  rotX: number;
-  rotY: number;
-  rotZ: number;
-  scaleX: number;
-  scaleY: number;
-  scaleZ: number;
-  key: string;
-  zoneId: number;
-  save: boolean;
-}
-
-export interface EcommerceWsData {
-  type: WSEventType;
-  datasource: number;
-  wallet: string;
-  status: 'success' | 'fail' | 'pending';
-  orderId: number;
-}
-
-export interface JoystickSlotData extends JoystickBaseData {
-  type: WSEventType;
-  datasource: number;
-}
-
-export interface IDCGWebSocket extends WebSocket {
-  isAlive: boolean;
-  datasource: string;
-}
-
-export interface WebSocketClient {
-  [key: string]: WebSocket;
-}
-
-export interface WSChannels {
-  joystick: {
-    clients: WebSocketClient;
-  };
-  ecommerce: {
-    clients: WebSocketClient;
-  };
-}
-
-wss.on('connection', (ws: IDCGWebSocket, req) => {
+wss.on('connection', (ws: DCGWebSocket, req) => {
   ws.isAlive = true;
   const baseUrl = 'http://localhost';
 
@@ -126,7 +85,7 @@ const interval = setInterval(function ping() {
   if (!wss.clients.size) {
     channels.joystick.clients = {};
   } else {
-    wss.clients.forEach(function each(ws: IDCGWebSocket) {
+    wss.clients.forEach(function each(ws: DCGWebSocket) {
       if (ws.isAlive === false && ws.datasource) {
         delete channels.joystick.clients[ws.datasource];
         return ws.close();

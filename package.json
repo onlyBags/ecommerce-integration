@@ -17,6 +17,7 @@
     "build:db": "cd packages/ecommerce-db && npm run build",
     "build:types": "cd packages/ecommerce-data-types && npm run build",
     "build:wc": "cd packages/ecommerce-woocommerce && npm run build",
+    "build:websocket": "cd packages/ecommerce-websocket && npm run build",
     "affected:graph": "nx affected:graph",
     "affected:apps:json": "nx affected:graph --base=main --head=HEAD --file=affected-graph.json",
     "docker:prune:volume": "docker volume prune -a --force --filter \"label!=dg-live-monorepo_db\"",
@@ -61,6 +62,7 @@
   "dependencies": {
     "@woocommerce/woocommerce-rest-api": "^1.0.1",
     "axios": "^1.4.0",
+    "ci": "^2.3.0",
     "cors": "^2.8.5",
     "dotenv": "^16.0.3",
     "express": "^4.18.2",

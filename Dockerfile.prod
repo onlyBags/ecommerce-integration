@@ -20,8 +20,8 @@ RUN rm ./packages/ecommerce-woocommerce/dist -rf
 RUN rm ./packages/ecommerce-server/public/swagger.json -f
 RUN rm ./packages/ecommerce-server/src/routes/routes.ts -f
 RUN apt-get update && apt-get install -y nano
-
-RUN npm i -ci
+ 
+RUN npm ci
 # RUN npm i -g nodemon
 # Building all the packages
 RUN npm run build
