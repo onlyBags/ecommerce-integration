@@ -17,12 +17,6 @@
     "prod": "npm run swagger && tsc -p tsconfig.json && node ./dist/src/index.js",
     "debug": "tsc -p tsconfig.json && node --inspect=0.0.0.0:9229 ./dist/src/index.js"
   },
-  "copyFiles": [
-    {
-      "from": "public/swagger.json",
-      "to": "dist/public/swagger.json"
-    }
-  ],
   "nx": {
     "implicitDependencies": [
       "@dg-live/ecommerce-web3"
