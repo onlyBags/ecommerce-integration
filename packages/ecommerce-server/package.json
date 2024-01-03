@@ -6,7 +6,7 @@
   "scripts": {
     "copy-assets": "node copy-assets.js",
     "prebuild": "npm run swagger && npm run copy-assets",
-    "build": "tsc -p tsconfig.json",
+    "build": "tsc -p tsconfig.json && npm run copy-assets",
     "dev1": "cross-env NODE_ENV=development tsc-watch -p tsconfig.json --onSuccess \"node ./dist/src/index.js\"",
     "dev2": "nodemon --watch packages/ecommerce-server --exec npm run start",
     "dev3": "nodemon --watch 'src/**/*.ts' --exec 'ts-node' src/index.ts",
