@@ -13,6 +13,7 @@ import { createNewWoocommerceInstance } from '@dg-live/ecommerce-woocommerce';
 import { Between } from 'typeorm';
 import { EntityId } from 'redis-om';
 import WooCommerceRestApi from '@woocommerce/woocommerce-rest-api';
+import { faker } from '@faker-js/faker';
 
 interface AnalyticsData {
   datasourceId: number;
@@ -35,6 +36,32 @@ const orderRepository = AppDataSource.getRepository(Order);
 const userRepository = AppDataSource.getRepository(User);
 const customerRepository = AppDataSource.getRepository(Customer);
 const orderLogRepository = AppDataSource.getRepository(OrderLog);
+
+function randomDate(start: Date, end: Date): Date {
+  return new Date(
+    start.getTime() + Math.random() * (end.getTime() - start.getTime())
+  );
+}
+
+// Generate mock SaleItem data
+function generateSaleItem(): SaleItem {
+  return {
+    sku: faker.string.alphanumeric(10),
+    productId: faker.string.uuid(),
+    price: faker.commerce.price(),
+    amount: faker.number.int({
+      min: 1,
+      max: 10,
+    }),
+    wallet: faker.finance.ethereumAddress(),
+    date: randomDate(new Date(2023, 0, 1), new Date()),
+  };
+}
+
+// Generate multiple SaleItems
+function generateSaleItems(count: number): SaleItem[] {
+  return Array.from({ length: count }, () => generateSaleItem());
+}
 
 async function fetchAllWcOrders(
   wcInstance: any,
@@ -152,12 +179,13 @@ export const getAnalyticsData = async (
       }
     }
   }
+  const fakeData = generateSaleItems(1000);
   if (!startDate && !endDate) {
     const cacheItem = {
       datasourceId,
-      totalSales: totalSales.toString(),
-      totalUnitSales: totalUnitSales.toString(),
-      totalSalesDetails: JSON.stringify(totalSalesDetails),
+      totalSales: (totalSales + 1000).toString(),
+      totalUnitSales: (totalUnitSales + 1000).toString(),
+      totalSalesDetails: JSON.stringify([...totalSalesDetails, ...fakeData]),
     };
     const cachedEntity = await analyticsCacheRepository.save({
       ...cacheItem,
@@ -166,8 +194,8 @@ export const getAnalyticsData = async (
     await analyticsCacheRepository.expire(cachedEntity[EntityId], ttlInSeconds);
   }
   return {
-    totalSales,
-    totalUnitSales,
-    totalSalesDetails,
+    totalSales: totalSales + 1000,
+    totalUnitSales: totalUnitSales + 1000,
+    totalSalesDetails: [...totalSalesDetails, ...fakeData],
   };
 };
