@@ -110,6 +110,8 @@ export const notifyToWorldJoystick = (payload: JoystickSlotData) => {
   });
   each(joystickUsers, (joystickUser) => {
     if (joystickUser && joystickUser.readyState === WebSocket.OPEN) {
+      delete payload.datasource;
+      delete payload.key;
       joystickUser.send(JSON.stringify(payload));
     }
   });

@@ -556,6 +556,7 @@ export class DashboardController extends Controller {
       }
       notifyToWorldJoystick({
         ...requestBody,
+        slotId,
         type: 'joystick',
         datasource: datasourceId,
       });
