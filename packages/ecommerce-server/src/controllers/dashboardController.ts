@@ -555,8 +555,7 @@ export class DashboardController extends Controller {
         throw new Error('Invalid user key');
       }
       notifyToWorldJoystick({
-        ...requestBody,
-        slotId,
+        ...{ ...requestBody, slotId },
         type: 'joystick',
         datasource: datasourceId,
       });
