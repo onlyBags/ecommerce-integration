@@ -22,6 +22,12 @@ import {
   Slot,
   OrderLog,
   ShippingCost,
+  MagentoCategoryLink,
+  MagentoCustomAttribute,
+  MagentoExtensionAttributes,
+  MagentoMediaGalleryEntry,
+  MagentoProductLink,
+  MagentoProduct,
 } from '../entity/index.js';
 import { envConfig } from '@dg-live/ecommerce-config';
 
@@ -64,6 +70,12 @@ export const AppDataSource = new typeorm.DataSource({
     Slot,
     OrderLog,
     ShippingCost,
+    MagentoCategoryLink,
+    MagentoCustomAttribute,
+    MagentoExtensionAttributes,
+    MagentoMediaGalleryEntry,
+    MagentoProductLink,
+    MagentoProduct,
   ],
   migrations: [],
   subscribers: [],
