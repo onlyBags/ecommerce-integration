@@ -68,10 +68,7 @@ export class WoocommerceController extends Controller {
       throw new ValidateError(errorFields, 'Error geting product catalog');
 
     try {
-      const wProducts = await getAllProducts({
-        apiKey,
-        datasourceId,
-      });
+      const wProducts = await getAllProducts({ datasourceId: +datasourceId });
       const resp = {
         message: 'Products fetched successfully',
         status: 200,

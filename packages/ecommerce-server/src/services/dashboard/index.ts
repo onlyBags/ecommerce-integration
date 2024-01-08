@@ -95,16 +95,20 @@ export const saveUserDatasource = async (
   datasource.isActive = true;
   try {
     const savedDatasource = await datasourceRepository.save(datasource);
-    const storeSettings = await getSettings({
-      apiKey,
-      datasourceId: savedDatasource.id,
-    });
-    const foundCurrencySetting: WooCommerceCurrencySettings[] =
-      storeSettings.filter((x) => x.id === 'woocommerce_currency');
-    if (foundCurrencySetting.length) {
-      const currencySettings = foundCurrencySetting[0];
-      savedDatasource.currencyCode = currencySettings.value;
-      await datasourceRepository.save(savedDatasource);
+    let storeSettings = [];
+    if (datasource.platform === 'woocommerce') {
+      storeSettings = await getSettings({
+        apiKey,
+        datasourceId: savedDatasource.id,
+      });
+
+      const foundCurrencySetting: WooCommerceCurrencySettings[] =
+        storeSettings.filter((x) => x.id === 'woocommerce_currency');
+      if (foundCurrencySetting.length) {
+        const currencySettings = foundCurrencySetting[0];
+        savedDatasource.currencyCode = currencySettings.value;
+        await datasourceRepository.save(savedDatasource);
+      }
     }
     return savedDatasource;
   } catch (err) {

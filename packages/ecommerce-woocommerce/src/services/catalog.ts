@@ -9,39 +9,36 @@ import {
   WoocommerceProductRes,
 } from '@dg-live/ecommerce-data-types';
 
-import { AppDataSource, WoocommerceProduct, User } from '@dg-live/ecommerce-db';
+import {
+  AppDataSource,
+  WoocommerceProduct,
+  User,
+  Datasource,
+} from '@dg-live/ecommerce-db';
 // import { myData } from './mydata.js';
 
 const userRepository = AppDataSource.getRepository(User);
+const datasourceRepository = AppDataSource.getRepository(Datasource);
 const woocommerceProductRepository =
   AppDataSource.getRepository(WoocommerceProduct);
+
 export const getAllProducts = async ({
-  apiKey,
   datasourceId,
-}: WCRequestOptions): Promise<WoocommerceProduct[]> => {
+}: {
+  datasourceId: number;
+}): Promise<WoocommerceProduct[]> => {
   try {
-    const foundUser = await userRepository.findOne({
-      where: { apiKey, datasource: { id: datasourceId } },
+    const foundDatasource = await datasourceRepository.findOne({
+      where: {
+        id: datasourceId,
+      },
       relations: {
-        datasource: {
-          woocommerceProduct: {
-            images: true,
-            slot: true,
-            categories: true,
-            attributes: {
-              options: true,
-            },
-          },
-        },
+        woocommerceProduct: true,
       },
     });
-    if (
-      !foundUser ||
-      !foundUser.datasource.length ||
-      !foundUser.datasource[0].woocommerceProduct.length
-    )
+    if (!foundDatasource || !foundDatasource.woocommerceProduct.length)
       return [];
-    return foundUser.datasource[0].woocommerceProduct;
+    return foundDatasource.woocommerceProduct;
   } catch (err) {
     throw err;
   }

@@ -128,10 +128,12 @@ export class DashboardController extends Controller {
         status: 201,
         data: await dashboardService.saveUserDatasource(apiKey, requestBody),
       };
-      await createWebhooks({
-        apiKey,
-        datasourceId: resp.data.id,
-      });
+      if (platform === 'woocommerce') {
+        await createWebhooks({
+          apiKey,
+          datasourceId: resp.data.id,
+        });
+      }
       return resp;
     } catch (err) {
       throw new ValidateError({}, err.message);
