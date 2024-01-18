@@ -2,23 +2,20 @@ import {
   Entity,
   PrimaryGeneratedColumn,
   Column,
-  Unique,
-  ManyToMany,
-  OneToMany,
   ManyToOne,
   Relation,
 } from 'typeorm';
 import { Customer } from './Customer.js';
 
 @Entity({
-  name: 'user_billing',
+  name: 'customer_billing',
 })
 export class Billing {
   @PrimaryGeneratedColumn()
   id: number;
 
-  // @ManyToOne(() => Customer, (customer) => customer.id)
-  // customer: Relation<Customer>;
+  @ManyToOne(() => Customer)
+  customer: Relation<Customer>;
 
   @Column()
   firstName: string;

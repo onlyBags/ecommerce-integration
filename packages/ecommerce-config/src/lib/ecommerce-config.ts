@@ -40,6 +40,7 @@ export const envConfig = Object.freeze({
   wsPort: parseInt(process.env.WS_PORT),
   subGraphEndpoint: process.env.SUBGRAPH_ENDPOINT,
   subGraphVersion: process.env.SUBGRAPH_VERSION,
+  infuraKey: process.env.INFURA_KEY,
 });
 
 export default envConfig;

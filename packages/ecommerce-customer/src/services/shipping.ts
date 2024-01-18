@@ -13,10 +13,6 @@ export const saveShipping = async ({
   shippingData: OrderShipping;
 }) => {
   try {
-    const foundCustomer = await customerRepository.findOne({
-      where: { id: customer.id },
-    });
-    if (!foundCustomer) throw new ValidateError({}, 'Invalid customer');
     const newShipping = new Shipping();
     newShipping.firstName = shippingData.firstName;
     newShipping.lastName = shippingData.lastName;
@@ -26,9 +22,8 @@ export const saveShipping = async ({
     newShipping.state = shippingData.state;
     newShipping.postcode = shippingData.postcode;
     newShipping.country = shippingData.country;
+    newShipping.customer = customer;
     const savedShipping = await shippingRepository.save(newShipping);
-    foundCustomer.shipping = [savedShipping];
-    await customerRepository.save(foundCustomer);
     return savedShipping;
   } catch (error) {
     console.log('error', error);
@@ -37,18 +32,20 @@ export const saveShipping = async ({
   }
 };
 
-export const getShippings = async (wallet: string) => {
+export const getShipping = async (wallet: string) => {
   try {
-    const foundCustomer = await customerRepository.findOne({
-      where: { wallet },
+    const foundShipping = await shippingRepository.find({
       relations: {
-        shipping: true,
+        customer: true,
+      },
+      where: {
+        customer: {
+          wallet,
+        },
       },
     });
-    if (!foundCustomer) throw new ValidateError({}, 'Invalid customer');
-    return foundCustomer.shipping;
+    return foundShipping;
   } catch (err) {
-    console.log('err', err);
     throw err;
   }
 };

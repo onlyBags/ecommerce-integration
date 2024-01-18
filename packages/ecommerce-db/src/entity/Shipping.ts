@@ -17,11 +17,8 @@ export class Shipping {
   @PrimaryGeneratedColumn()
   id: number;
 
-  // @Column()
-  // shippingId: number;
-
-  // @ManyToOne(() => Customer, (customer) => customer.id)
-  // customer: Relation<Customer>;
+  @ManyToOne(() => Customer)
+  customer: Relation<Customer>;
 
   @Column()
   firstName: string;

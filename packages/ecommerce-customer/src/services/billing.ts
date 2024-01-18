@@ -1,6 +1,6 @@
 import { ValidateError } from 'tsoa';
 import { AppDataSource, Billing, Customer } from '@dg-live/ecommerce-db';
-import { OrderBilling, OrderShipping } from '@dg-live/ecommerce-data-types';
+import { OrderBilling } from '@dg-live/ecommerce-data-types';
 
 const billingRepository = AppDataSource.getRepository(Billing);
 const customerRepository = AppDataSource.getRepository(Customer);
@@ -11,10 +11,6 @@ export const saveBilling = async ({
   customer: Customer;
   billingData: OrderBilling;
 }) => {
-  const foundCustomer = await customerRepository.findOne({
-    where: { id: customer.id },
-  });
-  if (!foundCustomer) throw new ValidateError({}, 'Invalid customer');
   const newBilling = new Billing();
   newBilling.firstName = billingData.firstName;
   newBilling.lastName = billingData.lastName;
@@ -26,10 +22,9 @@ export const saveBilling = async ({
   newBilling.country = billingData.country;
   newBilling.email = billingData.email;
   newBilling.phone = billingData.phone;
+  newBilling.customer = customer;
   try {
     const savedBilling = await billingRepository.save(newBilling);
-    foundCustomer.billing = [savedBilling];
-    await customerRepository.save(foundCustomer);
     return savedBilling;
   } catch (error) {
     console.log('error', error);
@@ -40,16 +35,18 @@ export const saveBilling = async ({
 
 export const getBilling = async (wallet: string) => {
   try {
-    const foundCustomer = await customerRepository.findOne({
-      where: { wallet },
+    const foundBilling = await billingRepository.find({
       relations: {
-        billing: true,
+        customer: true,
+      },
+      where: {
+        customer: {
+          wallet,
+        },
       },
     });
-    if (!foundCustomer) throw new ValidateError({}, 'Invalid customer');
-    return foundCustomer.billing;
+    return foundBilling;
   } catch (err) {
-    console.log('err', err);
     throw err;
   }
 };

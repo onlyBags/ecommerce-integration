@@ -8,8 +8,6 @@ import {
   Unique,
   Relation,
 } from 'typeorm';
-import { Shipping } from './Shipping.js';
-import { Billing } from './Billing.js';
 import { Order } from './Order.js';
 
 @Entity()
@@ -24,11 +22,11 @@ export class Customer {
   // @OneToMany(() => Order, (order) => order.id)
   // orders: Relation<Order[]>;
 
-  @OneToMany(() => Shipping, (shipping) => shipping.id)
-  shipping: Relation<Shipping[]>;
+  // @OneToMany(() => Shipping, (shipping) => shipping.id)
+  // shipping: Relation<Shipping[]>;
 
-  @OneToMany(() => Billing, (billing) => billing.id)
-  billing: Relation<Billing[]>;
+  // @OneToMany(() => Billing, (billing) => billing.id)
+  // billing: Relation<Billing[]>;
 
   @Column({ default: true })
   isActive: boolean;

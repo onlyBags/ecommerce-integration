@@ -18,6 +18,7 @@
     "build:types": "cd packages/ecommerce-data-types && npm run build",
     "build:wc": "cd packages/ecommerce-woocommerce && npm run build",
     "build:websocket": "cd packages/ecommerce-websocket && npm run build",
+    "build:web3": "cd packages/ecommerce-web3 && npm run build",
     "affected:graph": "nx affected:graph",
     "affected:apps:json": "nx affected:graph --base=main --head=HEAD --file=affected-graph.json",
     "docker:prune:volume": "docker volume prune -a --force --filter \"label!=dg-live-monorepo_db\"",
@@ -80,6 +81,7 @@
     "tsoa": "^5.1.1",
     "typeorm": "^0.3.16",
     "uuid": "^9.0.1",
+    "web3-eth-accounts": "^4.1.1",
     "ws": "^8.14.2"
   }
 }

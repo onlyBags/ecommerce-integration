@@ -30,6 +30,8 @@ const orderRepository = AppDataSource.getRepository(Order);
 const customerRepository = AppDataSource.getRepository(Customer);
 const userRepository = AppDataSource.getRepository(User);
 const datasourceRepository = AppDataSource.getRepository(Datasource);
+const shippingRepository = AppDataSource.getRepository(Shipping);
+const billingRepository = AppDataSource.getRepository(Billing);
 
 export const getCustomer = async (wallet: string) => {
   const foundCustomer = await customerRepository.findOne({
@@ -179,22 +181,22 @@ export const createOrder = async ({
       ? { id: order.shippingId }
       : undefined;
     const billingWhere = order.billingId ? { id: order.billingId } : undefined;
+    const foundShipping = await shippingRepository.findOne({
+      where: shippingWhere,
+    });
+    const foundBilling = await billingRepository.findOne({
+      where: billingWhere,
+    });
     const foundCustomer = await customerRepository.findOne({
-      relations: {
-        shipping: !!shippingWhere,
-        billing: !!billingWhere,
-      },
       where: {
         wallet: customer.wallet,
-        shipping: shippingWhere,
-        billing: billingWhere,
       },
     });
     if (!foundCustomer) {
       throw new Error(`Customer with wallet ${order.wallet} not found`);
     }
-    if (foundCustomer.shipping?.length) {
-      wcShipping = mapShippingWCShipping(foundCustomer.shipping[0]);
+    if (foundShipping) {
+      wcShipping = mapShippingWCShipping(foundShipping);
     } else if (order.saveShipping) {
       const savedShipping = await saveShipping({
         customer,
@@ -202,8 +204,8 @@ export const createOrder = async ({
       });
       wcShipping = mapShippingWCShipping(savedShipping);
     }
-    if (foundCustomer.billing?.length) {
-      wcBilling = mapBillingWCBilling(foundCustomer.billing[0]);
+    if (foundBilling) {
+      wcBilling = mapBillingWCBilling(foundBilling);
     } else if (order.saveBilling) {
       const savedBilling = await saveBilling({
         customer,
@@ -212,7 +214,7 @@ export const createOrder = async ({
       wcBilling = mapBillingWCBilling(savedBilling);
     }
   } else {
-    if (order.saveShipping) {
+    if (order.saveShipping || 1) {
       const savedShipping = await saveShipping({
         customer,
         shippingData: order.shipping,
@@ -221,7 +223,7 @@ export const createOrder = async ({
     } else {
       wcShipping = mapShippingWCShipping(order.shipping);
     }
-    if (order.saveBilling) {
+    if (order.saveBilling || 1) {
       const savedBilling = await saveBilling({
         customer,
         billingData: order.billing,
