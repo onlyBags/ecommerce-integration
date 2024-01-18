@@ -4,6 +4,7 @@ import {
   Column,
   ManyToOne,
   JoinColumn,
+  Relation,
 } from 'typeorm';
 import { MagentoProduct } from './index.js';
 
@@ -23,5 +24,5 @@ export class MagentoProductLink {
 
   @ManyToOne(() => MagentoProduct, (product) => product.productLinks)
   @JoinColumn({ name: 'productId' })
-  product: MagentoProduct;
+  product: Relation<MagentoProduct>;
 }

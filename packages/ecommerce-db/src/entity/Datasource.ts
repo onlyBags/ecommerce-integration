@@ -13,6 +13,7 @@ import { User } from './User.js';
 import { WoocommerceProduct } from './WoocommerceProduct.js';
 import { Slot } from './Slot.js';
 import { Order } from './Order.js';
+import { MagentoProduct } from './MagentoProduct.js';
 
 @Entity()
 export class Datasource {
@@ -33,6 +34,12 @@ export class Datasource {
     (woocommerceProduct) => woocommerceProduct.datasource
   )
   woocommerceProduct: Relation<WoocommerceProduct[]>;
+
+  @OneToMany(
+    () => WoocommerceProduct,
+    (woocommerceProduct) => woocommerceProduct.datasource
+  )
+  magentoProduct: Relation<MagentoProduct[]>;
 
   @OneToMany(() => Order, (order) => order.id)
   orders: Relation<Order[]>;

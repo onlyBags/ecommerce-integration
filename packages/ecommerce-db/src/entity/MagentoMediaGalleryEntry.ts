@@ -4,6 +4,7 @@ import {
   Column,
   ManyToOne,
   JoinColumn,
+  Relation,
 } from 'typeorm';
 import { MagentoProduct } from './index.js';
 
@@ -35,5 +36,5 @@ export class MagentoMediaGalleryEntry {
 
   @ManyToOne(() => MagentoProduct, (product) => product.mediaGalleryEntries)
   @JoinColumn({ name: 'productId' })
-  product: MagentoProduct;
+  magentoProduct: Relation<MagentoProduct>;
 }

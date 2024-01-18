@@ -9,15 +9,27 @@ import {
 import { MagentoExtensionAttributes } from './index.js';
 
 @Entity()
-export class MagentoCategoryLink {
+export class MagentoConfigurableProductOptions {
   @PrimaryGeneratedColumn()
   id: number;
 
   @Column()
-  position: number;
+  configurableProductId: number;
 
   @Column()
-  categoryId: string;
+  attributeId: string;
+
+  @Column()
+  label: string;
+
+  @Column()
+  position: number;
+
+  @Column('simple-array')
+  values: number[];
+
+  @Column()
+  productId: number;
 
   @ManyToOne(() => MagentoExtensionAttributes)
   extensionAttributes: Relation<MagentoExtensionAttributes>;

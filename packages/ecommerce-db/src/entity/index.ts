@@ -24,3 +24,4 @@ export * from './MagentoCustomAttribute.js';
 export * from './MagentoMediaGalleryEntry.js';
 export * from './MagentoExtensionAttributes.js';
 export * from './MagentoProductLink.js';
+export * from './MagentoConfigurableProductOptions.js';

@@ -14,6 +14,7 @@
   },
   "dependencies": {
     "@dg-live/ecommerce-config": "*",
-    "@dg-live/ecommerce-db": "*"
+    "@dg-live/ecommerce-db": "*",
+    "@dg-live/ecommerce-data-types": "*"
   }
 }

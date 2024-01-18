@@ -4,8 +4,14 @@ import {
   Column,
   OneToMany,
   JoinTable,
+  Relation,
+  OneToOne,
 } from 'typeorm';
-import { MagentoProduct, MagentoCategoryLink } from './index.js';
+import {
+  MagentoProduct,
+  MagentoCategoryLink,
+  MagentoConfigurableProductOptions,
+} from './index.js';
 
 @Entity()
 export class MagentoExtensionAttributes {
@@ -15,29 +21,18 @@ export class MagentoExtensionAttributes {
   @Column('simple-array')
   websiteIds: number[];
 
-  @OneToMany(() => MagentoCategoryLink, (categoryLink) => categoryLink.product)
-  @JoinTable()
-  categoryLinks: MagentoCategoryLink[];
+  @Column('simple-array', { nullable: true })
+  configurableProductLinks: number[];
 
-  // Add other fields for extension attributes here
-  // For example, if there are configurable product options, you can define them as follows:
-  // @OneToMany(() => ConfigurableProductOption, configurableProductOption => configurableProductOption.extensionAttribute)
-  // configurableProductOptions: ConfigurableProductOption[];
+  // @OneToMany(
+  //   () => MagentoCategoryLink,
+  //   (categoryLink) => categoryLink.extensionAttributes
+  // )
+  // categoryLinks: Relation<MagentoCategoryLink[]>;
 
-  @OneToMany(() => MagentoProduct, (product) => product.extensionAttributes)
-  products: MagentoProduct[];
+  // @OneToMany(
+  //   () => MagentoConfigurableProductOptions,
+  //   (options) => options.extensionAttributes
+  // )
+  // configurableProductOptions: Relation<MagentoConfigurableProductOptions[]>;
 }
-
-// If you have configurable product options, you would also define an entity for them
-// @Entity()
-// export class ConfigurableProductOption {
-//   @PrimaryGeneratedColumn()
-//   id: number;
-//
-//   // Define other fields specific to configurable product options
-//
-//   @ManyToOne(() => MagentoExtensionAttributes, extensionAttributes => extensionAttributes.configurableProductOptions)
-//   extensionAttribute: MagentoExtensionAttributes;
-// }
-
-// Continue this pattern for other nested extension attributes as needed

@@ -5,9 +5,11 @@ import {
   OneToMany,
   ManyToOne,
   JoinColumn,
+  OneToOne,
   CreateDateColumn,
   UpdateDateColumn,
   Relation,
+  Index,
 } from 'typeorm';
 
 import {
@@ -16,12 +18,23 @@ import {
   MagentoCustomAttribute,
   MagentoProductLink,
   MagentoExtensionAttributes,
+  Datasource,
 } from './index.js';
 
 @Entity()
 export class MagentoProduct {
   @PrimaryGeneratedColumn()
   id: number;
+
+  @Column()
+  productId: number;
+
+  @ManyToOne(() => Datasource, (datasource) => datasource.magentoProduct)
+  datasource: Relation<Datasource>;
+
+  @Index()
+  @Column({ type: 'int' })
+  datasourceId: number;
 
   @Column()
   sku: string;
@@ -53,12 +66,9 @@ export class MagentoProduct {
   @Column('float')
   weight: number;
 
-  @OneToMany(() => MagentoCategoryLink, (categoryLink) => categoryLink.product)
-  categoryLinks: Relation<MagentoCategoryLink[]>;
-
   @OneToMany(
     () => MagentoMediaGalleryEntry,
-    (mediaGalleryEntry) => mediaGalleryEntry.product
+    (mediaGalleryEntry) => mediaGalleryEntry.magentoProduct
   )
   mediaGalleryEntries: Relation<MagentoMediaGalleryEntry[]>;
 
@@ -71,10 +81,7 @@ export class MagentoProduct {
   @OneToMany(() => MagentoProductLink, (productLink) => productLink.product)
   productLinks: Relation<MagentoProductLink[]>;
 
-  @ManyToOne(
-    () => MagentoExtensionAttributes,
-    (extensionAttributes) => extensionAttributes.products
-  )
-  @JoinColumn({ name: 'extensionAttributesId' })
+  @OneToOne(() => MagentoExtensionAttributes)
+  @JoinColumn()
   extensionAttributes: Relation<MagentoExtensionAttributes>;
 }

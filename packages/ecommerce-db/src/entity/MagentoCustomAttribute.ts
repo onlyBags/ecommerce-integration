@@ -4,6 +4,7 @@ import {
   Column,
   ManyToOne,
   JoinColumn,
+  Relation,
 } from 'typeorm';
 import { MagentoProduct } from './index.js';
 
@@ -20,5 +21,5 @@ export class MagentoCustomAttribute {
 
   @ManyToOne(() => MagentoProduct, (product) => product.customAttributes)
   @JoinColumn({ name: 'productId' })
-  product: MagentoProduct;
+  product: Relation<MagentoProduct>;
 }
