@@ -31,7 +31,6 @@ export class Image {
   dateModifiedGmt: string;
 
   @Column({ type: 'varchar', nullable: true })
-  @Unique('UQ_IMAGE_SRC', ['src'])
   src: string;
 
   @Column({ type: 'varchar', nullable: true })
