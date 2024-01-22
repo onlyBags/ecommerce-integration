@@ -214,7 +214,7 @@ export const createOrder = async ({
       wcBilling = mapBillingWCBilling(savedBilling);
     }
   } else {
-    if (order.saveShipping || 1) {
+    if (order.saveShipping) {
       const savedShipping = await saveShipping({
         customer,
         shippingData: order.shipping,
@@ -223,7 +223,7 @@ export const createOrder = async ({
     } else {
       wcShipping = mapShippingWCShipping(order.shipping);
     }
-    if (order.saveBilling || 1) {
+    if (order.saveBilling) {
       const savedBilling = await saveBilling({
         customer,
         billingData: order.billing,
