@@ -31,22 +31,22 @@ export class Slot {
   )
   woocommerceProduct: Relation<WoocommerceProduct>;
 
-  @Column()
+  @Column('decimal', { precision: 18, scale: 2 })
   posX: number;
 
-  @Column()
+  @Column('decimal', { precision: 18, scale: 2 })
   posY: number;
 
-  @Column()
+  @Column('decimal', { precision: 18, scale: 2 })
   posZ: number;
 
-  @Column()
+  @Column('decimal', { precision: 5, scale: 2 })
   sizeX: number;
 
-  @Column()
+  @Column('decimal', { precision: 5, scale: 2 })
   sizeY: number;
 
-  @Column()
+  @Column('decimal', { precision: 5, scale: 2 })
   sizeZ: number;
 
   @Column()
