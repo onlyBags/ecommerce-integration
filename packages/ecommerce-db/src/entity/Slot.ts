@@ -40,13 +40,13 @@ export class Slot {
   @Column('decimal', { precision: 18, scale: 2 })
   posZ: number;
 
-  @Column('decimal', { precision: 5, scale: 2 })
+  @Column('decimal', { precision: 18, scale: 2 })
   sizeX: number;
 
-  @Column('decimal', { precision: 5, scale: 2 })
+  @Column('decimal', { precision: 18, scale: 2 })
   sizeY: number;
 
-  @Column('decimal', { precision: 5, scale: 2 })
+  @Column('decimal', { precision: 18, scale: 2 })
   sizeZ: number;
 
   @Column()
