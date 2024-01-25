@@ -48,3 +48,8 @@ export interface SaveUserDatasourceReq {
   accessTokenSecret?: string;
   baseUrl: string;
 }
+
+export interface CountriesData {
+  name: string;
+  code: string;
+}
