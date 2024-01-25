@@ -4,8 +4,11 @@ import {
   Datasource,
   Slot,
   WoocommerceProduct,
+  ShippingCost,
 } from '@dg-live/ecommerce-db';
 import {
+  DatasourceShippingCost,
+  DatasourceShippingCostUpdate,
   JoystickBaseData,
   JoystickSlotData,
   NewSlotReq,
@@ -18,6 +21,7 @@ import { getPassword } from '../../util/index.js';
 import { getSettings } from '@dg-live/ecommerce-woocommerce';
 import axios from 'axios';
 import { envConfig } from '@dg-live/ecommerce-config';
+import { countries } from '../../data/countries.js';
 
 const { nodeEnv } = envConfig;
 interface WooCommerceCurrencySettings {
@@ -39,6 +43,7 @@ const userRepository = AppDataSource.getRepository(User);
 const datasourceRepository = AppDataSource.getRepository(Datasource);
 const slotRepository = AppDataSource.getRepository(Slot);
 const woocommerceProduct = AppDataSource.getRepository(WoocommerceProduct);
+const shippingCostRepository = AppDataSource.getRepository(ShippingCost);
 
 const dashboardConfig = {
   baseURL: 'https://business.dglive.org/api',
@@ -62,7 +67,6 @@ export const saveClient = async (clientReq: SaveUserReq): Promise<User> => {
   user.username = clientReq.username;
   user.apiKey = clientReq.apiKey;
   user.isActive = true;
-  user.wallet = clientReq.wallet;
   return await userRepository.save(user);
 };
 
@@ -435,4 +439,136 @@ export const validateUserKey = async ({
   } catch (err) {
     throw err;
   }
+};
+
+export const addShippingCost = async ({
+  apiKey,
+  datasourceId,
+  body,
+}: {
+  apiKey: string;
+  datasourceId: number;
+  body: DatasourceShippingCost;
+}) => {
+  const foundUser = await userRepository.findOne({
+    where: { apiKey, datasource: { id: datasourceId } },
+    relations: {
+      datasource: true,
+    },
+  });
+
+  if (!foundUser) throw new Error('User not found');
+
+  const shippingCostExists = await shippingCostRepository.findOne({
+    where: { countryCode: body.code, datasource: { id: datasourceId } },
+  });
+  if (shippingCostExists)
+    throw new Error(
+      `Shipping cost already exists for countryCode : ${body.code}`
+    );
+  if (countries.find((c) => c.code === body.code) === undefined)
+    throw new Error(`Invalid Country code ${body.code}`);
+
+  const shippingCost = new ShippingCost();
+  shippingCost.countryCode = body.code;
+  shippingCost.price = body.price;
+  shippingCost.datasource = foundUser.datasource[0];
+  shippingCost.isActive = true;
+
+  try {
+    const savedShippingCost = await shippingCostRepository.save(shippingCost);
+    return savedShippingCost;
+  } catch (err) {
+    console.log(err);
+    throw err;
+  }
+};
+
+export const updateShippingCost = async ({
+  apiKey,
+  datasourceId,
+  body,
+  code,
+}: {
+  apiKey: string;
+  datasourceId: number;
+  code: string;
+  body: DatasourceShippingCostUpdate;
+}) => {
+  const foundUser = await userRepository.findOne({
+    where: { apiKey, datasource: { id: datasourceId } },
+    relations: {
+      datasource: true,
+    },
+  });
+
+  if (!foundUser) throw new Error('User not found');
+
+  const shippingCost = await shippingCostRepository.findOne({
+    where: { countryCode: code, datasource: { id: datasourceId } },
+  });
+  if (!shippingCost)
+    throw new Error(`Shipping cost not found for countryCode : ${code}`);
+
+  shippingCost.price = body.price;
+  shippingCost.isActive = !!body.isActive;
+  try {
+    const savedShippingCost = await shippingCostRepository.save(shippingCost);
+    return savedShippingCost;
+  } catch (err) {
+    console.log(err);
+    throw err;
+  }
+};
+
+export const deleteShipping = async ({
+  apiKey,
+  datasourceId,
+  code,
+}: {
+  apiKey: string;
+  datasourceId: number;
+  code: string;
+}) => {
+  const foundUser = await userRepository.findOne({
+    where: { apiKey, datasource: { id: datasourceId } },
+    relations: {
+      datasource: true,
+    },
+  });
+
+  if (!foundUser) throw new Error('User not found');
+
+  const shippingCost = await shippingCostRepository.findOne({
+    where: { countryCode: code, datasource: { id: datasourceId } },
+  });
+  if (!shippingCost)
+    throw new Error(`Shipping cost not found for countryCode : ${code}`);
+
+  try {
+    await shippingCostRepository.remove(shippingCost);
+  } catch (err) {
+    console.log(err);
+    throw err;
+  }
+};
+
+export const getShippingsByDatasourceId = async ({
+  datasourceId,
+}: {
+  datasourceId: number;
+}) => {
+  const shippingCosts = await shippingCostRepository.find({
+    where: { datasource: { id: datasourceId } },
+  });
+
+  const shippingCostsData = shippingCosts.map((sc) => {
+    return {
+      name: countries.find((c) => c.code === sc.countryCode)?.name,
+      code: sc.countryCode,
+      price: sc.price,
+      isActive: sc.isActive,
+    };
+  });
+  return shippingCostsData;
 };

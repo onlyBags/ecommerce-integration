@@ -25,6 +25,8 @@ import {
   NewSlotReq,
   UpdateSlotReq,
   JoystickBaseData,
+  DatasourceShippingCost,
+  DatasourceShippingCostUpdate,
 } from '@dg-live/ecommerce-data-types';
 import { createWebhooks } from '@dg-live/ecommerce-woocommerce';
 import { notifyToWorldJoystick } from '@dg-live/ecommerce-websocket';
@@ -577,33 +579,4 @@ export class DashboardController extends Controller {
       throw new ValidateError({}, err.message);
     }
   }
-
-  // @Get('joystick-open/{zoneId}')
-  // public async joystickOpened(
-  //   @Path() zoneId: string
-  // ): Promise<DGLResponse<any>> {
-  //   try {
-  //     if (!zoneId) {
-  //       const fields: FieldErrors = {
-  //         sellerAddress: {
-  //           message: 'ZoneId its required',
-  //           value: zoneId,
-  //         },
-  //       };
-  //       throw new ValidateError(fields, 'Error notifying joystick opened');
-  //     }
-  //     const payload: IWSNotifyDashboard = {
-  //       status: 'success',
-  //       type: 'joystickOpened',
-  //     };
-  //     webSocketService.notifyToDashboardv2(payload);
-  //     return {
-  //       status: 201,
-  //       data: '',
-  //       message: 'Succesfully notified joystick opened',
-  //     };
-  //   } catch (e) {
-  //     throw new ValidateError({}, e.message);
-  //   }
-  // }
 }

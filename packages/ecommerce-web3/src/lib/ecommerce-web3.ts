@@ -43,7 +43,7 @@ export const buildOrders = async (start: number): Promise<void> => {
         },
       });
 
-      const user = await userRepository.findOne({
+      const datasource = await datasourceRepository.findOne({
         where: {
           wallet: payment.beneficiary,
         },
@@ -69,9 +69,9 @@ export const buildOrders = async (start: number): Promise<void> => {
       //     },
       //   },
       // });
-      if (!customer || !user) continue;
+      if (!customer || !datasource) continue;
       if (!order) order = await rebuildOrder(payment);
-      if (user.wallet.toLowerCase() !== payment.beneficiary.toLowerCase())
+      if (datasource.wallet.toLowerCase() !== payment.beneficiary.toLowerCase())
         continue;
       let orderLog = order.orderLog;
       if (!orderLog) {
@@ -79,7 +79,7 @@ export const buildOrders = async (start: number): Promise<void> => {
         orderLogToSave.transactionHash = payment.transactionHash;
         orderLogToSave.amount = payment.amount;
         orderLogToSave.customer = customer;
-        orderLogToSave.user = user;
+        orderLogToSave.datasource = datasource;
         orderLogToSave.orderStatus = 'pending';
         orderLogToSave.isValidated = false;
         await orderLogRepository.save(orderLogToSave);
@@ -122,9 +122,7 @@ const validateOrdersVsWoocommerce = async () => {
         const orderToValidate = await orderRepository.findOne({
           relations: {
             orderLog: {
-              user: {
-                datasource: true,
-              },
+              datasource: true,
             },
           },
           where: {
@@ -142,8 +140,8 @@ const validateOrdersVsWoocommerce = async () => {
           await orderLogRepository.save(orderLog);
           const notifyData: EcommerceWsData = {
             type: 'ecommerce',
-            datasource: orderLog.user.datasource[0].id,
-            wallet: orderLog.user.wallet,
+            datasource: orderLog.datasource[0].id,
+            wallet: orderLog.datasource.wallet,
             status: 'success',
             orderId: order.storeOrderId,
           };
@@ -153,7 +151,7 @@ const validateOrdersVsWoocommerce = async () => {
           orderLogToSave.transactionHash = '0xERR';
           orderLogToSave.amount = '123';
           orderLogToSave.customer = await customerRepository.find()[0];
-          orderLogToSave.user = await userRepository.find()[0];
+          orderLogToSave.datasource = await datasourceRepository.find()[0];
           orderLogToSave.orderStatus = 'completed';
           orderLogToSave.isValidated = true;
           await orderLogRepository.save(orderLogToSave);

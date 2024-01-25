@@ -8,7 +8,6 @@ export interface SaveUserReq {
   username: string;
   apiKey: string;
   masterKey: string;
-  wallet: string;
 }
 export interface NewSlotReq {
   name: string;
@@ -52,4 +51,14 @@ export interface SaveUserDatasourceReq {
 export interface CountriesData {
   name: string;
   code: string;
+}
+
+export interface DatasourceShippingCost {
+  code: string;
+  price: number;
+}
+
+export interface DatasourceShippingCostUpdate {
+  price: number;
+  isActive?: boolean;
 }

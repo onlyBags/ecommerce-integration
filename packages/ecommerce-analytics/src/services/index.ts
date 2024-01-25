@@ -139,7 +139,7 @@ export const getAnalyticsData = async (
     relations: {
       customer: true,
       orderLog: {
-        user: true,
+        datasource: true,
         customer: true,
       },
     },

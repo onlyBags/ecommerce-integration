@@ -21,6 +21,7 @@ import {
   Order,
   Slot,
   OrderLog,
+  ShippingCost,
 } from '../entity/index.js';
 import { envConfig } from '@dg-live/ecommerce-config';
 
@@ -62,6 +63,7 @@ export const AppDataSource = new typeorm.DataSource({
     Order,
     Slot,
     OrderLog,
+    ShippingCost,
   ],
   migrations: [],
   subscribers: [],

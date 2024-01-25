@@ -8,7 +8,7 @@ import {
   OneToOne,
 } from 'typeorm';
 
-import { Customer, User } from './index.js';
+import { Customer, Datasource, User } from './index.js';
 import { stringToBool } from '../utils/index.js';
 
 @Entity()
@@ -25,8 +25,8 @@ export class OrderLog {
   @ManyToOne(() => Customer, (customer) => customer.wallet)
   customer: Relation<Customer>;
 
-  @ManyToOne(() => User, (user) => user.id)
-  user: Relation<User>;
+  @ManyToOne(() => Datasource, (datasource) => datasource.id)
+  datasource: Relation<Datasource>;
 
   @Column({ type: 'double', nullable: true })
   amount: string;
