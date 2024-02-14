@@ -804,20 +804,18 @@
       };
 
       const setSlotData = (slotData) => {
-        const { posX, posY, posZ, sizeX, sizeY, sizeZ, rotX, rotY, rotZ, id } =
-          slotData;
-        posX.innerText = posX;
-        posY.innerText = posY;
-        posZ.innerText = posZ;
-        scaleX.value = sizeX;
-        scaleY.value = sizeY;
-        scaleZ.value = sizeZ;
-        rotateX.value = rotX;
-        rotateXInput.value = rotX;
-        rotateY.value = rotY;
-        rotateYInput.value = rotY;
-        rotateZ.value = rotZ;
-        rotateZInput.value = rotZ;
+        posX.innerText = slotData.posX;
+        posY.innerText = slotData.posY;
+        posZ.innerText = slotData.posX;
+        scaleX.value = slotData.sizeX;
+        scaleY.value = slotData.sizeY;
+        scaleZ.value = slotData.sizeZ;
+        rotateX.value = slotData.rotX;
+        rotateXInput.value = slotData.rotX;
+        rotateY.value = slotData.rotY;
+        rotateYInput.value = slotData.rotY;
+        rotateZ.value = slotData.rotZ;
+        rotateZInput.value = slotData.rotZ;
       };
 
       const setBannerData = (bannerData) => {
@@ -850,8 +848,8 @@
 
       const ddlSlotsBannerChange = () => {
         const foundItem = isSlot
-          ? slots.find((x) => x.id === slotBannerDropdown.value)
-          : banners.find((x) => x.id === slotBannerDropdown.value);
+          ? slots.find((x) => x.id === +slotBannerDropdown.value)
+          : banners.find((x) => x.id === +slotBannerDropdown.value);
         if (isSlot) {
           slotId = slotBannerDropdown.value;
         } else {
@@ -865,7 +863,6 @@
 
       const setDropdownData = (itemData) => {
         for (const item of itemData) {
-          debugger;
           const option = document.createElement('option');
           option.value = item.id;
           option.text = item.name;
