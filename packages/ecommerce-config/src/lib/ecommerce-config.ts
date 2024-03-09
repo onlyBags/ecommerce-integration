@@ -41,6 +41,9 @@ export const envConfig = Object.freeze({
   subGraphEndpoint: process.env.SUBGRAPH_ENDPOINT,
   subGraphVersion: process.env.SUBGRAPH_VERSION,
   infuraKey: process.env.INFURA_KEY,
+  awsAccessKeyId: process.env.AWS_ACCESS_KEY_ID,
+  awsSecretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+  s3BucketName: process.env.S3_BUCKET_NAME,
 });
 
 export default envConfig;

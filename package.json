@@ -16,6 +16,7 @@
     "debug": "cd packages/ecommerce-server && npm run debug",
     "build:db": "cd packages/ecommerce-db && npm run build",
     "build:types": "cd packages/ecommerce-data-types && npm run build",
+    "build:config": "cd packages/ecommerce-config && npm run build",
     "build:wc": "cd packages/ecommerce-woocommerce && npm run build",
     "build:websocket": "cd packages/ecommerce-websocket && npm run build",
     "build:web3": "cd packages/ecommerce-web3 && npm run build",
@@ -32,6 +33,7 @@
     "@faker-js/faker": "^8.3.1",
     "@nx/jest": "^16.2.1",
     "@nx/js": "16.2.1",
+    "@types/aws-sdk": "^2.7.0",
     "@types/cors": "^2.8.13",
     "@types/express": "^4.17.17",
     "@types/jest": "^29.5.1",
@@ -63,6 +65,7 @@
   },
   "dependencies": {
     "@woocommerce/woocommerce-rest-api": "^1.0.1",
+    "aws-sdk": "^2.1574.0",
     "axios": "^1.4.0",
     "ci": "^2.3.0",
     "cors": "^2.8.5",

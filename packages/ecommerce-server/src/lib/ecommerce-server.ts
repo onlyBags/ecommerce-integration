@@ -17,6 +17,7 @@ import https from 'https';
 import FormData from 'form-data';
 import fs from 'fs';
 import axios from 'axios';
+import AWS from 'aws-sdk';
 
 import '@dg-live/ecommerce-websocket';
 import { AppDataSource } from '@dg-live/ecommerce-db';
@@ -36,6 +37,15 @@ if (process.env.NODE_ENV !== 'test') {
     swaggerDocument = JSON.parse(data);
   });
 }
+
+// Configure AWS
+AWS.config.update({
+  accessKeyId: envConfig.awsAccessKeyId,
+  secretAccessKey: envConfig.awsSecretAccessKey,
+  region: 'us-east-1', // Replace with your bucket's region
+});
+
+const s3 = new AWS.S3();
 
 const app: Express = express();
 const port = envConfig.port || 8080;
@@ -97,6 +107,42 @@ app.get('/v1/image', async (req: ExRequest, res: ExResponse): Promise<any> => {
 
   request.end();
 });
+
+app.get(
+  '/v1/sdk-image-res',
+  async (req: ExRequest, res: ExResponse): Promise<any> => {
+    try {
+      const imageUrl = req.query.src as string;
+      if (!imageUrl) {
+        return res.status(400).send('Missing image src query parameter');
+      }
+
+      const parsedUrl = new URL(imageUrl);
+      const bucket = parsedUrl.hostname.split('.')[0];
+      const key = parsedUrl.pathname.substring(1);
+
+      const s3Params = {
+        Bucket: bucket,
+        Key: key,
+      };
+
+      const readStream = s3.getObject(s3Params).createReadStream();
+
+      readStream.on('error', (err: Error) => {
+        console.error(err);
+        return res.status(500).send('Error reading file from S3');
+      });
+
+      // Optionally set the content type here if you want
+      // For example: res.type('image/png');
+
+      readStream.pipe(res);
+    } catch (error) {
+      console.error(error);
+      res.status(500).send('Server error');
+    }
+  }
+);
 
 RegisterRoutes(app);
 
