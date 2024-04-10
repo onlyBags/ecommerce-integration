@@ -6,7 +6,10 @@ import {
   getSettings,
 } from '@dg-live/ecommerce-woocommerce';
 
-import { getAllProducts as mgGetAllProducts } from '@dg-live/ecommerce-magento';
+import {
+  syncCatalog as mgSyncCatalog,
+  getAllProducts as mgGetAllProducts,
+} from '@dg-live/ecommerce-magento';
 
 const datasourceRepository = AppDataSource.getRepository(Datasource);
 
@@ -37,5 +40,5 @@ export const syncCatalog = async ({
   if (!datasource) throw new Error('Invalid datasourceId');
   return datasource.platform === 'woocommerce'
     ? await wcSyncCatalog({ apiKey, datasourceId })
-    : [];
+    : await mgSyncCatalog({ apiKey, datasourceId });
 };

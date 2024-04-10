@@ -15,11 +15,9 @@ import {
 } from 'tsoa';
 
 import { DGLResponse } from '@dg-live/ecommerce-data-types';
-
-import { syncCatalog, getSettings } from '@dg-live/ecommerce-woocommerce';
-
 import { getAllProducts } from '../services/catalog/index.js';
-import { WoocommerceProduct } from '@dg-live/ecommerce-db';
+
+import * as catalogService from '../services/catalog/index.js';
 
 @Route('catalog')
 @Tags('Catalog')
@@ -77,7 +75,7 @@ export class CatalogController extends Controller {
       const resp = {
         message: 'Catalog synced successfully',
         status: 200,
-        data: await syncCatalog({ apiKey, datasourceId }),
+        data: await catalogService.syncCatalog({ apiKey, datasourceId }), //await syncCatalog({ apiKey, datasourceId }),
       };
       return resp;
     } catch (err) {

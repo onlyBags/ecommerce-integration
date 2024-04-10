@@ -77,18 +77,18 @@ export const syncCatalog = async ({
     });
 
     const syncedAt = new Date();
-    if (products?.data?.length) {
-      // const woocommerceProducts = await parseProductResponse(
-      //   products.data as any[],
-      //   apiKey,
-      //   datasourceId,
-      //   syncedAt
-      // );
+    if (products?.items?.length) {
+      const savedProducts = await parseProductResponse(
+        products as RawMagentoProduct,
+        apiKey,
+        datasourceId,
+        syncedAt
+      );
       let res: {
         savedProducts?: MagentoProduct[];
         updatedProducts?: MagentoProduct[];
       } = {
-        savedProducts: [],
+        savedProducts: savedProducts,
         updatedProducts: [],
       };
       // for (let woocommerceProduct of woocommerceProducts) {
