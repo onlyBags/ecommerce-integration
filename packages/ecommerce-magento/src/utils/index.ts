@@ -37,10 +37,14 @@ export const magentoApi = async ({
   apiKey,
   datasourceId,
   action,
+  method = 'GET',
+  body
 }: {
   apiKey: string;
   datasourceId: number;
   action: MgActions;
+  method?: 'GET' | 'POST' | 'PUT' | 'DELETE';
+  body?: any;
 }): Promise<any> => {
   const foundUserDatasource = await userRepository.findOne({
     where: { apiKey, datasource: { id: datasourceId } },
@@ -57,7 +61,7 @@ export const magentoApi = async ({
 
   const simpleTryData = {
     url: `${baseUrl}/rest/V1/${action}`,
-    method: 'GET',
+    method,
   };
   const simpleTryAccess = new oAuth({
     consumer: {
@@ -81,12 +85,16 @@ export const magentoApi = async ({
     simpleTryAccess.authorize(simpleTryData, token)
   );
   try {
-    const res = await axios.get(simpleTryData.url, {
+    const res = await axios({
+      method: simpleTryData.method,
+      url: simpleTryData.url,
       headers: {
         ...simpleTryAuthHeader,
       },
-    });
-    if (res.data) return res.data;
+      data: body,
+    
+    })
+    return res;
   } catch (err) {
     console.log(err);
     throw err;

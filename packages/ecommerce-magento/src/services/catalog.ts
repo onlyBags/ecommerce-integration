@@ -91,16 +91,6 @@ export const syncCatalog = async ({
         savedProducts: savedProducts,
         updatedProducts: [],
       };
-      // for (let woocommerceProduct of woocommerceProducts) {
-      //   const { savedProduct, updatedProduct } = await upsertProduct(
-      //     woocommerceProduct
-      //   );
-      //   if (savedProduct) {
-      //     res.savedProducts.push(savedProduct);
-      //   } else if (updatedProduct) {
-      //     res.updatedProducts.push(updatedProduct);
-      //   }
-      // }
       return res;
     }
     return {

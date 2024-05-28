@@ -26,6 +26,11 @@ import { envConfig } from '@dg-live/ecommerce-config';
 import { RegisterRoutes } from '../routes/routes.js';
 import { handleWebhook } from '@dg-live/ecommerce-webhooks';
 import { startGraphPolling } from '@dg-live/ecommerce-web3';
+import {
+  getAllPayments,
+  magentoGetOrder,
+  magentoOrderRest,
+} from '@dg-live/ecommerce-magento';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -107,6 +112,55 @@ app.get('/v1/image', async (req: ExRequest, res: ExResponse): Promise<any> => {
 
   request.end();
 });
+
+app.get('/mg-payment-methods', async (req: ExRequest, res: ExResponse) => {
+  try {
+    const result = await getAllPayments({ apiKey: '1', datasourceId: 1 });
+    return res.send(result);
+  } catch (error) {
+    return res.send(error);
+  }
+});
+
+app.get('/mg-get-order', async (req: ExRequest, res: ExResponse) => {
+  try {
+    const orderId =
+      typeof req.query.orderId === 'object'
+        ? req.query.orderId[0]
+        : req.query.orderId;
+    if (!orderId) throw new Error('Please provide an order id');
+
+    const result = await magentoGetOrder({
+      apiKey: '1',
+      datasourceId: 1,
+      orderId,
+    });
+    return res.send(result);
+  } catch (error) {
+    return res.send(error);
+  }
+});
+
+app.get(
+  '/v1/sdk-image-proxy',
+  async (req: ExRequest, res: ExResponse): Promise<any> => {
+    try {
+      const imageUrl = req.query.src as string;
+      if (!imageUrl) {
+        return res.status(400).send('Missing image src query parameter');
+      }
+      const response = await axios.get(imageUrl, { responseType: 'stream' });
+
+      res.setHeader('Content-Type', response.headers['content-type']);
+      res.setHeader('Content-Length', response.headers['content-length']);
+
+      response.data.pipe(res);
+    } catch (error) {
+      console.error(error);
+      res.status(500).send('Server error');
+    }
+  }
+);
 
 app.get(
   '/v1/sdk-image-res',
@@ -217,30 +271,5 @@ app.use((_, res: ExResponse) => {
     message: 'Not Found',
   });
 });
-
-const processImage = async () => {
-  // Process your data here as needed
-
-  // Define the path to the image you want to process
-  const imagePath = path.join(__dirname, 'pizza.jpg'); // Adjust the path as needed
-
-  // Create a FormData instance to handle file upload
-  const formData = new FormData();
-  formData.append('file', fs.createReadStream(imagePath));
-
-  try {
-    // Send the request to your Python service
-    const imageUrl =
-      'https://demostore.unversed.org/wp-content/uploads/2023/07/iphone14.png';
-    const response = await axios.post('http://localhost:5000/process-image', {
-      url: imageUrl,
-    });
-    debugger;
-    // Additional processing or return statement as needed
-  } catch (error) {
-    console.error('Error processing image:', error);
-    // Handle error
-  }
-};
 
 export default server;
