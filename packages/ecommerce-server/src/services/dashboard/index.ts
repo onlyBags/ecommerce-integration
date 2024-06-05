@@ -514,7 +514,7 @@ export const updateShippingCost = async ({
   if (!shippingCost)
     throw new Error(`Shipping cost not found for countryCode : ${code}`);
 
-  shippingCost.price = body.price;
+  if (body.price !== undefined) shippingCost.price = body.price;
   shippingCost.isActive = !!body.isActive;
   try {
     const savedShippingCost = await shippingCostRepository.save(shippingCost);

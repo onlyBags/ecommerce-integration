@@ -4,9 +4,14 @@ import { createHmac } from 'crypto';
 import axios from 'axios';
 
 import { magentoApi } from '../utils/index.js';
+import {
+  Entity,
+  MagentoOrder,
+  MagentoOrderReq,
+} from '@dg-live/ecommerce-data-types';
 const userRepository = AppDataSource.getRepository(User);
 
-const mockPayload3 = {
+const mockPayload3: MagentoOrderReq = {
   entity: {
     base_currency_code: 'USD',
     base_discount_amount: 0,
@@ -739,14 +744,257 @@ const modOrderCreatedOnWebPage = {
 };
 export const createOrder = async () => {};
 
+function mapToMagentoOrderReq(order: MagentoOrder): MagentoOrderReq {
+  const entity: Entity = {
+    base_currency_code: 'USD', // Adjust these as needed
+    base_discount_amount: 0,
+    base_grand_total: 0,
+    base_discount_tax_compensation_amount: 0,
+    base_shipping_amount: 0,
+    base_shipping_discount_amount: 0,
+    base_shipping_discount_tax_compensation_amnt: 0,
+    base_shipping_incl_tax: 0,
+    base_shipping_tax_amount: 0,
+    base_subtotal: 0,
+    base_subtotal_incl_tax: 0,
+    base_tax_amount: 0,
+    base_total_due: 0,
+    base_to_global_rate: 1,
+    base_to_order_rate: 1,
+    created_at: new Date().toISOString(),
+    customer_email: order.billing.email || '',
+    customer_firstname: order.billing.firstName,
+    customer_group_id: 0,
+    customer_is_guest: 1,
+    customer_lastname: order.billing.lastName,
+    customer_note_notify: 1,
+    discount_amount: 0,
+    global_currency_code: 'USD',
+    grand_total: 0,
+    discount_tax_compensation_amount: 0,
+    is_virtual: 0,
+    order_currency_code: 'USD',
+    quote_id: 0,
+    shipping_amount: parseFloat(order.shippingLines[0].total || '0'),
+    shipping_description: order.shippingLines[0].methodTitle,
+    shipping_discount_amount: 0,
+    shipping_discount_tax_compensation_amount: 0,
+    shipping_incl_tax: parseFloat(order.shippingLines[0].total || '0'),
+    shipping_tax_amount: 0,
+    state: 'new',
+    status: 'pending',
+    store_currency_code: 'USD',
+    store_id: 1,
+    store_name: 'Main Website\nMain Website Store\nDefault Store View',
+    store_to_base_rate: 1,
+    store_to_order_rate: 1,
+    subtotal: 0,
+    subtotal_incl_tax: 0,
+    tax_amount: 0,
+    total_due: 0,
+    total_item_count: order.lineItems.length,
+    total_qty_ordered: order.lineItems.reduce(
+      (total, item) => total + item.quantity,
+      0
+    ),
+    updated_at: new Date().toISOString(),
+    weight: 0,
+    items: order.lineItems.map((item, index) => ({
+      amount_refunded: 0,
+      base_amount_refunded: 0,
+      base_discount_amount: 0,
+      base_discount_invoiced: 0,
+      base_discount_tax_compensation_amount: 0,
+      base_original_price: 0,
+      base_price: 0,
+      base_price_incl_tax: 0,
+      base_row_invoiced: 0,
+      base_row_total: 0,
+      base_row_total_incl_tax: 0,
+      base_tax_amount: 0,
+      base_tax_invoiced: 0,
+      created_at: new Date().toISOString(),
+      discount_amount: 0,
+      discount_invoiced: 0,
+      discount_percent: 0,
+      free_shipping: 0,
+      discount_tax_compensation_amount: 0,
+      is_qty_decimal: 0,
+      is_virtual: 0,
+      item_id: index,
+      name: '', // Adjust as needed
+      no_discount: 0,
+      order_id: 0,
+      original_price: 0,
+      price: 0,
+      price_incl_tax: 0,
+      product_id: item.productId,
+      product_type: 'simple',
+      qty_canceled: 0,
+      qty_invoiced: 0,
+      qty_ordered: item.quantity,
+      qty_refunded: 0,
+      qty_shipped: 0,
+      quote_item_id: 0,
+      row_invoiced: 0,
+      row_total: 0,
+      row_total_incl_tax: 0,
+      row_weight: 0,
+      sku: '', // Adjust as needed
+      store_id: 1,
+      tax_amount: 0,
+      tax_invoiced: 0,
+      tax_percent: 0,
+      updated_at: new Date().toISOString(),
+      weight: 0,
+    })),
+    billing_address: {
+      address_type: 'billing',
+      city: order.billing.city,
+      company: '', // Adjust as needed
+      country_id: order.billing.country,
+      email: order.billing.email || '',
+      entity_id: 0,
+      firstname: order.billing.firstName,
+      lastname: order.billing.lastName,
+      parent_id: 0,
+      postcode: order.billing.postcode,
+      region: order.billing.state,
+      region_code: order.billing.state,
+      region_id: 0,
+      street: [order.billing.address1, order.billing.address2 || ''],
+      telephone: order.billing.phone || '',
+    },
+    payment: {
+      account_status: null,
+      additional_information: [order.paymentMethodTitle],
+      amount_ordered: 0,
+      base_amount_ordered: 0,
+      base_shipping_amount: 0,
+      cc_exp_year: '0',
+      cc_last4: null,
+      cc_ss_start_month: '0',
+      cc_ss_start_year: '0',
+      entity_id: 0,
+      method: order.paymentMethod,
+      parent_id: 0,
+      shipping_amount: 0,
+    },
+    status_histories: [],
+    extension_attributes: {
+      shipping_assignments: [
+        {
+          shipping: {
+            address: {
+              address_type: 'shipping',
+              city: order.shipping.city,
+              company: '', // Adjust as needed
+              country_id: order.shipping.country,
+              email: order.billing.email || '',
+              entity_id: 0,
+              firstname: order.shipping.firstName,
+              lastname: order.shipping.lastName,
+              parent_id: 0,
+              postcode: order.shipping.postcode,
+              region: order.shipping.state,
+              region_code: order.shipping.state,
+              region_id: 0,
+              street: [order.shipping.address1, order.shipping.address2 || ''],
+              telephone: order.billing.phone || '',
+            },
+            method: order.shippingLines[0].methodId,
+            total: {
+              base_shipping_amount: parseFloat(
+                order.shippingLines[0].total || '0'
+              ),
+              base_shipping_discount_amount: 0,
+              base_shipping_discount_tax_compensation_amnt: 0,
+              base_shipping_incl_tax: parseFloat(
+                order.shippingLines[0].total || '0'
+              ),
+              base_shipping_tax_amount: 0,
+              shipping_amount: parseFloat(order.shippingLines[0].total || '0'),
+              shipping_discount_amount: 0,
+              shipping_discount_tax_compensation_amount: 0,
+              shipping_incl_tax: parseFloat(
+                order.shippingLines[0].total || '0'
+              ),
+              shipping_tax_amount: 0,
+            },
+          },
+          items: order.lineItems.map((item, index) => ({
+            amount_refunded: 0,
+            base_amount_refunded: 0,
+            base_discount_amount: 0,
+            base_discount_invoiced: 0,
+            base_discount_tax_compensation_amount: 0,
+            base_original_price: 0,
+            base_price: 0,
+            base_price_incl_tax: 0,
+            base_row_invoiced: 0,
+            base_row_total: 0,
+            base_row_total_incl_tax: 0,
+            base_tax_amount: 0,
+            base_tax_invoiced: 0,
+            created_at: new Date().toISOString(),
+            discount_amount: 0,
+            discount_invoiced: 0,
+            discount_percent: 0,
+            free_shipping: 0,
+            discount_tax_compensation_amount: 0,
+            is_qty_decimal: 0,
+            is_virtual: 0,
+            item_id: index,
+            name: '', // Adjust as needed
+            no_discount: 0,
+            order_id: 0,
+            original_price: 0,
+            price: 0,
+            price_incl_tax: 0,
+            product_id: item.productId,
+            product_type: 'simple',
+            qty_canceled: 0,
+            qty_invoiced: 0,
+            qty_ordered: item.quantity,
+            qty_refunded: 0,
+            qty_shipped: 0,
+            quote_item_id: 0,
+            row_invoiced: 0,
+            row_total: 0,
+            row_total_incl_tax: 0,
+            row_weight: 0,
+            sku: '', // Adjust as needed
+            store_id: 1,
+            tax_amount: 0,
+            tax_invoiced: 0,
+            tax_percent: 0,
+            updated_at: new Date().toISOString(),
+            weight: 0,
+          })),
+        },
+      ],
+      payment_additional_info: [
+        {
+          key: 'method_title',
+          value: order.paymentMethodTitle,
+        },
+      ],
+      applied_taxes: [],
+      item_applied_taxes: [],
+    },
+  };
+
+  return { entity };
+}
+
 export const magentoOrderRest = async ({
   apiKey,
   datasourceId,
-  body = mockPayload3,
+  body,
 }: {
   apiKey: string;
   datasourceId: number;
-  body: any;
+  body: MagentoOrder;
 }): Promise<any> => {
   const foundUserDatasource = await userRepository.findOne({
     where: { apiKey, datasource: { id: datasourceId } },
@@ -786,8 +1034,9 @@ export const magentoOrderRest = async ({
   const simpleTryAuthHeader = simpleTryAccess.toHeader(
     simpleTryAccess.authorize(simpleTryData, token)
   );
+  const orderReq: MagentoOrderReq = mapToMagentoOrderReq(body);
   try {
-    const res = await axios.post(simpleTryData.url, body, {
+    const res = await axios.post(simpleTryData.url, orderReq, {
       headers: {
         ...simpleTryAuthHeader,
       },
@@ -858,3 +1107,48 @@ export const magentoGetOrder = async ({
     throw err;
   }
 };
+// {
+//   "paymentMethod": "checkmo",
+//   "paymentMethodTitle": "Check / Money order",
+//   "wallet": "",
+//   "billing": {
+//     "firstName": "my name",
+//     "lastName": "my last name",
+//     "address1": "my street",
+//     "address2": "my second street",
+//     "city": "Alaska",
+//     "state": "Alaska",
+//     "postcode": "12342",
+//     "country": "US",
+//     "email": "cuentaparavtv@gmail.com",
+//     "phone": "+447788996655"
+//   },
+//   "shipping": {
+//     "firstName": "my name",
+//     "lastName": "my last name",
+//     "address1": "my street",
+//     "address2": "my second street",
+//     "city": "Alaska",
+//     "state": "Alaska",
+//     "postcode": "12342",
+//     "country": "US"
+//   },
+//   "lineItems": [
+//     {
+//       "productId": 1,
+//       "quantity": 10,
+//       "variationId": 0
+//     }
+//   ],
+//   "shippingLines": [
+//     {
+//       "methodId": "flatrate_flatrate",
+//       "methodTitle": "Flat Rate - Fixed",
+//       "total": "50"
+//     }
+//   ],
+//   "shippingId": 0,
+//   "billingId": 0,
+//   "saveBilling": true,
+//   "saveShipping": true
+// }

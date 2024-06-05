@@ -6,3 +6,4 @@ export * from './RawMagentoMediaGalleryEntry.js';
 export * from './RawMagentoProduct.js';
 export * from './RawMagentoProductItem.js';
 export * from './RawMagentoCategory.js';
+export * from './Order.js';

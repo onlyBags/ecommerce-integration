@@ -59,6 +59,6 @@ export interface DatasourceShippingCost {
 }
 
 export interface DatasourceShippingCostUpdate {
-  price: number;
+  price?: number;
   isActive?: boolean;
 }

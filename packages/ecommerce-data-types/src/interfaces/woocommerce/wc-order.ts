@@ -1,33 +1,11 @@
 import { Order } from '@dg-live/ecommerce-db';
-import { MetaData } from '../index.js';
-
-export interface OrderShipping {
-  firstName: string;
-  lastName: string;
-  address1: string;
-  address2?: string;
-  city: string;
-  state: string;
-  postcode: string;
-  country: string;
-}
-
-export interface OrderBilling extends OrderShipping {
-  email?: string;
-  phone?: string;
-}
-
-export interface LineItem {
-  productId: number;
-  quantity: number;
-  variationId?: number;
-}
-
-export interface ShippingLine {
-  methodId: string;
-  methodTitle: string;
-  total?: string;
-}
+import {
+  LineItem,
+  MetaData,
+  OrderBilling,
+  OrderShipping,
+  ShippingLine,
+} from '../index.js';
 
 export interface WoocommerceOrderCreatedRes {
   dgLiveOrder: Order;

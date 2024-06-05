@@ -13,7 +13,7 @@ import {
   Path,
 } from 'tsoa';
 
-import { DGLResponse } from '@dg-live/ecommerce-data-types';
+import { DGLResponse, MagentoOrder } from '@dg-live/ecommerce-data-types';
 import { magentoOrderRest, getAllProducts } from '@dg-live/ecommerce-magento';
 import { WoocommerceProduct } from '@dg-live/ecommerce-db';
 
@@ -25,7 +25,7 @@ export class MagentoController extends Controller {
   public async createOrder(
     @Header('api-key') apiKey: string,
     @Path() datasourceId: number,
-    @Body() requestBody: object
+    @Body() requestBody: MagentoOrder
   ): Promise<DGLResponse<any>> {
     const errorFields: FieldErrors = {};
     if (!apiKey) {
