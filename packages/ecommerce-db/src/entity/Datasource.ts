@@ -36,8 +36,8 @@ export class Datasource {
   woocommerceProduct: Relation<WoocommerceProduct[]>;
 
   @OneToMany(
-    () => WoocommerceProduct,
-    (woocommerceProduct) => woocommerceProduct.datasource
+    () => MagentoProduct,
+    (magentoProduct) => magentoProduct.datasource
   )
   magentoProduct: Relation<MagentoProduct[]>;
 

@@ -12,54 +12,36 @@ export const getAllProducts = async ({
   datasourceId,
 }: {
   datasourceId: number;
-}): Promise<any> => {
+}): Promise<MagentoProduct[]> => {
   try {
     const foundDatasource = await datasourceRepository.findOne({
       where: {
         id: datasourceId,
-        platform: 'magento',
       },
       relations: {
-        user: true,
+        magentoProduct: {
+          mediaGalleryEntries: true,
+          customAttributes: true,
+          productLinks: true,
+          extensionAttributes: true,
+        },
       },
     });
-    if (!foundDatasource) throw new Error('Datasource not found');
-    const apiKey = foundDatasource.user.apiKey;
-
-    const products: RawMagentoProduct = await magentoApi({
-      apiKey,
-      datasourceId,
-      action: MgActions.GET_PRODUCTS,
-    });
-
-    const productsAttributes = await magentoApi({
-      apiKey,
-      datasourceId,
-      action: MgActions.GET_PRODUCTS_ATTRIBUTES,
-    });
-    const categories = await magentoApi({
-      apiKey,
-      datasourceId,
-      action: MgActions.GET_CATEGORIES,
-    });
-    const categoriesList = await magentoApi({
-      apiKey,
-      datasourceId,
-      action: MgActions.GET_CATEGORIES_LIST,
-    });
-    console.log(productsAttributes);
-    const syncedAt = new Date();
-    await parseProductResponse(
-      products as RawMagentoProduct,
-      apiKey,
-      datasourceId,
-      syncedAt
-    );
-    return { products, productsAttributes, categories, categoriesList } as any;
+    if (!foundDatasource || !foundDatasource.magentoProduct.length) return [];
+    return addImageBaseUrl(foundDatasource);
   } catch (err) {
-    console.log(err);
     throw err;
   }
+};
+
+const addImageBaseUrl = (datasource: Datasource) => {
+  const baseUrl = datasource.baseUrl;
+  datasource.magentoProduct.forEach((product) => {
+    product.mediaGalleryEntries.forEach((media) => {
+      media.file = `${baseUrl}media/catalog/product${media.file}`;
+    });
+  });
+  return datasource.magentoProduct;
 };
 
 export const syncCatalog = async ({
@@ -70,16 +52,16 @@ export const syncCatalog = async ({
   updatedProducts?: MagentoProduct[];
 }> => {
   try {
-    const products = await magentoApi({
+    const mgRes = await magentoApi({
       apiKey,
       datasourceId,
       action: MgActions.GET_PRODUCTS,
     });
 
     const syncedAt = new Date();
-    if (products?.items?.length) {
+    if (mgRes.data?.items?.length) {
       const savedProducts = await parseProductResponse(
-        products as RawMagentoProduct,
+        mgRes?.data as RawMagentoProduct,
         apiKey,
         datasourceId,
         syncedAt

@@ -38,7 +38,7 @@ export const magentoApi = async ({
   datasourceId,
   action,
   method = 'GET',
-  body
+  body,
 }: {
   apiKey: string;
   datasourceId: number;
@@ -92,8 +92,7 @@ export const magentoApi = async ({
         ...simpleTryAuthHeader,
       },
       data: body,
-    
-    })
+    });
     return res;
   } catch (err) {
     console.log(err);
@@ -112,11 +111,6 @@ export const parseProductResponse = async (
   updatedAt: Date
 ): Promise<MagentoProduct[]> => {
   const data: MagentoProduct[] = [];
-  const RawMagentoCategory: RawMagentoCategory[] = await magentoApi({
-    apiKey,
-    datasourceId,
-    action: MgActions.GET_CATEGORIES_LIST,
-  });
   for (const rawMagentoProduct of response.items) {
     await AppDataSource.manager.transaction(
       async (transactionalEntityManager) => {
@@ -125,6 +119,7 @@ export const parseProductResponse = async (
           relations: {
             datasource: {
               magentoProduct: true,
+              woocommerceProduct: false,
             },
           },
           where: {
@@ -224,15 +219,17 @@ export const parseProductResponse = async (
         } else {
           const foundExtensionAttributes =
             await extensionAttributesRepository.findOne({
-              relations: {
-                configurableProductLinks: true,
-              },
               where: {
                 id: extensionAttributes.id,
               },
             });
           console.log(foundExtensionAttributes);
-          debugger;
+          foundExtensionAttributes.configurableProductLinks =
+            extensionAttributes.configurableProductLinks || [];
+          foundExtensionAttributes.websiteIds =
+            extensionAttributes.websiteIds || [];
+          extensionAttributesToSave = foundExtensionAttributes;
+          await extensionAttributesRepository.save(extensionAttributesToSave);
         }
         if (Object.keys(extensionAttributesToSave).length)
           product.extensionAttributes = extensionAttributesToSave;

@@ -44,6 +44,8 @@ export const envConfig = Object.freeze({
   awsAccessKeyId: process.env.AWS_ACCESS_KEY_ID,
   awsSecretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
   s3BucketName: process.env.S3_BUCKET_NAME,
+  mailgunApiKeyId: process.env.MAILGUN_API_KEY_ID || '',
+  mailgunApiKey: process.env.MAILGUN_API_KEY || '',
 });
 
 export default envConfig;
