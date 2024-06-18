@@ -252,6 +252,6 @@ export class WoocommerceProduct {
   // })
   metaData: Relation<MetaData[]>;
 
-  @OneToMany(() => Slot, (slot) => slot.woocommerceProduct)
-  slot: Relation<Slot[]>;
+  // @OneToMany(() => Slot, (slot) => slot.woocommerceProduct)
+  // slot: Relation<Slot[]>;
 }

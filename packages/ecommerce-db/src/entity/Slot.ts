@@ -8,6 +8,7 @@ import {
 } from 'typeorm';
 import { Datasource } from './Datasource.js';
 import { WoocommerceProduct } from './WoocommerceProduct.js';
+import { MagentoProduct } from './MagentoProduct.js';
 
 @Entity({
   name: 'slot',
@@ -25,11 +26,11 @@ export class Slot {
   @Column({ default: true })
   enabled: boolean;
 
-  @ManyToOne(
-    () => WoocommerceProduct,
-    (woocommerceProduct) => woocommerceProduct.slot
-  )
+  @ManyToOne(() => WoocommerceProduct)
   woocommerceProduct: Relation<WoocommerceProduct>;
+
+  @ManyToOne(() => MagentoProduct)
+  magentoProduct: Relation<MagentoProduct>;
 
   @Column('decimal', { precision: 18, scale: 2 })
   posX: number;

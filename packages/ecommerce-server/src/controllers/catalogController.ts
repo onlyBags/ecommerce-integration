@@ -15,7 +15,7 @@ import {
 } from 'tsoa';
 
 import { DGLResponse } from '@dg-live/ecommerce-data-types';
-import { getAllProducts } from '../services/catalog/index.js';
+import { getAllProducts, getAllSlots } from '../services/catalog/index.js';
 
 import * as catalogService from '../services/catalog/index.js';
 
@@ -76,6 +76,31 @@ export class CatalogController extends Controller {
         message: 'Catalog synced successfully',
         status: 200,
         data: await catalogService.syncCatalog({ apiKey, datasourceId }), //await syncCatalog({ apiKey, datasourceId }),
+      };
+      return resp;
+    } catch (err) {
+      throw new ValidateError({}, err.message);
+    }
+  }
+
+  @Get('/slots/{datasourceId}')
+  @SuccessResponse('200', 'Created')
+  public async slots(@Path() datasourceId: number): Promise<DGLResponse<any>> {
+    const errorFields: FieldErrors = {};
+    if (!datasourceId) {
+      errorFields.datasourceId = {
+        message: 'Invalid datasourceId',
+        value: datasourceId,
+      };
+    }
+    if (Object.keys(errorFields).length > 0)
+      throw new ValidateError(errorFields, 'Error geting product catalog');
+    try {
+      const slots = await getAllSlots(+datasourceId);
+      const resp = {
+        message: 'Slots fetched successfully',
+        status: 200,
+        data: slots,
       };
       return resp;
     } catch (err) {

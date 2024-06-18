@@ -5,6 +5,7 @@ import {
   Slot,
   WoocommerceProduct,
   ShippingCost,
+  MagentoProduct,
 } from '@dg-live/ecommerce-db';
 import {
   DatasourceShippingCost,
@@ -42,7 +43,9 @@ interface WooCommerceCurrencySettings {
 const userRepository = AppDataSource.getRepository(User);
 const datasourceRepository = AppDataSource.getRepository(Datasource);
 const slotRepository = AppDataSource.getRepository(Slot);
-const woocommerceProduct = AppDataSource.getRepository(WoocommerceProduct);
+const woocommerceProductRepository =
+  AppDataSource.getRepository(WoocommerceProduct);
+const magentoProductRepository = AppDataSource.getRepository(MagentoProduct);
 const shippingCostRepository = AppDataSource.getRepository(ShippingCost);
 
 const dashboardConfig = {
@@ -209,11 +212,12 @@ export const updateSlot = async (
   const foundUser = await getUserAndCheckDatasource(apiKey, datasourceId);
   if (!foundUser) throw new Error('User not found');
   if (!foundUser.datasource.length) throw new Error('Datasource not found');
-
+  const datasource = foundUser.datasource[0];
   const foundSlot = await slotRepository.findOne({
     where: { id: slotId, datasource: { id: datasourceId } },
     relations: {
-      woocommerceProduct: true,
+      woocommerceProduct: datasource.platform === 'woocommerce',
+      magentoProduct: datasource.platform !== 'woocommerce',
     },
   });
   // const foundSlot = await slotRepository.preload({ id: slotId, ...slotReq },);
@@ -223,27 +227,38 @@ export const updateSlot = async (
   if (!!slotReq.productId) {
     const productId = slotReq.productId;
     delete slotReq.productId;
-    const datasource = foundUser.datasource[0];
-    let foundProduct: WoocommerceProduct;
+    let foundProduct: WoocommerceProduct | MagentoProduct;
 
     if (datasource.platform === 'woocommerce') {
-      foundProduct = await woocommerceProduct.findOne({
+      foundProduct = await woocommerceProductRepository.findOne({
         where: { productId: productId, datasourceId },
         relations: {
           images: true,
         },
       });
     } else if (datasource.platform === 'magento') {
-      throw new Error('Magento platform not supported yet');
+      foundProduct = await magentoProductRepository.findOne({
+        where: { productId: productId, datasourceId },
+        relations: {
+          mediaGalleryEntries: true,
+        },
+      });
     }
     if (!foundProduct)
       throw new Error(
         `Product ${productId} not found in datasource ${datasourceId} and platform ${datasource.platform}`
       );
-    foundSlot.woocommerceProduct = foundProduct;
-    foundSlot.image = await proccesImage(
-      foundSlot.woocommerceProduct.images[0].src
-    );
+    if (datasource.platform === 'woocommerce') {
+      foundSlot.woocommerceProduct = foundProduct as WoocommerceProduct;
+      foundSlot.image = await proccesImage(
+        foundSlot.woocommerceProduct.images[0].src
+      );
+    } else {
+      foundSlot.magentoProduct = foundProduct as MagentoProduct;
+      foundSlot.image = await proccesImage(
+        `${datasource.baseUrl}media/catalog/product${foundSlot.magentoProduct.mediaGalleryEntries[0].file}`
+      );
+    }
     try {
       await slotRepository.save({ ...foundSlot, ...slotReq });
     } catch (error) {
@@ -258,7 +273,8 @@ export const updateSlot = async (
     const updatedSlot = await slotRepository.findOne({
       where: { id: slotId, datasource: { id: datasourceId } },
       relations: {
-        woocommerceProduct: true,
+        woocommerceProduct: datasource.platform === 'woocommerce',
+        magentoProduct: datasource.platform !== 'woocommerce',
       },
     });
     return updatedSlot;
@@ -398,7 +414,9 @@ export const getSlots = async (datasourceId: number): Promise<Slot[]> => {
 async function getUserAndCheckDatasource(apiKey: string, datasourceId: number) {
   const foundUser = await userRepository.findOne({
     where: { apiKey, datasource: { id: datasourceId } },
-    relations: ['datasource'],
+    relations: {
+      datasource: true,
+    },
   });
 
   if (!foundUser) throw new Error('User not found');

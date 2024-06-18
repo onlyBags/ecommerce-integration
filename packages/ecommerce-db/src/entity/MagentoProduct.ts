@@ -19,6 +19,7 @@ import {
   MagentoProductLink,
   MagentoExtensionAttributes,
   Datasource,
+  Slot,
 } from './index.js';
 
 @Entity()
@@ -84,4 +85,7 @@ export class MagentoProduct {
   @OneToOne(() => MagentoExtensionAttributes)
   @JoinColumn()
   extensionAttributes: Relation<MagentoExtensionAttributes>;
+
+  // @OneToMany(() => Slot, (slot) => slot.magentoProduct)
+  // slot: Relation<Slot[]>;
 }

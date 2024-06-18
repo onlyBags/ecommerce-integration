@@ -14,10 +14,12 @@ import {
   WoocommerceProduct,
   User,
   Datasource,
+  Slot,
 } from '@dg-live/ecommerce-db';
 // import { myData } from './mydata.js';
 
 const userRepository = AppDataSource.getRepository(User);
+const slotRepository = AppDataSource.getRepository(Slot);
 const datasourceRepository = AppDataSource.getRepository(Datasource);
 const woocommerceProductRepository =
   AppDataSource.getRepository(WoocommerceProduct);
