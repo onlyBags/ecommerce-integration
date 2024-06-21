@@ -12,6 +12,7 @@ import {
   getAllProducts as mgGetAllProducts,
   getAllSlots as mgGetAllSlots,
 } from '@dg-live/ecommerce-magento';
+import { SlotRes } from '@dg-live/ecommerce-data-types';
 
 const datasourceRepository = AppDataSource.getRepository(Datasource);
 
@@ -45,7 +46,7 @@ export const syncCatalog = async ({
     : await mgSyncCatalog({ apiKey, datasourceId });
 };
 
-export const getAllSlots = async (datasourceId: number) => {
+export const getAllSlots = async (datasourceId: number): Promise<SlotRes[]> => {
   const datasource = await datasourceRepository.findOne({
     where: {
       id: datasourceId,
@@ -54,5 +55,5 @@ export const getAllSlots = async (datasourceId: number) => {
   if (!datasource) throw new Error('Invalid datasourceId');
   return datasource.platform === 'woocommerce'
     ? await wcGetAllSlots({ datasourceId })
-    : await mgGetAllSlots({ datasourceId });
+    : ((await mgGetAllSlots({ datasourceId })) as any);
 };
