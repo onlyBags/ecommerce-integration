@@ -3,7 +3,6 @@ import {
   Route,
   SuccessResponse,
   Post,
-  Body,
   Get,
   Query,
   Tags,
@@ -11,25 +10,19 @@ import {
   ValidateError,
   Header,
   Path,
-  Example,
 } from 'tsoa';
 
 import {
   DGLResponse,
   WoocommerceShippingZone,
   ProductVariation,
-  WoocommerceOrderCreatedRes,
-  WoocommerceOrder,
   WoocommerceWebhookResponse,
 } from '@dg-live/ecommerce-data-types';
 
 import {
-  syncCatalog,
-  getAllProducts,
   getShippingZones,
   shippingLocations,
   getProductVariation,
-  createOrder,
   shippingMethods,
   getWebhooks,
   createWebhooks,
@@ -38,10 +31,6 @@ import {
 
 import { WoocommerceProduct } from '@dg-live/ecommerce-db';
 
-type OrderExample = {
-  datasourceId: number;
-  wcOrder: WoocommerceOrder;
-};
 @Route('woocommerce')
 @Tags('Woocommerce')
 export class WoocommerceController extends Controller {
@@ -333,95 +322,96 @@ export class WoocommerceController extends Controller {
     }
   }
 
-  @Post('/order')
-  @SuccessResponse('200', 'Order Created')
-  @Example<OrderExample>({
-    datasourceId: 1,
-    wcOrder: {
-      paymentMethod: 'bacs',
-      paymentMethodTitle: 'Testing DGL-E',
-      wallet: '0x355A93EE3781CCF6084C86DAD7921e5e731ad519',
-      billing: {
-        firstName: 'Maiki',
-        lastName: 'Prueba',
-        address1: 'E. Costa',
-        address2: '1068',
-        city: 'Buenos Aires',
-        state: 'BSAS',
-        postcode: '1068',
-        country: 'AR',
-      },
-      shipping: {
-        firstName: 'Maiki',
-        lastName: 'Prueba',
-        address1: 'E. Costa',
-        address2: '1068',
-        city: 'Buenos Aires',
-        state: 'BSAS',
-        postcode: '1068',
-        country: 'AR',
-      },
-      lineItems: [
-        {
-          productId: 4518,
-          quantity: 1,
-        },
-      ],
-      shippingLines: [
-        {
-          methodId: 'oca_wanderlust',
-          methodTitle: 'Oca',
-          // total: "10.00"
-        },
-      ],
-    },
-  })
-  public async wcCreateOrder(
-    @Header('api-key') apiKey: string,
-    @Body()
-    body: {
-      datasourceId: number;
-      wcOrder: WoocommerceOrder;
-    }
-  ): Promise<DGLResponse<WoocommerceOrderCreatedRes>> {
-    const errorFields: FieldErrors = {};
-    if (!apiKey) {
-      errorFields.apiKey = {
-        message: 'Invalid apiKey',
-        value: apiKey,
-      };
-    }
-    if (!body.datasourceId) {
-      errorFields.datasourceId = {
-        message: 'Invalid datasourceId',
-        value: body.datasourceId,
-      };
-    }
-    if (!body.wcOrder.wallet) {
-      errorFields.wallet = {
-        message: 'Invalid wallet',
-        value: body.wcOrder.wallet,
-      };
-    }
+  // @Post('/order')
+  // @SuccessResponse('200', 'Order Created')
+  // @Example<OrderExample>({
+  //   datasourceId: 1,
+  //   wcOrder: {
+  //     paymentMethod: 'bacs',
+  //     paymentMethodTitle: 'Testing DGL-E',
+  //     wallet: '0x355A93EE3781CCF6084C86DAD7921e5e731ad519',
+  //     billing: {
+  //       firstName: 'Maiki',
+  //       lastName: 'Prueba',
+  //       address1: 'E. Costa',
+  //       address2: '1068',
+  //       city: 'Buenos Aires',
+  //       state: 'BSAS',
+  //       postcode: '1068',
+  //       country: 'AR',
+  //     },
+  //     shipping: {
+  //       firstName: 'Maiki',
+  //       lastName: 'Prueba',
+  //       address1: 'E. Costa',
+  //       address2: '1068',
+  //       city: 'Buenos Aires',
+  //       state: 'BSAS',
+  //       postcode: '1068',
+  //       country: 'AR',
+  //     },
+  //     lineItems: [
+  //       {
+  //         productId: 4518,
+  //         quantity: 1,
+  //       },
+  //     ],
+  //     shippingLines: [
+  //       {
+  //         methodId: 'oca_wanderlust',
+  //         methodTitle: 'Oca',
+  //         // total: "10.00"
+  //       },
+  //     ],
+  //   },
+  // })
+  // public async wcCreateOrder(
+  //   @Header('api-key') apiKey: string,
+  //   @Body()
+  //   body: {
+  //     datasourceId: number;
+  //     wcOrder: WoocommerceOrder;
+  //   }
+  // ): Promise<DGLResponse<WoocommerceOrderCreatedRes>> {
+  //   const errorFields: FieldErrors = {};
+  //   if (!apiKey) {
+  //     errorFields.apiKey = {
+  //       message: 'Invalid apiKey',
+  //       value: apiKey,
+  //     };
+  //   }
+  //   if (!body.datasourceId) {
+  //     errorFields.datasourceId = {
+  //       message: 'Invalid datasourceId',
+  //       value: body.datasourceId,
+  //     };
+  //   }
+  //   if (!body.wcOrder.wallet) {
+  //     errorFields.wallet = {
+  //       message: 'Invalid wallet',
+  //       value: body.wcOrder.wallet,
+  //     };
+  //   }
 
-    if (Object.keys(errorFields).length > 0)
-      throw new ValidateError(errorFields, 'Error creating order');
-    try {
-      const wcOrderRes = await createOrder({
-        apiKey,
-        datasourceId: body.datasourceId,
-        order: body.wcOrder,
-      });
-      const resp = {
-        message: 'Order created successfully',
-        status: 200,
-        data: wcOrderRes,
-      };
-      return resp as any;
-    } catch (err) {
-      throw new ValidateError({}, err.message);
-    }
-  }
+  //   if (Object.keys(errorFields).length > 0)
+  //     throw new ValidateError(errorFields, 'Error creating order');
+  //   try {
+  //     const wcOrderRes = await createOrder({
+  //       apiKey,
+  //       datasourceId: body.datasourceId,
+  //       order: body.wcOrder,
+  //     });
+  //     const resp = {
+  //       message: 'Order created successfully',
+  //       status: 200,
+  //       data: wcOrderRes,
+  //     };
+  //     return resp as any;
+  //   } catch (err) {
+  //     throw new ValidateError({}, err.message);
+  //   }
+  // }
+
   @Post('/webhooks/{datasourceId}')
   @SuccessResponse('200', 'Webhook')
   public async createWebhooks(

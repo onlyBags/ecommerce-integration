@@ -1,4 +1,4 @@
-export type IcePriceResponse = {
+export type BagPriceResponse = {
   status: {
     timestamp: string;
     error_code: number;

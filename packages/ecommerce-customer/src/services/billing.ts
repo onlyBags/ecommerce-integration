@@ -1,6 +1,6 @@
 import { ValidateError } from 'tsoa';
 import { AppDataSource, Billing, Customer } from '@dg-live/ecommerce-db';
-import { OrderBilling } from '@dg-live/ecommerce-data-types';
+import { BillingReq, OrderBilling } from '@dg-live/ecommerce-data-types';
 
 const billingRepository = AppDataSource.getRepository(Billing);
 const customerRepository = AppDataSource.getRepository(Customer);
@@ -49,4 +49,26 @@ export const getBilling = async (wallet: string) => {
   } catch (err) {
     throw err;
   }
+};
+
+export const mapBillingWCBilling = (billing: Billing | OrderBilling) => {
+  const mappedBilling: BillingReq = {
+    first_name: billing.firstName,
+    last_name: billing.lastName,
+    address_1: billing.address1,
+    city: billing.city,
+    state: billing.state,
+    postcode: billing.postcode,
+    country: billing.country,
+    email: '',
+    phone: '',
+    address_2: '',
+  };
+  if (billing.email) mappedBilling.email = billing.email;
+  else delete mappedBilling.email;
+  if (billing.phone) mappedBilling.phone = billing.phone;
+  else delete mappedBilling.phone;
+  if (billing.address2) mappedBilling.address_2 = billing.address2;
+  else delete mappedBilling.address_2;
+  return mappedBilling;
 };

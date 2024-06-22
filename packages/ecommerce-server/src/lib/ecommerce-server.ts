@@ -26,11 +26,7 @@ import { envConfig } from '@dg-live/ecommerce-config';
 import { RegisterRoutes } from '../routes/routes.js';
 import { handleWebhook } from '@dg-live/ecommerce-webhooks';
 import { startGraphPolling } from '@dg-live/ecommerce-web3';
-import {
-  getAllPayments,
-  magentoGetOrder,
-  magentoOrderRest,
-} from '@dg-live/ecommerce-magento';
+import { getAllPayments } from '@dg-live/ecommerce-magento';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -67,50 +63,60 @@ app.use(express.json());
 app.disable('x-powered-by');
 
 app.get('/v1/image', async (req: ExRequest, res: ExResponse): Promise<any> => {
-  const parts = url.parse(req.url, true);
-  const imageUrl =
-    typeof parts.query.src === 'string' ? parts.query.src : parts.query.src[0];
+  try {
+    const parts = url.parse(req.url, true);
+    const imageUrl =
+      typeof parts.query.src === 'string'
+        ? parts.query.src
+        : parts.query.src[0];
 
-  const parsedUrl = new URL(imageUrl);
+    const parsedUrl = new URL(imageUrl);
 
-  const protocol = parsedUrl.protocol;
-  const hostname = parsedUrl.hostname;
-  const pathname = parsedUrl.pathname;
+    const protocol = parsedUrl.protocol;
+    const hostname = parsedUrl.hostname;
+    const pathname = parsedUrl.pathname;
 
-  const fullUrlString = parsedUrl.toString();
+    const fullUrlString = parsedUrl.toString();
 
-  const filename = fullUrlString.split('/').pop();
+    const filename = fullUrlString.split('/').pop();
 
-  const options = {
-    port: protocol === 'https:' ? 443 : 80,
-    host: hostname,
-    method: 'GET',
-    path: pathname,
-    accept: '*/*',
-  };
+    const options = {
+      port: protocol === 'https:' ? 443 : 80,
+      host: hostname,
+      method: 'GET',
+      path: pathname,
+      accept: '*/*',
+    };
 
-  const request =
-    options.port === 443 ? https.request(options) : http.request(options);
+    const request =
+      options.port === 443 ? https.request(options) : http.request(options);
 
-  request.addListener('response', function (proxyResponse) {
-    let offset = 0;
-    const contentLength = parseInt(proxyResponse.headers['content-length'], 10);
-    const body = Buffer.alloc(contentLength);
+    request.addListener('response', function (proxyResponse) {
+      let offset = 0;
+      const contentLength = parseInt(
+        proxyResponse.headers['content-length'],
+        10
+      );
+      const body = Buffer.alloc(contentLength);
 
-    proxyResponse.setEncoding('binary');
-    proxyResponse.addListener('data', function (chunk) {
-      body.write(chunk, offset, 'binary');
-      offset += chunk.length;
+      proxyResponse.setEncoding('binary');
+      proxyResponse.addListener('data', function (chunk) {
+        body.write(chunk, offset, 'binary');
+        offset += chunk.length;
+      });
+
+      proxyResponse.addListener('end', function () {
+        res.contentType(filename);
+        res.write(body);
+        res.end();
+      });
     });
 
-    proxyResponse.addListener('end', function () {
-      res.contentType(filename);
-      res.write(body);
-      res.end();
-    });
-  });
-
-  request.end();
+    request.end();
+  } catch (err) {
+    console.log(err);
+    res.send('');
+  }
 });
 
 app.get('/mg-payment-methods', async (req: ExRequest, res: ExResponse) => {
@@ -122,24 +128,24 @@ app.get('/mg-payment-methods', async (req: ExRequest, res: ExResponse) => {
   }
 });
 
-app.get('/mg-get-order', async (req: ExRequest, res: ExResponse) => {
-  try {
-    const orderId =
-      typeof req.query.orderId === 'object'
-        ? req.query.orderId[0]
-        : req.query.orderId;
-    if (!orderId) throw new Error('Please provide an order id');
+// app.get('/mg-get-order', async (req: ExRequest, res: ExResponse) => {
+//   try {
+//     const orderId =
+//       typeof req.query.orderId === 'object'
+//         ? req.query.orderId[0]
+//         : req.query.orderId;
+//     if (!orderId) throw new Error('Please provide an order id');
 
-    const result = await magentoGetOrder({
-      apiKey: '1',
-      datasourceId: 1,
-      orderId,
-    });
-    return res.send(result);
-  } catch (error) {
-    return res.send(error);
-  }
-});
+//     const result = await magentoGetOrder({
+//       apiKey: '1',
+//       datasourceId: 1,
+//       orderId,
+//     });
+//     return res.send(result);
+//   } catch (error) {
+//     return res.send(error);
+//   }
+// });
 
 app.get(
   '/v1/sdk-image-proxy',

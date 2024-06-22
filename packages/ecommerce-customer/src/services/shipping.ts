@@ -49,3 +49,16 @@ export const getShipping = async (wallet: string) => {
     throw err;
   }
 };
+
+export const mapShippingWCShipping = (shipping: Shipping | OrderShipping) => {
+  return {
+    first_name: shipping.firstName,
+    last_name: shipping.lastName,
+    address_1: shipping.address1,
+    address_2: shipping.address2,
+    city: shipping.city,
+    state: shipping.state,
+    postcode: shipping.postcode,
+    country: shipping.country,
+  };
+};

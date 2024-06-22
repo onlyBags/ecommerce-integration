@@ -1,18 +1,15 @@
 import { createNewWoocommerceInstance } from '../util/index.js';
 import {
-  WoocommerceOrder,
   WoocommerceOrderReq,
   WCOrderCreated,
-  OrderBilling,
-  OrderShipping,
   BillingReq,
   ShippingReq,
-  WoocommerceOrderCreatedRes,
-  IcePriceResponse,
   WCValidateOrderData,
+  OnlyBagsOrderRequest,
+  OnlyBagsOrderCreatedRes,
 } from '@dg-live/ecommerce-data-types';
 
-import axios, { AxiosResponse } from 'axios';
+import { AxiosResponse } from 'axios';
 import {
   AppDataSource,
   Billing,
@@ -21,10 +18,16 @@ import {
   Customer,
   User,
   Datasource,
-  OrderLog,
 } from '@dg-live/ecommerce-db';
 
-import { saveBilling, saveShipping } from '@dg-live/ecommerce-customer';
+import {
+  getBagPrice,
+  getCustomer,
+  mapBillingWCBilling,
+  mapShippingWCShipping,
+  saveBilling,
+  saveShipping,
+} from '@dg-live/ecommerce-customer';
 
 const orderRepository = AppDataSource.getRepository(Order);
 const customerRepository = AppDataSource.getRepository(Customer);
@@ -32,65 +35,6 @@ const userRepository = AppDataSource.getRepository(User);
 const datasourceRepository = AppDataSource.getRepository(Datasource);
 const shippingRepository = AppDataSource.getRepository(Shipping);
 const billingRepository = AppDataSource.getRepository(Billing);
-
-export const getCustomer = async (wallet: string) => {
-  const foundCustomer = await customerRepository.findOne({
-    where: {
-      wallet,
-    },
-  });
-  if (foundCustomer) return foundCustomer;
-  const newCustomer = new Customer();
-  newCustomer.wallet = wallet;
-  return await customerRepository.save(newCustomer);
-};
-
-const mapShippingWCShipping = (shipping: Shipping | OrderShipping) => {
-  return {
-    first_name: shipping.firstName,
-    last_name: shipping.lastName,
-    address_1: shipping.address1,
-    address_2: shipping.address2,
-    city: shipping.city,
-    state: shipping.state,
-    postcode: shipping.postcode,
-    country: shipping.country,
-  };
-};
-
-const mapBillingWCBilling = (billing: Billing | OrderBilling) => {
-  const mappedBilling: BillingReq = {
-    first_name: billing.firstName,
-    last_name: billing.lastName,
-    address_1: billing.address1,
-    city: billing.city,
-    state: billing.state,
-    postcode: billing.postcode,
-    country: billing.country,
-    email: '',
-    phone: '',
-    address_2: '',
-  };
-  if (billing.email) mappedBilling.email = billing.email;
-  else delete mappedBilling.email;
-  if (billing.phone) mappedBilling.phone = billing.phone;
-  else delete mappedBilling.phone;
-  if (billing.address2) mappedBilling.address_2 = billing.address2;
-  else delete mappedBilling.address_2;
-  return mappedBilling;
-};
-
-const getIcePrice = async (): Promise<IcePriceResponse> => {
-  try {
-    const res = await axios.get<IcePriceResponse>(
-      'https://api.dglive.org/v1/stripe/ice-price'
-    );
-    return res.data;
-  } catch (error) {
-    console.error('An error occurred:', error);
-    throw new Error('Failed to fetch ICE price');
-  }
-};
 
 export const saveOrder = async (
   order: WCOrderCreated,
@@ -143,7 +87,7 @@ export const saveOrder = async (
   if (!datasource) throw new Error('Datasource not found');
   try {
     const orderToSave = new Order();
-    const icePrice = await getIcePrice();
+    const bagPrice = await getBagPrice();
     orderToSave.storeOrderId = order.id;
     orderToSave.orderKey = order.order_key;
     orderToSave.status = order.status;
@@ -153,8 +97,8 @@ export const saveOrder = async (
     orderToSave.datasource = datasource;
     // orderToSave.totalIce = +order.total / icePrice.data.quote.USD.price;
     orderToSave.totalIce = 0;
-    orderToSave.iceValue = icePrice.data.quote.USD.price;
-    orderToSave.iceValueTimestamp = new Date(icePrice.data.last_updated);
+    orderToSave.iceValue = bagPrice.data.quote.USD.price;
+    orderToSave.iceValueTimestamp = new Date(bagPrice.data.last_updated);
     const savedOrder = await orderRepository.save(orderToSave);
     return savedOrder;
   } catch (error) {
@@ -164,17 +108,21 @@ export const saveOrder = async (
   }
 };
 
-export const createOrder = async ({
-  apiKey,
-  datasourceId,
-  order,
-}: {
-  apiKey: string;
-  datasourceId: number;
-  order: WoocommerceOrder;
-}): Promise<WoocommerceOrderCreatedRes> => {
+export const createOrder = async (
+  datasourceId: number,
+  order: OnlyBagsOrderRequest
+): Promise<OnlyBagsOrderCreatedRes> => {
   let wcShipping: ShippingReq;
   let wcBilling: BillingReq;
+  const foundUser = await userRepository.findOne({
+    relations: {
+      datasource: true,
+    },
+    where: {
+      id: datasourceId,
+    },
+  });
+  if (!foundUser?.datasource?.length) throw new Error('Datasource not found');
   const customer = await getCustomer(order.wallet);
   if (order.shippingId || order.billingId) {
     const shippingWhere = order.shippingId
@@ -266,7 +214,10 @@ export const createOrder = async ({
     ],
   };
   try {
-    const wc = await createNewWoocommerceInstance({ apiKey, datasourceId });
+    const wc = await createNewWoocommerceInstance({
+      apiKey: foundUser.apiKey,
+      datasourceId,
+    });
     const res = (await wc.post(
       'orders',
       orderReq

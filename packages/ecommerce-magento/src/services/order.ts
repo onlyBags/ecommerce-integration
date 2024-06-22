@@ -1,15 +1,35 @@
-import { AppDataSource, User } from '@dg-live/ecommerce-db';
+import {
+  AppDataSource,
+  Billing,
+  Customer,
+  Shipping,
+  User,
+} from '@dg-live/ecommerce-db';
 import oAuth from 'oauth-1.0a';
 import { createHmac } from 'crypto';
 import axios from 'axios';
 
 import { magentoApi } from '../utils/index.js';
 import {
+  BillingReq,
   Entity,
   MagentoOrder,
   MagentoOrderReq,
+  OnlyBagsOrderRequest,
+  ShippingReq,
 } from '@dg-live/ecommerce-data-types';
+
+import {
+  mapBillingWCBilling,
+  mapShippingWCShipping,
+  saveBilling,
+  saveShipping,
+} from '@dg-live/ecommerce-customer';
+
 const userRepository = AppDataSource.getRepository(User);
+const shippingRepository = AppDataSource.getRepository(Shipping);
+const billingRepository = AppDataSource.getRepository(Billing);
+const customerRepository = AppDataSource.getRepository(Customer);
 
 const mockPayload3: MagentoOrderReq = {
   entity: {
@@ -272,7 +292,17 @@ const getCurrentFormattedDate = () => {
   return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
 };
 
-console.log(getCurrentFormattedDate());
+export const getCustomer = async (wallet: string) => {
+  const foundCustomer = await customerRepository.findOne({
+    where: {
+      wallet,
+    },
+  });
+  if (foundCustomer) return foundCustomer;
+  const newCustomer = new Customer();
+  newCustomer.wallet = wallet;
+  return await customerRepository.save(newCustomer);
+};
 
 const orderCreatedOnWebPage = {
   entity: {
@@ -742,11 +772,10 @@ const modOrderCreatedOnWebPage = {
     },
   },
 };
-export const createOrder = async () => {};
 
-function mapToMagentoOrderReq(order: MagentoOrder): MagentoOrderReq {
+function mapToMagentoOrderReq(order: OnlyBagsOrderRequest): MagentoOrderReq {
   const entity: Entity = {
-    base_currency_code: 'USD', // Adjust these as needed
+    base_currency_code: 'USD',
     base_discount_amount: 0,
     base_grand_total: 0,
     base_discount_tax_compensation_amount: 0,
@@ -987,18 +1016,17 @@ function mapToMagentoOrderReq(order: MagentoOrder): MagentoOrderReq {
   return { entity };
 }
 
-export const magentoOrderRest = async ({
-  apiKey,
-  datasourceId,
-  body,
-}: {
-  apiKey: string;
-  datasourceId: number;
-  body: MagentoOrder;
-}): Promise<any> => {
+export const createOrder = async (
+  datasourceId: number,
+  order: OnlyBagsOrderRequest
+): Promise<any> => {
+  let wcShipping: ShippingReq;
+  let wcBilling: BillingReq;
   const foundUserDatasource = await userRepository.findOne({
-    where: { apiKey, datasource: { id: datasourceId } },
-    relations: ['datasource'],
+    where: { datasource: { id: datasourceId } },
+    relations: {
+      datasource: true,
+    },
   });
   if (!foundUserDatasource) throw new Error("User's datasource not found");
   const {
@@ -1008,6 +1036,64 @@ export const magentoOrderRest = async ({
     accessToken,
     accessTokenSecret,
   } = foundUserDatasource.datasource[0];
+  const customer = await getCustomer(order.wallet);
+  if (order.shippingId || order.billingId) {
+    const shippingWhere = order.shippingId
+      ? { id: order.shippingId }
+      : undefined;
+    const billingWhere = order.billingId ? { id: order.billingId } : undefined;
+    const foundShipping = await shippingRepository.findOne({
+      where: shippingWhere,
+    });
+    const foundBilling = await billingRepository.findOne({
+      where: billingWhere,
+    });
+    const foundCustomer = await customerRepository.findOne({
+      where: {
+        wallet: customer.wallet,
+      },
+    });
+    if (!foundCustomer) {
+      throw new Error(`Customer with wallet ${order.wallet} not found`);
+    }
+    if (foundShipping) {
+      wcShipping = mapShippingWCShipping(foundShipping);
+    } else if (order.saveShipping) {
+      const savedShipping = await saveShipping({
+        customer,
+        shippingData: order.shipping,
+      });
+      wcShipping = mapShippingWCShipping(savedShipping);
+    }
+    if (foundBilling) {
+      wcBilling = mapBillingWCBilling(foundBilling);
+    } else if (order.saveBilling) {
+      const savedBilling = await saveBilling({
+        customer,
+        billingData: order.billing,
+      });
+      wcBilling = mapBillingWCBilling(savedBilling);
+    }
+  } else {
+    if (order.saveShipping) {
+      const savedShipping = await saveShipping({
+        customer,
+        shippingData: order.shipping,
+      });
+      wcShipping = mapShippingWCShipping(savedShipping);
+    } else {
+      wcShipping = mapShippingWCShipping(order.shipping);
+    }
+    if (order.saveBilling) {
+      const savedBilling = await saveBilling({
+        customer,
+        billingData: order.billing,
+      });
+      wcBilling = mapBillingWCBilling(savedBilling);
+    } else {
+      wcBilling = mapBillingWCBilling(order.billing);
+    }
+  }
 
   const simpleTryData = {
     url: `${baseUrl}rest/V1/orders`,
@@ -1034,7 +1120,7 @@ export const magentoOrderRest = async ({
   const simpleTryAuthHeader = simpleTryAccess.toHeader(
     simpleTryAccess.authorize(simpleTryData, token)
   );
-  const orderReq: MagentoOrderReq = mapToMagentoOrderReq(body);
+  const orderReq: MagentoOrderReq = mapToMagentoOrderReq(order);
   try {
     const res = await axios.post(simpleTryData.url, orderReq, {
       headers: {

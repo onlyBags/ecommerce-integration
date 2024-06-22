@@ -13,7 +13,6 @@ import {
 } from '../services/graph.service.js';
 
 import {
-  getCustomer,
   getOrderById,
   saveOrder,
   setOrderAsPayed,
@@ -23,6 +22,8 @@ import {
   WCValidateOrderData,
   EcommerceWsData,
 } from '@dg-live/ecommerce-data-types';
+import { getCustomer } from '@dg-live/ecommerce-customer';
+
 import { Not } from 'typeorm';
 
 const orderRepository = AppDataSource.getRepository(Order);
