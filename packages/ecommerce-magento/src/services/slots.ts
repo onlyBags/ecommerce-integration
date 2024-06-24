@@ -68,7 +68,7 @@ function mapMagentoProductToArticle(
     (entry) =>
       ({
         id: entry.id,
-        src: `${baseUrl}media/catalog/product${entry.file}`,
+        src: `${baseUrl}/media/catalog/product${entry.file}`,
         name: entry.file.split('/').pop(),
         alt: entry.file.split('/').pop(),
       } as Image)

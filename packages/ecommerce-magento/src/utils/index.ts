@@ -39,12 +39,14 @@ export const magentoApi = async ({
   action,
   method = 'GET',
   body,
+  pathData,
 }: {
   apiKey: string;
   datasourceId: number;
   action: MgActions;
   method?: 'GET' | 'POST' | 'PUT' | 'DELETE';
   body?: any;
+  pathData?: string;
 }): Promise<any> => {
   const foundUserDatasource = await userRepository.findOne({
     where: { apiKey, datasource: { id: datasourceId } },
@@ -60,7 +62,9 @@ export const magentoApi = async ({
   } = foundUserDatasource.datasource[0];
 
   const simpleTryData = {
-    url: `${baseUrl}/rest/V1/${action}`,
+    url: `${baseUrl}/rest/default/V1/${action}${
+      pathData ? '/' + pathData : ''
+    }`,
     method,
   };
   const simpleTryAccess = new oAuth({
@@ -91,7 +95,6 @@ export const magentoApi = async ({
       headers: {
         ...simpleTryAuthHeader,
       },
-      data: body,
     });
     return res;
   } catch (err) {

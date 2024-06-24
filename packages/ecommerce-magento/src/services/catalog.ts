@@ -38,7 +38,7 @@ const addImageBaseUrl = (datasource: Datasource) => {
   const baseUrl = datasource.baseUrl;
   datasource.magentoProduct.forEach((product) => {
     product.mediaGalleryEntries.forEach((media) => {
-      media.file = `${baseUrl}media/catalog/product${media.file}`;
+      media.file = `${baseUrl}/media/catalog/product${media.file}`;
     });
   });
   return datasource.magentoProduct;

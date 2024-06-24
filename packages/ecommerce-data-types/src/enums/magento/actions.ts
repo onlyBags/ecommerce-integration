@@ -5,4 +5,5 @@ export enum MgActions {
   GET_CATEGORIES_LIST = 'categories/list?searchCriteria[pageSize]=100',
   POST_ORDER = 'order',
   PAYMENT_METHODS = 'payments-config/usd',
+  GET_PRODUCT_DETAIL = 'products',
 }

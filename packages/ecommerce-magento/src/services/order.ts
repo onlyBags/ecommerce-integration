@@ -2,24 +2,32 @@ import {
   AppDataSource,
   Billing,
   Customer,
+  Datasource,
+  MagentoProduct,
+  Order,
   Shipping,
   User,
 } from '@dg-live/ecommerce-db';
 import oAuth from 'oauth-1.0a';
 import { createHmac } from 'crypto';
-import axios from 'axios';
+import axios, { AxiosResponse } from 'axios';
 
 import { magentoApi } from '../utils/index.js';
 import {
   BillingReq,
   Entity,
+  LineItem,
   MagentoOrder,
   MagentoOrderReq,
   OnlyBagsOrderRequest,
   ShippingReq,
+  MgActions,
+  RawMagentoProductItem,
+  MGOrderCreated,
 } from '@dg-live/ecommerce-data-types';
 
 import {
+  getBagPrice,
   mapBillingWCBilling,
   mapShippingWCShipping,
   saveBilling,
@@ -30,6 +38,9 @@ const userRepository = AppDataSource.getRepository(User);
 const shippingRepository = AppDataSource.getRepository(Shipping);
 const billingRepository = AppDataSource.getRepository(Billing);
 const customerRepository = AppDataSource.getRepository(Customer);
+const datasourceRepository = AppDataSource.getRepository(Datasource);
+const magentoProductRepository = AppDataSource.getRepository(MagentoProduct);
+const orderRepository = AppDataSource.getRepository(Order);
 
 const mockPayload3: MagentoOrderReq = {
   entity: {
@@ -773,7 +784,60 @@ const modOrderCreatedOnWebPage = {
   },
 };
 
-function mapToMagentoOrderReq(order: OnlyBagsOrderRequest): MagentoOrderReq {
+const validateProductsPrice = async (
+  apiKey: string,
+  datasourceId: number,
+  lineItems: LineItem[]
+): Promise<MagentoProduct[]> => {
+  const productDataArr: MagentoProduct[] = [];
+  try {
+    for (const lineItem of lineItems) {
+      const foundProduct = await magentoProductRepository.findOne({
+        relations: {
+          datasource: true,
+        },
+        where: {
+          datasource: {
+            id: datasourceId,
+          },
+          id: lineItem.productId,
+        },
+      });
+      if (!foundProduct) {
+        throw new Error(`Product with id ${lineItem.productId} not found`);
+      }
+      const sku = foundProduct.sku;
+      const { data: productData }: { data: RawMagentoProductItem } =
+        await magentoApi({
+          apiKey,
+          datasourceId,
+          action: MgActions.GET_PRODUCT_DETAIL,
+          pathData: sku.toString(),
+        });
+      if (foundProduct.price !== productData.price) {
+        throw new Error(
+          `Product with id ${lineItem.productId} price is not the same`
+        );
+      }
+      productDataArr.push(foundProduct);
+    }
+    return productDataArr;
+  } catch (err) {
+    throw new Error(err);
+  }
+};
+
+const mapToMagentoOrderReq = async (
+  apiKey: string,
+  datasourceId: number,
+  order: OnlyBagsOrderRequest
+): Promise<MagentoOrderReq> => {
+  // Need to fetch product price from store.
+  const productsData = await validateProductsPrice(
+    apiKey,
+    datasourceId,
+    order.lineItems
+  );
   const entity: Entity = {
     base_currency_code: 'USD',
     base_discount_amount: 0,
@@ -791,7 +855,7 @@ function mapToMagentoOrderReq(order: OnlyBagsOrderRequest): MagentoOrderReq {
     base_to_global_rate: 1,
     base_to_order_rate: 1,
     created_at: new Date().toISOString(),
-    customer_email: order.billing.email || '',
+    customer_email: 'cuentaparavtv@gmail.com',
     customer_firstname: order.billing.firstName,
     customer_group_id: 0,
     customer_is_guest: 1,
@@ -804,11 +868,11 @@ function mapToMagentoOrderReq(order: OnlyBagsOrderRequest): MagentoOrderReq {
     is_virtual: 0,
     order_currency_code: 'USD',
     quote_id: 0,
-    shipping_amount: parseFloat(order.shippingLines[0].total || '0'),
-    shipping_description: order.shippingLines[0].methodTitle,
+    shipping_amount: 0, // parseFloat(order.shippingLines[0].total || '0'),
+    shipping_description: 'Onlybags Shipping config', //order.shippingLines[0].methodTitle,
     shipping_discount_amount: 0,
     shipping_discount_tax_compensation_amount: 0,
-    shipping_incl_tax: parseFloat(order.shippingLines[0].total || '0'),
+    shipping_incl_tax: 0, // parseFloat(order.shippingLines[0].total || '0'),
     shipping_tax_amount: 0,
     state: 'new',
     status: 'pending',
@@ -828,61 +892,65 @@ function mapToMagentoOrderReq(order: OnlyBagsOrderRequest): MagentoOrderReq {
     ),
     updated_at: new Date().toISOString(),
     weight: 0,
-    items: order.lineItems.map((item, index) => ({
-      amount_refunded: 0,
-      base_amount_refunded: 0,
-      base_discount_amount: 0,
-      base_discount_invoiced: 0,
-      base_discount_tax_compensation_amount: 0,
-      base_original_price: 0,
-      base_price: 0,
-      base_price_incl_tax: 0,
-      base_row_invoiced: 0,
-      base_row_total: 0,
-      base_row_total_incl_tax: 0,
-      base_tax_amount: 0,
-      base_tax_invoiced: 0,
-      created_at: new Date().toISOString(),
-      discount_amount: 0,
-      discount_invoiced: 0,
-      discount_percent: 0,
-      free_shipping: 0,
-      discount_tax_compensation_amount: 0,
-      is_qty_decimal: 0,
-      is_virtual: 0,
-      item_id: index,
-      name: '', // Adjust as needed
-      no_discount: 0,
-      order_id: 0,
-      original_price: 0,
-      price: 0,
-      price_incl_tax: 0,
-      product_id: item.productId,
-      product_type: 'simple',
-      qty_canceled: 0,
-      qty_invoiced: 0,
-      qty_ordered: item.quantity,
-      qty_refunded: 0,
-      qty_shipped: 0,
-      quote_item_id: 0,
-      row_invoiced: 0,
-      row_total: 0,
-      row_total_incl_tax: 0,
-      row_weight: 0,
-      sku: '', // Adjust as needed
-      store_id: 1,
-      tax_amount: 0,
-      tax_invoiced: 0,
-      tax_percent: 0,
-      updated_at: new Date().toISOString(),
-      weight: 0,
-    })),
+    items: productsData.map((item, index) => {
+      const prdQty: number =
+        order.lineItems.find((x) => x.productId === item.id)?.quantity || 0;
+      return {
+        amount_refunded: 0,
+        base_amount_refunded: 0,
+        base_discount_amount: 0,
+        base_discount_invoiced: 0,
+        base_discount_tax_compensation_amount: 0,
+        base_original_price: item.price,
+        base_price: item.price,
+        base_price_incl_tax: item.price,
+        base_row_invoiced: item.price * prdQty,
+        base_row_total: item.price * prdQty,
+        base_row_total_incl_tax: item.price * prdQty,
+        base_tax_amount: 0,
+        base_tax_invoiced: 0,
+        created_at: new Date().toISOString(),
+        discount_amount: 0,
+        discount_invoiced: 0,
+        discount_percent: 0,
+        free_shipping: 0,
+        discount_tax_compensation_amount: 0,
+        is_qty_decimal: 0,
+        is_virtual: 0,
+        item_id: index,
+        name: item.name,
+        no_discount: 0,
+        order_id: 0,
+        original_price: item.price,
+        price: item.price,
+        price_incl_tax: item.price,
+        product_id: item.productId,
+        product_type: 'simple',
+        qty_canceled: 0,
+        qty_invoiced: 0,
+        qty_ordered: prdQty,
+        qty_refunded: 0,
+        qty_shipped: 0,
+        quote_item_id: 0,
+        row_invoiced: 0,
+        row_total: item.price * prdQty,
+        row_total_incl_tax: item.price,
+        row_weight: 0,
+        sku: item.sku,
+        store_id: 1,
+        tax_amount: 0,
+        tax_invoiced: 0,
+        tax_percent: 0,
+        updated_at: new Date().toISOString(),
+        weight: item.weight,
+      };
+    }),
     billing_address: {
       address_type: 'billing',
       city: order.billing.city,
       company: '', // Adjust as needed
       country_id: order.billing.country,
-      email: order.billing.email || '',
+      email: 'cuentaparavtv@gmail.com',
       entity_id: 0,
       firstname: order.billing.firstName,
       lastname: order.billing.lastName,
@@ -919,7 +987,7 @@ function mapToMagentoOrderReq(order: OnlyBagsOrderRequest): MagentoOrderReq {
               city: order.shipping.city,
               company: '', // Adjust as needed
               country_id: order.shipping.country,
-              email: order.billing.email || '',
+              email: 'cuentaparavtv@gmail.com',
               entity_id: 0,
               firstname: order.shipping.firstName,
               lastname: order.shipping.lastName,
@@ -931,75 +999,70 @@ function mapToMagentoOrderReq(order: OnlyBagsOrderRequest): MagentoOrderReq {
               street: [order.shipping.address1, order.shipping.address2 || ''],
               telephone: order.billing.phone || '',
             },
-            method: order.shippingLines[0].methodId,
+            method: 'Testing shipping', //order.shippingLines[0].methodId,
             total: {
-              base_shipping_amount: parseFloat(
-                order.shippingLines[0].total || '0'
-              ),
+              base_shipping_amount: 0, // parseFloat( order.shippingLines[0].total || '0'),
               base_shipping_discount_amount: 0,
               base_shipping_discount_tax_compensation_amnt: 0,
-              base_shipping_incl_tax: parseFloat(
-                order.shippingLines[0].total || '0'
-              ),
+              base_shipping_incl_tax: 0, //parseFloat(order.shippingLines[0].total || '0'),
               base_shipping_tax_amount: 0,
-              shipping_amount: parseFloat(order.shippingLines[0].total || '0'),
+              shipping_amount: 0, // parseFloat(order.shippingLines[0].total || '0'),
               shipping_discount_amount: 0,
               shipping_discount_tax_compensation_amount: 0,
-              shipping_incl_tax: parseFloat(
-                order.shippingLines[0].total || '0'
-              ),
+              shipping_incl_tax: 0, // parseFloat(order.shippingLines[0].total || '0'),
               shipping_tax_amount: 0,
             },
           },
-          items: order.lineItems.map((item, index) => ({
-            amount_refunded: 0,
-            base_amount_refunded: 0,
-            base_discount_amount: 0,
-            base_discount_invoiced: 0,
-            base_discount_tax_compensation_amount: 0,
-            base_original_price: 0,
-            base_price: 0,
-            base_price_incl_tax: 0,
-            base_row_invoiced: 0,
-            base_row_total: 0,
-            base_row_total_incl_tax: 0,
-            base_tax_amount: 0,
-            base_tax_invoiced: 0,
-            created_at: new Date().toISOString(),
-            discount_amount: 0,
-            discount_invoiced: 0,
-            discount_percent: 0,
-            free_shipping: 0,
-            discount_tax_compensation_amount: 0,
-            is_qty_decimal: 0,
-            is_virtual: 0,
-            item_id: index,
-            name: '', // Adjust as needed
-            no_discount: 0,
-            order_id: 0,
-            original_price: 0,
-            price: 0,
-            price_incl_tax: 0,
-            product_id: item.productId,
-            product_type: 'simple',
-            qty_canceled: 0,
-            qty_invoiced: 0,
-            qty_ordered: item.quantity,
-            qty_refunded: 0,
-            qty_shipped: 0,
-            quote_item_id: 0,
-            row_invoiced: 0,
-            row_total: 0,
-            row_total_incl_tax: 0,
-            row_weight: 0,
-            sku: '', // Adjust as needed
-            store_id: 1,
-            tax_amount: 0,
-            tax_invoiced: 0,
-            tax_percent: 0,
-            updated_at: new Date().toISOString(),
-            weight: 0,
-          })),
+          items: [],
+          // order.lineItems.map((item, index) => ({
+          //   amount_refunded: 0,
+          //   base_amount_refunded: 0,
+          //   base_discount_amount: 0,
+          //   base_discount_invoiced: 0,
+          //   base_discount_tax_compensation_amount: 0,
+          //   base_original_price: 0,
+          //   base_price: 0,
+          //   base_price_incl_tax: 0,
+          //   base_row_invoiced: 0,
+          //   base_row_total: 0,
+          //   base_row_total_incl_tax: 0,
+          //   base_tax_amount: 0,
+          //   base_tax_invoiced: 0,
+          //   created_at: new Date().toISOString(),
+          //   discount_amount: 0,
+          //   discount_invoiced: 0,
+          //   discount_percent: 0,
+          //   free_shipping: 0,
+          //   discount_tax_compensation_amount: 0,
+          //   is_qty_decimal: 0,
+          //   is_virtual: 0,
+          //   item_id: index,
+          //   name: '', // Adjust as needed
+          //   no_discount: 0,
+          //   order_id: 0,
+          //   original_price: 0,
+          //   price: 0,
+          //   price_incl_tax: 0,
+          //   product_id: item.productId,
+          //   product_type: 'simple',
+          //   qty_canceled: 0,
+          //   qty_invoiced: 0,
+          //   qty_ordered: item.quantity,
+          //   qty_refunded: 0,
+          //   qty_shipped: 0,
+          //   quote_item_id: 0,
+          //   row_invoiced: 0,
+          //   row_total: 0,
+          //   row_total_incl_tax: 0,
+          //   row_weight: 0,
+          //   sku: '', // Adjust as needed
+          //   store_id: 1,
+          //   tax_amount: 0,
+          //   tax_invoiced: 0,
+          //   tax_percent: 0,
+          //   updated_at: new Date().toISOString(),
+          //   weight: 0,
+          // }))
         },
       ],
       payment_additional_info: [
@@ -1014,7 +1077,7 @@ function mapToMagentoOrderReq(order: OnlyBagsOrderRequest): MagentoOrderReq {
   };
 
   return { entity };
-}
+};
 
 export const createOrder = async (
   datasourceId: number,
@@ -1029,6 +1092,7 @@ export const createOrder = async (
     },
   });
   if (!foundUserDatasource) throw new Error("User's datasource not found");
+  const apiKey = foundUserDatasource.apiKey;
   const {
     baseUrl,
     consumerKey,
@@ -1096,7 +1160,7 @@ export const createOrder = async (
   }
 
   const simpleTryData = {
-    url: `${baseUrl}rest/V1/orders`,
+    url: `${baseUrl}/rest/V1/orders`,
     method: 'POST',
   };
   const simpleTryAccess = new oAuth({
@@ -1120,17 +1184,61 @@ export const createOrder = async (
   const simpleTryAuthHeader = simpleTryAccess.toHeader(
     simpleTryAccess.authorize(simpleTryData, token)
   );
-  const orderReq: MagentoOrderReq = mapToMagentoOrderReq(order);
+  const orderReq: MagentoOrderReq = await mapToMagentoOrderReq(
+    apiKey,
+    datasourceId,
+    order
+  );
   try {
-    const res = await axios.post(simpleTryData.url, orderReq, {
-      headers: {
-        ...simpleTryAuthHeader,
-      },
-    });
-    if (res.data) return res.data;
+    const res: AxiosResponse<MGOrderCreated> = await axios.post(
+      simpleTryData.url,
+      orderReq,
+      {
+        headers: {
+          ...simpleTryAuthHeader,
+        },
+      }
+    );
+    const savedOrder = await saveOrder(res.data, customer, datasourceId);
+    return {
+      dgLiveOrder: savedOrder,
+      raw: res.data,
+    };
   } catch (err) {
     console.log(err);
     throw err;
+  }
+};
+
+export const saveOrder = async (
+  order: MGOrderCreated,
+  customer: Customer,
+  datasourceId: number
+) => {
+  const datasource = await datasourceRepository.findOneBy({
+    id: datasourceId,
+  });
+  if (!datasource) throw new Error('Datasource not found');
+  try {
+    const orderToSave = new Order();
+    const bagPrice = await getBagPrice();
+    orderToSave.storeOrderId = order.entity_id;
+    orderToSave.orderKey = order.increment_id;
+    orderToSave.status = order.status;
+    orderToSave.customer = customer;
+    orderToSave.total = +order.base_grand_total;
+    orderToSave.currency = order.base_currency_code;
+    orderToSave.datasource = datasource;
+    // orderToSave.totalIce = +order.total / icePrice.data.quote.USD.price;
+    orderToSave.totalIce = 0;
+    orderToSave.iceValue = bagPrice.data.quote.USD.price;
+    orderToSave.iceValueTimestamp = new Date(bagPrice.data.last_updated);
+    const savedOrder = await orderRepository.save(orderToSave);
+    return savedOrder;
+  } catch (error) {
+    console.log('error', error);
+    debugger;
+    throw error;
   }
 };
 

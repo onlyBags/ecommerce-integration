@@ -93,7 +93,7 @@ export const saveUserDatasource = async (
   datasource.consumerSecret = clientReq.consumerSecret;
   datasource.accessToken = clientReq.accessToken;
   datasource.accessTokenSecret = clientReq.accessTokenSecret;
-  datasource.baseUrl = clientReq.baseUrl;
+  datasource.baseUrl = clientReq.baseUrl.replace(/\/$/, '');
   datasource.webhookSecret = getPassword();
   datasource.isActive = true;
   try {
@@ -256,7 +256,7 @@ export const updateSlot = async (
     } else {
       foundSlot.magentoProduct = foundProduct as MagentoProduct;
       foundSlot.image = await proccesImage(
-        `${datasource.baseUrl}media/catalog/product${foundSlot.magentoProduct.mediaGalleryEntries[0].file}`
+        `${datasource.baseUrl}/media/catalog/product${foundSlot.magentoProduct.mediaGalleryEntries[0].file}`
       );
     }
     try {
