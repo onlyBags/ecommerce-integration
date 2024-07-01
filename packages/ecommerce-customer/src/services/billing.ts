@@ -1,9 +1,7 @@
-import { ValidateError } from 'tsoa';
 import { AppDataSource, Billing, Customer } from '@dg-live/ecommerce-db';
 import { BillingReq, OrderBilling } from '@dg-live/ecommerce-data-types';
 
 const billingRepository = AppDataSource.getRepository(Billing);
-const customerRepository = AppDataSource.getRepository(Customer);
 export const saveBilling = async ({
   customer,
   billingData,
@@ -11,17 +9,37 @@ export const saveBilling = async ({
   customer: Customer;
   billingData: OrderBilling;
 }) => {
+  const billingAddressExists = await billingRepository.findOne({
+    where: {
+      firstName: billingData?.firstName?.toLowerCase() || 'only-bags-ecommerce',
+      lastName: billingData?.lastName?.toLowerCase() || 'only-bags-ecommerce',
+      address1: billingData.address1.toLowerCase(),
+      address2: billingData?.address2?.toLowerCase() || 'only-bags-ecommerce',
+      city: billingData.city.toLowerCase(),
+      state: billingData.state.toLowerCase(),
+      postcode: billingData.postcode.toLowerCase(),
+      country: billingData.country.toLowerCase(),
+      email: billingData.email.toLowerCase(),
+      customer: {
+        id: customer.id,
+      },
+    },
+    relations: {
+      customer: true,
+    },
+  });
+  if (billingAddressExists) return billingAddressExists;
   const newBilling = new Billing();
-  newBilling.firstName = billingData.firstName;
-  newBilling.lastName = billingData.lastName;
-  newBilling.address1 = billingData.address1;
-  newBilling.address2 = billingData.address2;
-  newBilling.city = billingData.city;
-  newBilling.state = billingData.state;
-  newBilling.postcode = billingData.postcode;
-  newBilling.country = billingData.country;
-  newBilling.email = billingData.email;
-  newBilling.phone = billingData.phone;
+  newBilling.firstName = billingData.firstName.toLowerCase();
+  newBilling.lastName = billingData.lastName?.toLowerCase();
+  newBilling.address1 = billingData.address1.toLowerCase();
+  newBilling.address2 = billingData.address2?.toLowerCase();
+  newBilling.city = billingData.city.toLowerCase();
+  newBilling.state = billingData.state.toLowerCase();
+  newBilling.postcode = billingData.postcode.toLowerCase();
+  newBilling.country = billingData.country.toLowerCase();
+  newBilling.email = billingData.email.toLowerCase();
+  newBilling.phone = billingData.phone?.toLowerCase();
   newBilling.customer = customer;
   try {
     const savedBilling = await billingRepository.save(newBilling);

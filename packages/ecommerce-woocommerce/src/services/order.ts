@@ -39,7 +39,8 @@ const billingRepository = AppDataSource.getRepository(Billing);
 export const saveOrder = async (
   order: WCOrderCreated,
   customer: Customer,
-  datasourceId: number
+  datasourceId: number,
+  paymentMethod: string
 ) => {
   const mockData = {
     id: 131,
@@ -88,7 +89,8 @@ export const saveOrder = async (
   try {
     const orderToSave = new Order();
     const bagPrice = await getBagPrice();
-    orderToSave.storeOrderId = order.id;
+    orderToSave.storeOrderId = order.id.toString();
+    orderToSave.paymentMethod = paymentMethod;
     orderToSave.orderKey = order.order_key;
     orderToSave.status = order.status;
     orderToSave.customer = customer;
@@ -119,11 +121,13 @@ export const createOrder = async (
       datasource: true,
     },
     where: {
-      id: datasourceId,
+      datasource: {
+        id: datasourceId,
+      },
     },
   });
   if (!foundUser?.datasource?.length) throw new Error('Datasource not found');
-  const customer = await getCustomer(order.wallet);
+  const customer = await getCustomer(order.wallet, order.email);
   if (order.shippingId || order.billingId) {
     const shippingWhere = order.shippingId
       ? { id: order.shippingId }
@@ -184,7 +188,7 @@ export const createOrder = async (
 
   const orderReq: WoocommerceOrderReq = {
     payment_method: order.paymentMethod,
-    payment_method_title: order.paymentMethodTitle,
+    payment_method_title: order.paymentMethod,
     set_paid: false,
     billing: wcBilling,
     shipping: wcShipping,
@@ -222,7 +226,12 @@ export const createOrder = async (
       'orders',
       orderReq
     )) as AxiosResponse<WCOrderCreated>;
-    const savedOrder = await saveOrder(res.data, customer, datasourceId);
+    const savedOrder = await saveOrder(
+      res.data,
+      customer,
+      datasourceId,
+      order.paymentMethod
+    );
     return {
       dgLiveOrder: savedOrder,
       raw: res.data,

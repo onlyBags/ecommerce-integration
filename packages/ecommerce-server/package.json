@@ -32,6 +32,7 @@
     "@dg-live/ecommerce-data-types": "*",
     "@dg-live/ecommerce-websocket": "*",
     "@dg-live/ecommerce-web3": "*",
-    "@dg-live/ecommerce-analytics": "*"
+    "@dg-live/ecommerce-analytics": "*",
+    "@dg-live/ecommerce-payment-service": "*"
   }
 }

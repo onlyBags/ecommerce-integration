@@ -1,0 +1,15 @@
+{
+  "name": "@dg-live/ecommerce-payment-service",
+  "version": "0.0.1",
+  "type": "module",
+  "main": "./dist/index.js",
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "watch": "tsc -p tsconfig.json --watch"
+  },
+  "dependencies": {
+    "@dg-live/ecommerce-db": "*",
+    "@dg-live/ecommerce-config": "*",
+    "@dg-live/ecommerce-data-types": "*"
+  }
+}

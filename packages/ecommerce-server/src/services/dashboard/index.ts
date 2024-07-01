@@ -16,6 +16,7 @@ import {
   SaveUserDatasourceReq,
   SaveUserReq,
   UpdateSlotReq,
+  UpdateUserDatasourceReq,
 } from '@dg-live/ecommerce-data-types';
 
 import { getPassword } from '../../util/index.js';
@@ -94,6 +95,7 @@ export const saveUserDatasource = async (
   datasource.accessToken = clientReq.accessToken;
   datasource.accessTokenSecret = clientReq.accessTokenSecret;
   datasource.baseUrl = clientReq.baseUrl.replace(/\/$/, '');
+  datasource.dollarRatio = clientReq.dollarRatio;
   datasource.webhookSecret = getPassword();
   datasource.isActive = true;
   try {
@@ -118,6 +120,82 @@ export const saveUserDatasource = async (
     console.log(err);
     throw err;
   }
+};
+
+export const updateUserDatasource = async (
+  apiKey: string,
+  clientReq: UpdateUserDatasourceReq
+): Promise<Datasource> => {
+  const user = await userRepository.findOne({
+    where: { apiKey },
+  });
+
+  if (!user) throw new Error('User not found');
+
+  const datasource = await datasourceRepository.findOne({
+    where: { id: clientReq.datasourceId, user: { id: user.id } },
+  });
+
+  if (!datasource) throw new Error('Datasource not found');
+  datasource.name = clientReq.name || datasource.name;
+  datasource.wallet = clientReq.wallet || datasource.wallet;
+  datasource.consumerKey = clientReq.consumerKey || datasource.consumerKey;
+  datasource.consumerSecret =
+    clientReq.consumerSecret || datasource.consumerSecret;
+  datasource.accessToken = clientReq.accessToken || datasource.accessToken;
+  datasource.accessTokenSecret =
+    clientReq.accessTokenSecret || datasource.accessTokenSecret;
+  datasource.baseUrl = clientReq.baseUrl
+    ? clientReq.baseUrl.replace(/\/$/, '')
+    : datasource.baseUrl;
+  datasource.dollarRatio = clientReq.dollarRatio || datasource.dollarRatio;
+  datasource.isActive =
+    clientReq.active !== undefined ? clientReq.active : datasource.isActive;
+
+  try {
+    const updatedDatasource = await datasourceRepository.save(datasource);
+    let storeSettings = [];
+
+    if (datasource.platform === 'woocommerce') {
+      storeSettings = await getSettings({
+        apiKey,
+        datasourceId: updatedDatasource.id,
+      });
+
+      const foundCurrencySetting = storeSettings.find(
+        (x) => x.id === 'woocommerce_currency'
+      );
+      if (foundCurrencySetting) {
+        updatedDatasource.currencyCode = foundCurrencySetting.value;
+        await datasourceRepository.save(updatedDatasource);
+      }
+    }
+
+    return updatedDatasource;
+  } catch (err) {
+    console.log(err);
+    throw err;
+  }
+};
+
+export const deleteUserDatasource = async (
+  apiKey: string,
+  datasourceId: number
+): Promise<void> => {
+  const user = await userRepository.findOne({
+    where: { apiKey },
+  });
+
+  if (!user) throw new Error('User not found');
+
+  const datasource = await datasourceRepository.findOne({
+    where: { id: datasourceId, user: { id: user.id } },
+  });
+
+  if (!datasource) throw new Error('Datasource not found');
+
+  datasource.isActive = false;
+  await datasourceRepository.save(datasource);
 };
 
 export const getUserDatasources = async (

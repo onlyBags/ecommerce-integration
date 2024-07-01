@@ -15,7 +15,8 @@ export const getBagPrice = async (): Promise<BagPriceResponse> => {
 };
 
 const customerRepository = AppDataSource.getRepository(Customer);
-export const getCustomer = async (wallet: string) => {
+
+export const getCustomer = async (wallet: string, email?: string) => {
   const foundCustomer = await customerRepository.findOne({
     where: {
       wallet,
@@ -24,5 +25,7 @@ export const getCustomer = async (wallet: string) => {
   if (foundCustomer) return foundCustomer;
   const newCustomer = new Customer();
   newCustomer.wallet = wallet;
+  newCustomer.email = email || 'no@mail.com';
+
   return await customerRepository.save(newCustomer);
 };

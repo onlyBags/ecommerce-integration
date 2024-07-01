@@ -46,6 +46,12 @@ export const envConfig = Object.freeze({
   s3BucketName: process.env.S3_BUCKET_NAME,
   mailgunApiKeyId: process.env.MAILGUN_API_KEY_ID || '',
   mailgunApiKey: process.env.MAILGUN_API_KEY || '',
+  binanceApiKey: process.env.BINANCE_API_KEY || '',
+  binanceApiSecret: process.env.BINANCE_API_SECRET || '',
+  binanceApiUrl: process.env.BINANCE_API_URL || '',
+  coinbaseApiKey: process.env.COINBASE_API_KEY || '',
+  coinbaseWhSecret: process.env.COINBASE_WH_SECRET || '',
+  baseUrl: process.env.BASE_URL || '',
 });
 
 export default envConfig;

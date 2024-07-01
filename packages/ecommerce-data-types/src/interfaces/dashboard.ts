@@ -46,6 +46,21 @@ export interface SaveUserDatasourceReq {
   accessToken?: string;
   accessTokenSecret?: string;
   baseUrl: string;
+  dollarRatio: number;
+}
+
+export interface UpdateUserDatasourceReq {
+  datasourceId: number;
+  name?: string;
+  wallet?: string;
+  platform?: string;
+  consumerKey?: string;
+  consumerSecret?: string;
+  accessToken?: string;
+  accessTokenSecret?: string;
+  baseUrl?: string;
+  dollarRatio?: number;
+  active?: boolean;
 }
 
 export interface CountriesData {

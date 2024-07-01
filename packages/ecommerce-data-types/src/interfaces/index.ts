@@ -7,3 +7,5 @@ export * from './catalog/index.js';
 export * from './magento/index.js';
 export * from './common.js';
 export * from './order/index.js';
+export * from './binance/index.js';
+export * from './coinbase/index.js';

@@ -41,7 +41,7 @@ export class Billing {
   @Column()
   country: string;
 
-  @Column({ nullable: true })
+  @Column({ nullable: false, default: 'no@email.com' })
   email: string;
 
   @Column({ nullable: true })

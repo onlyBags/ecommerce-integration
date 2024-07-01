@@ -27,7 +27,7 @@ import { RegisterRoutes } from '../routes/routes.js';
 import { handleWebhook } from '@dg-live/ecommerce-webhooks';
 import { startGraphPolling } from '@dg-live/ecommerce-web3';
 import { getAllPayments } from '@dg-live/ecommerce-magento';
-
+import { binanceWebhook } from '@dg-live/ecommerce-payment-service';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
@@ -50,6 +50,17 @@ const s3 = new AWS.S3();
 
 const app: Express = express();
 const port = envConfig.port || 8080;
+
+app.post('/v1/binance/webhook', express.raw({ type: '*/*' }), (req, res) => {
+  try {
+    binanceWebhook(req, res);
+  } catch (error) {
+    console.log(error);
+    res
+      .status(500)
+      .send('binance-WH-Error: ' + error?.message || 'Unknown error');
+  }
+});
 
 app.use(
   '/v1/webhooks/:apiKey/:datasourceId',

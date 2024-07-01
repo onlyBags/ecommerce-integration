@@ -14,6 +14,7 @@ import { WoocommerceProduct } from './WoocommerceProduct.js';
 import { Slot } from './Slot.js';
 import { Order } from './Order.js';
 import { MagentoProduct } from './MagentoProduct.js';
+import { BinanceOrder } from './BinanceOrder.js';
 
 @Entity()
 export class Datasource {
@@ -43,6 +44,9 @@ export class Datasource {
 
   @OneToMany(() => Order, (order) => order.id)
   orders: Relation<Order[]>;
+
+  @OneToMany(() => Order, (order) => order.id)
+  binanceOrder: Relation<BinanceOrder[]>;
 
   @OneToMany(() => Slot, (slot) => slot.datasource)
   slot: Relation<Slot[]>;
@@ -85,6 +89,9 @@ export class Datasource {
 
   @Column({ length: 3, default: 'USD' })
   currencyCode: string;
+
+  @Column({ type: 'decimal', precision: 10, scale: 2, default: 1.0 })
+  dollarRatio: number;
 
   @CreateDateColumn()
   createdAt: Date;

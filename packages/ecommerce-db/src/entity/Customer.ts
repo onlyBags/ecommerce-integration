@@ -9,6 +9,7 @@ import {
   Relation,
 } from 'typeorm';
 import { Order } from './Order.js';
+import { BinanceOrder } from './BinanceOrder.js';
 
 @Entity()
 @Unique(['wallet'])
@@ -25,8 +26,8 @@ export class Customer {
   // @OneToMany(() => Shipping, (shipping) => shipping.id)
   // shipping: Relation<Shipping[]>;
 
-  // @OneToMany(() => Billing, (billing) => billing.id)
-  // billing: Relation<Billing[]>;
+  @Column({ default: 'no@mail.com' })
+  email: string;
 
   @Column({ default: true })
   isActive: boolean;

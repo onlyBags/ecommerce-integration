@@ -7,15 +7,17 @@ export interface OrderShipping {
   state: string;
   postcode: string;
   country: string;
+  email: string;
 }
 
 export interface OrderBilling extends OrderShipping {
-  email?: string;
   phone?: string;
 }
 
 export interface LineItem {
   productId: number;
+  name: string;
+  description?: string;
   quantity: number;
   variationId?: number;
 }

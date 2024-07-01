@@ -15,7 +15,6 @@ export class Category {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Unique('UQ_CATEGORY_ID', ['categoryId'])
   @Column()
   categoryId: number;
 

@@ -54,7 +54,7 @@ export const buildOrders = async (start: number): Promise<void> => {
           orderLog: true,
         },
         where: {
-          storeOrderId: +payment.orderID,
+          storeOrderId: payment.orderID,
         },
       });
       // const datasourceData = await datasourceRepository.find({
@@ -101,7 +101,12 @@ const rebuildOrder = async (payment: Payment) => {
   try {
     const order = await getOrderById(data);
     const customer = await getCustomer(payment.buyer);
-    const savedOrder = await saveOrder(order, customer, payment.dataSource);
+    const savedOrder = await saveOrder(
+      order,
+      customer,
+      payment.dataSource,
+      'BAG'
+    );
     return savedOrder;
   } catch (error) {
     console.log('error', error);
@@ -144,7 +149,7 @@ const validateOrdersVsWoocommerce = async () => {
             datasource: orderLog.datasource[0].id,
             wallet: orderLog.datasource.wallet,
             status: 'success',
-            orderId: order.storeOrderId,
+            orderId: +order.storeOrderId,
           };
           notifyPurschase(notifyData);
         } else {

@@ -17,6 +17,7 @@ export class User {
   id: number;
 
   @Column()
+  @Unique(['UQ_USERNAME'])
   username: string;
 
   // @Column({ type: 'varchar', length: 42 })

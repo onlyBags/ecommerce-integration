@@ -8,7 +8,7 @@ import {
   Relation,
   OneToMany,
 } from 'typeorm';
-import { Customer, OrderLog, Datasource } from './index.js';
+import { Customer, OrderLog, Datasource, BinanceOrder } from './index.js';
 
 @Entity({
   name: 'order',
@@ -20,6 +20,9 @@ export class Order {
   @ManyToOne(() => Datasource, (datasource) => datasource.slot)
   datasource: Relation<Datasource>;
 
+  @Column({ default: 'BAG' })
+  paymentMethod: string;
+
   @ManyToOne(() => Customer, (customer) => customer.id)
   customer: Relation<Customer>;
 
@@ -28,7 +31,7 @@ export class Order {
   orderLog: Relation<OrderLog>;
 
   @Column()
-  storeOrderId: number;
+  storeOrderId: string;
 
   @Column()
   status: string;

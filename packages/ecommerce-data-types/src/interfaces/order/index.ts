@@ -13,8 +13,8 @@ export interface OnlyBagsOrderCreatedRes {
 }
 
 export interface OnlyBagsOrderRequest {
-  paymentMethod: string;
-  paymentMethodTitle: string;
+  paymentMethod: 'BAG' | 'BINANCE' | 'COINBASE';
+  email: string;
   wallet: string;
   billing: OrderBilling;
   shipping: OrderShipping;

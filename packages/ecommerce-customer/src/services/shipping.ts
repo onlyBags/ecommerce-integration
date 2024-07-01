@@ -3,7 +3,6 @@ import { OrderShipping } from '@dg-live/ecommerce-data-types';
 import { ValidateError } from 'tsoa';
 
 const shippingRepository = AppDataSource.getRepository(Shipping);
-const customerRepository = AppDataSource.getRepository(Customer);
 
 export const saveShipping = async ({
   customer,
@@ -13,15 +12,38 @@ export const saveShipping = async ({
   shippingData: OrderShipping;
 }) => {
   try {
+    const shippingAddressExists = await shippingRepository.findOne({
+      where: {
+        firstName:
+          shippingData?.firstName?.toLowerCase() || 'only-bags-ecommerce',
+        lastName:
+          shippingData?.lastName?.toLowerCase() || 'only-bags-ecommerce',
+        address1: shippingData.address1.toLowerCase(),
+        address2: shippingData?.address2?.toLowerCase(),
+        city: shippingData.city.toLowerCase(),
+        state: shippingData.state.toLowerCase(),
+        postcode: shippingData.postcode.toLowerCase(),
+        country: shippingData.country.toLowerCase(),
+        email: shippingData.email.toLowerCase(),
+        customer: {
+          id: customer.id,
+        },
+      },
+      relations: {
+        customer: true,
+      },
+    });
+    if (shippingAddressExists) return shippingAddressExists;
     const newShipping = new Shipping();
-    newShipping.firstName = shippingData.firstName;
-    newShipping.lastName = shippingData.lastName;
-    newShipping.address1 = shippingData.address1;
-    newShipping.address2 = shippingData.address2;
-    newShipping.city = shippingData.city;
-    newShipping.state = shippingData.state;
-    newShipping.postcode = shippingData.postcode;
-    newShipping.country = shippingData.country;
+    newShipping.firstName = shippingData.firstName?.toLowerCase();
+    newShipping.lastName = shippingData.lastName?.toLowerCase();
+    newShipping.address1 = shippingData.address1.toLowerCase();
+    newShipping.address2 = shippingData.address2?.toLowerCase();
+    newShipping.city = shippingData.city.toLowerCase();
+    newShipping.state = shippingData.state.toLowerCase();
+    newShipping.postcode = shippingData.postcode.toLowerCase();
+    newShipping.country = shippingData.country.toLowerCase();
+    newShipping.email = shippingData.email.toLowerCase();
     newShipping.customer = customer;
     const savedShipping = await shippingRepository.save(newShipping);
     return savedShipping;
@@ -60,5 +82,6 @@ export const mapShippingWCShipping = (shipping: Shipping | OrderShipping) => {
     state: shipping.state,
     postcode: shipping.postcode,
     country: shipping.country,
+    email: shipping.email,
   };
 };

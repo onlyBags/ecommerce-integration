@@ -27,6 +27,7 @@ import {
   JoystickBaseData,
   DatasourceShippingCost,
   DatasourceShippingCostUpdate,
+  UpdateUserDatasourceReq,
 } from '@dg-live/ecommerce-data-types';
 import { createWebhooks } from '@dg-live/ecommerce-woocommerce';
 import { notifyToWorldJoystick } from '@dg-live/ecommerce-websocket';
@@ -74,6 +75,7 @@ export class DashboardController extends Controller {
       accessTokenSecret,
       baseUrl,
       wallet,
+      dollarRatio,
     } = requestBody;
     if (!apiKey) {
       fields.apiKey = {
@@ -118,6 +120,12 @@ export class DashboardController extends Controller {
           value: wallet,
         };
       }
+      if (!dollarRatio) {
+        fields.wallet = {
+          message: 'Invalid dollarRatio',
+          value: dollarRatio,
+        };
+      }
     }
     if (Object.keys(fields).length) {
       throw new ValidateError(fields, 'Error saving user datasource');
@@ -134,6 +142,60 @@ export class DashboardController extends Controller {
           datasourceId: resp.data.id,
         });
       }
+      return resp;
+    } catch (err) {
+      throw new ValidateError({}, err.message);
+    }
+  }
+
+  @Put('/datasource')
+  @SuccessResponse('200', 'Updated')
+  public async updateUserDatasource(
+    @Header('api-key') apiKey: string,
+    @Body() requestBody: UpdateUserDatasourceReq
+  ): Promise<DGLResponse<Datasource>> {
+    const fields: FieldErrors = {};
+
+    if (!apiKey) {
+      fields.apiKey = {
+        message: 'Invalid apiKey',
+        value: apiKey,
+      };
+    }
+
+    if (Object.keys(fields).length) {
+      throw new ValidateError(fields, 'Error updating user datasource');
+    }
+
+    try {
+      const updatedDatasource = await dashboardService.updateUserDatasource(
+        apiKey,
+        requestBody
+      );
+      const resp: DGLResponse<Datasource> = {
+        message: 'User datasource updated successfully',
+        status: 200,
+        data: updatedDatasource,
+      };
+      return resp;
+    } catch (err) {
+      throw new ValidateError({}, err.message);
+    }
+  }
+
+  @Delete('/datasource/{id}')
+  @SuccessResponse('200', 'Deleted')
+  public async deleteUserDatasource(
+    @Header('api-key') apiKey: string,
+    @Body() datasourceId: number
+  ): Promise<DGLResponse<null>> {
+    try {
+      await dashboardService.deleteUserDatasource(apiKey, datasourceId);
+      const resp: DGLResponse<null> = {
+        message: 'User datasource deleted successfully',
+        status: 200,
+        data: null,
+      };
       return resp;
     } catch (err) {
       throw new ValidateError({}, err.message);

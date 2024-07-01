@@ -24,10 +24,12 @@ import {
   MgActions,
   RawMagentoProductItem,
   MGOrderCreated,
+  OnlyBagsOrderCreatedRes,
 } from '@dg-live/ecommerce-data-types';
 
 import {
   getBagPrice,
+  getCustomer,
   mapBillingWCBilling,
   mapShippingWCShipping,
   saveBilling,
@@ -301,18 +303,6 @@ const getCurrentFormattedDate = () => {
   const seconds = padZero(now.getSeconds());
 
   return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
-};
-
-export const getCustomer = async (wallet: string) => {
-  const foundCustomer = await customerRepository.findOne({
-    where: {
-      wallet,
-    },
-  });
-  if (foundCustomer) return foundCustomer;
-  const newCustomer = new Customer();
-  newCustomer.wallet = wallet;
-  return await customerRepository.save(newCustomer);
 };
 
 const orderCreatedOnWebPage = {
@@ -964,7 +954,7 @@ const mapToMagentoOrderReq = async (
     },
     payment: {
       account_status: null,
-      additional_information: [order.paymentMethodTitle],
+      additional_information: [order.paymentMethod],
       amount_ordered: 0,
       base_amount_ordered: 0,
       base_shipping_amount: 0,
@@ -1068,7 +1058,7 @@ const mapToMagentoOrderReq = async (
       payment_additional_info: [
         {
           key: 'method_title',
-          value: order.paymentMethodTitle,
+          value: order.paymentMethod,
         },
       ],
       applied_taxes: [],
@@ -1082,7 +1072,7 @@ const mapToMagentoOrderReq = async (
 export const createOrder = async (
   datasourceId: number,
   order: OnlyBagsOrderRequest
-): Promise<any> => {
+): Promise<OnlyBagsOrderCreatedRes> => {
   let wcShipping: ShippingReq;
   let wcBilling: BillingReq;
   const foundUserDatasource = await userRepository.findOne({
@@ -1100,7 +1090,7 @@ export const createOrder = async (
     accessToken,
     accessTokenSecret,
   } = foundUserDatasource.datasource[0];
-  const customer = await getCustomer(order.wallet);
+  const customer = await getCustomer(order.wallet, order.email);
   if (order.shippingId || order.billingId) {
     const shippingWhere = order.shippingId
       ? { id: order.shippingId }
@@ -1199,7 +1189,12 @@ export const createOrder = async (
         },
       }
     );
-    const savedOrder = await saveOrder(res.data, customer, datasourceId);
+    const savedOrder = await saveOrder(
+      res.data,
+      customer,
+      datasourceId,
+      order.paymentMethod
+    );
     return {
       dgLiveOrder: savedOrder,
       raw: res.data,
@@ -1213,7 +1208,8 @@ export const createOrder = async (
 export const saveOrder = async (
   order: MGOrderCreated,
   customer: Customer,
-  datasourceId: number
+  datasourceId: number,
+  paymentMethod: string
 ) => {
   const datasource = await datasourceRepository.findOneBy({
     id: datasourceId,
@@ -1222,14 +1218,14 @@ export const saveOrder = async (
   try {
     const orderToSave = new Order();
     const bagPrice = await getBagPrice();
-    orderToSave.storeOrderId = order.entity_id;
+    orderToSave.storeOrderId = order.entity_id.toString();
+    orderToSave.paymentMethod = paymentMethod;
     orderToSave.orderKey = order.increment_id;
     orderToSave.status = order.status;
     orderToSave.customer = customer;
     orderToSave.total = +order.base_grand_total;
     orderToSave.currency = order.base_currency_code;
     orderToSave.datasource = datasource;
-    // orderToSave.totalIce = +order.total / icePrice.data.quote.USD.price;
     orderToSave.totalIce = 0;
     orderToSave.iceValue = bagPrice.data.quote.USD.price;
     orderToSave.iceValueTimestamp = new Date(bagPrice.data.last_updated);

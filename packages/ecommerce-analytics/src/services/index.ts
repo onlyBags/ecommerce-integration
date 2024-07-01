@@ -149,7 +149,7 @@ export const getAnalyticsData = async (
   let totalUnitSales = 0;
   const totalSalesDetails: SaleItem[] = [];
 
-  const storeOrderIds = orders.map((order) => order.storeOrderId);
+  const storeOrderIds = orders.map((order) => +order.storeOrderId);
 
   const wc = await createNewWoocommerceInstance({ apiKey, datasourceId });
   const wcOrders = await fetchAllWcOrders(wc, storeOrderIds);

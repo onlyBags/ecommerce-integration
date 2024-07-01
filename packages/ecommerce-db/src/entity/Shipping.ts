@@ -41,6 +41,9 @@ export class Shipping {
   @Column()
   postcode: string;
 
+  @Column({ nullable: false, default: 'no@email.com' })
+  email: string;
+
   @Column()
   country: string;
 }
