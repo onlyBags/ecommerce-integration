@@ -44,7 +44,7 @@ const mapToSlotsRes = (slots: Slot[]): SlotRes[] => {
 function mapWooCommerceProductToArticle(
   woocommerceProduct: WoocommerceProduct
 ): Article {
-  const images: Image[] = woocommerceProduct.images.map(
+  const images: Image[] = woocommerceProduct?.images?.map(
     (image) =>
       ({
         id: image.id,
@@ -68,20 +68,20 @@ function mapWooCommerceProductToArticle(
     salePrice: woocommerceProduct.salePrice,
     shopType: 'woocommerce',
     images,
-    categories: woocommerceProduct.categories.map((category: any) => ({
+    categories: woocommerceProduct?.categories?.map((category: any) => ({
       id: category.id,
       categoryId: category.categoryId,
       name: category.name,
       slug: category.slug,
     })),
-    attributes: woocommerceProduct.attributes.map((attribute: any) => ({
+    attributes: woocommerceProduct?.attributes?.map((attribute: any) => ({
       id: attribute.id,
       attributeId: attribute.attributeId,
       name: attribute.name,
       position: attribute.position,
       visible: attribute.visible,
       variation: attribute.variation,
-      options: attribute.options.map((option: any) => ({
+      options: attribute?.options?.map((option: any) => ({
         id: option.id,
         value: option.value,
       })),
