@@ -151,7 +151,7 @@ const mockPayload3: MagentoOrderReq = {
       address_type: 'billing',
       city: 'Alaska',
       company: 'my company',
-      country_id: 'US',
+      country_id: 'USA',
       email: 'cuentaparavtv@gmail.com',
       entity_id: 9,
       firstname: 'my name',
@@ -199,7 +199,7 @@ const mockPayload3: MagentoOrderReq = {
               address_type: 'shipping',
               city: 'Alaska',
               company: 'my company',
-              country_id: 'US',
+              country_id: 'USA',
               email: 'cuentaparavtv@gmail.com',
               entity_id: 8,
               firstname: 'my name',
@@ -417,7 +417,7 @@ const orderCreatedOnWebPage = {
       address_type: 'billing',
       city: 'una ciudad',
       company: 'my company2',
-      country_id: 'AE',
+      country_id: 'USA',
       email: 'cuentaparavtv@gmail.com',
       entity_id: 11,
       firstname: 'maiki',
@@ -453,7 +453,7 @@ const orderCreatedOnWebPage = {
               address_type: 'shipping',
               city: 'arkansas',
               company: 'my company',
-              country_id: 'US',
+              country_id: 'USA',
               email: 'cuentaparavtv@gmail.com',
               entity_id: 10,
               firstname: 'maiki',
@@ -653,7 +653,7 @@ const modOrderCreatedOnWebPage = {
       address_type: 'billing',
       city: 'una ciudad',
       company: 'my company2',
-      country_id: 'AE',
+      country_id: 'USA',
       email: 'cuentaparavtv@gmail.com',
       firstname: 'maiki',
       lastname: 'billing',
@@ -685,7 +685,7 @@ const modOrderCreatedOnWebPage = {
               address_type: 'shipping',
               city: 'arkansas',
               company: 'my company',
-              country_id: 'US',
+              country_id: 'USA',
               email: 'cuentaparavtv@gmail.com',
               firstname: 'maiki',
               lastname: 'last name',
@@ -790,7 +790,7 @@ const validateProductsPrice = async (
           datasource: {
             id: datasourceId,
           },
-          id: lineItem.productId,
+          productId: lineItem.productId,
         },
       });
       if (!foundProduct) {
@@ -828,18 +828,19 @@ const mapToMagentoOrderReq = async (
     datasourceId,
     order.lineItems
   );
+  const grandTotal = productsData.reduce((acc, curr) => (acc += curr.price), 0);
   const entity: Entity = {
     base_currency_code: 'USD',
     base_discount_amount: 0,
-    base_grand_total: 0,
+    base_grand_total: grandTotal,
     base_discount_tax_compensation_amount: 0,
     base_shipping_amount: 0,
     base_shipping_discount_amount: 0,
     base_shipping_discount_tax_compensation_amnt: 0,
-    base_shipping_incl_tax: 0,
+    base_shipping_incl_tax: 10,
     base_shipping_tax_amount: 0,
-    base_subtotal: 0,
-    base_subtotal_incl_tax: 0,
+    base_subtotal: grandTotal,
+    base_subtotal_incl_tax: grandTotal,
     base_tax_amount: 0,
     base_total_due: 0,
     base_to_global_rate: 1,
@@ -853,7 +854,7 @@ const mapToMagentoOrderReq = async (
     customer_note_notify: 1,
     discount_amount: 0,
     global_currency_code: 'USD',
-    grand_total: 0,
+    grand_total: grandTotal,
     discount_tax_compensation_amount: 0,
     is_virtual: 0,
     order_currency_code: 'USD',
@@ -884,7 +885,8 @@ const mapToMagentoOrderReq = async (
     weight: 0,
     items: productsData.map((item, index) => {
       const prdQty: number =
-        order.lineItems.find((x) => x.productId === item.id)?.quantity || 0;
+        order.lineItems.find((x) => x.productId === item.productId)?.quantity ||
+        0;
       return {
         amount_refunded: 0,
         base_amount_refunded: 0,
@@ -939,7 +941,7 @@ const mapToMagentoOrderReq = async (
       address_type: 'billing',
       city: order.billing.city,
       company: '', // Adjust as needed
-      country_id: order.billing.country,
+      country_id: 'USA', // order.billing.country,
       email: 'cuentaparavtv@gmail.com',
       entity_id: 0,
       firstname: order.billing.firstName,
@@ -976,7 +978,7 @@ const mapToMagentoOrderReq = async (
               address_type: 'shipping',
               city: order.shipping.city,
               company: '', // Adjust as needed
-              country_id: order.shipping.country,
+              country_id: 'USA', //order.shipping.country,
               email: 'cuentaparavtv@gmail.com',
               entity_id: 0,
               firstname: order.shipping.firstName,
@@ -1297,48 +1299,148 @@ export const magentoGetOrder = async ({
     throw err;
   }
 };
-// {
-//   "paymentMethod": "checkmo",
-//   "paymentMethodTitle": "Check / Money order",
-//   "wallet": "",
-//   "billing": {
-//     "firstName": "my name",
-//     "lastName": "my last name",
-//     "address1": "my street",
-//     "address2": "my second street",
-//     "city": "Alaska",
-//     "state": "Alaska",
-//     "postcode": "12342",
-//     "country": "US",
-//     "email": "cuentaparavtv@gmail.com",
-//     "phone": "+447788996655"
-//   },
-//   "shipping": {
-//     "firstName": "my name",
-//     "lastName": "my last name",
-//     "address1": "my street",
-//     "address2": "my second street",
-//     "city": "Alaska",
-//     "state": "Alaska",
-//     "postcode": "12342",
-//     "country": "US"
-//   },
-//   "lineItems": [
-//     {
-//       "productId": 1,
-//       "quantity": 10,
-//       "variationId": 0
+
+// export const setOrderAsPayed = async (order: Order) => {
+//   try {
+//     let orderData: any;
+//     const foundDatasource = await datasourceRepository.findOne({
+//       where: {
+//         id: order.datasource.id,
+//       },
+//       relations: {
+//         user: true,
+//       },
+//     });
+//     if (!foundDatasource) throw new Error('Datasource not found');
+
+//     const {
+//       baseUrl,
+//       consumerKey,
+//       consumerSecret,
+//       accessToken,
+//       accessTokenSecret,
+//     } = foundDatasource;
+
+//     const mgGetData = {
+//       url: `${baseUrl}/rest/V1/orders/${order.orderKey}`,
+//       method: 'GET',
+//     };
+//     const mgDataAccess = new oAuth({
+//       consumer: {
+//         key: consumerKey,
+//         secret: consumerSecret,
+//       },
+//       signature_method: 'HMAC-SHA256',
+//       hash_function(base_string, key) {
+//         return createHmac('sha256', key)
+//           .update(base_string)
+//           .digest('base64')
+//           .toString();
+//       },
+//     });
+
+//     const token = {
+//       key: accessToken,
+//       secret: accessTokenSecret,
+//     };
+
+//     const mgDataAuthHeader = mgDataAccess.toHeader(
+//       mgDataAccess.authorize(mgGetData, token)
+//     );
+//     try {
+//       const res = await axios.get(mgGetData.url, {
+//         headers: {
+//           ...mgDataAuthHeader,
+//         },
+//       });
+//       if (res.data) {
+//         const mgPutData = {
+//           url: `${baseUrl}/rest/V1/orders/create`,
+//           method: 'PUT',
+//         };
+//         const putDataAuthHeader = mgDataAccess.toHeader(
+//           mgDataAccess.authorize(mgPutData, token)
+//         );
+
+//         const putRes: AxiosResponse<MGOrderCreated> = await axios.put(
+//           mgPutData.url,
+//           { entity: { ...res.data, status: 'APPROVED' } },
+//           {
+//             headers: {
+//               ...putDataAuthHeader,
+//             },
+//           }
+//         );
+//         console.log(putRes);
+//         debugger;
+//       }
+//     } catch (err) {
+//       console.log(err);
+//       throw err;
 //     }
-//   ],
-//   "shippingLines": [
-//     {
-//       "methodId": "flatrate_flatrate",
-//       "methodTitle": "Flat Rate - Fixed",
-//       "total": "50"
-//     }
-//   ],
-//   "shippingId": 0,
-//   "billingId": 0,
-//   "saveBilling": true,
-//   "saveShipping": true
-// }
+//   } catch (error) {
+//     throw new Error('Failed to set order as payed');
+//   }
+// };
+
+export const createOrderInvoice = async (order: Order) => {
+  const foundDatasource = await datasourceRepository.findOne({
+    where: {
+      id: order.datasource.id,
+    },
+    relations: {
+      user: true,
+    },
+  });
+  if (!foundDatasource) throw new Error('Datasource not found');
+  const {
+    baseUrl,
+    consumerKey,
+    consumerSecret,
+    accessToken,
+    accessTokenSecret,
+  } = foundDatasource;
+  const mgGetData = {
+    url: `${baseUrl}/rest/V1/order/${order.orderKey}/invoice`,
+    method: 'POST',
+  };
+  const mgDataAccess = new oAuth({
+    consumer: {
+      key: consumerKey,
+      secret: consumerSecret,
+    },
+    signature_method: 'HMAC-SHA256',
+    hash_function(base_string, key) {
+      return createHmac('sha256', key)
+        .update(base_string)
+        .digest('base64')
+        .toString();
+    },
+  });
+
+  const token = {
+    key: accessToken,
+    secret: accessTokenSecret,
+  };
+
+  const mgDataAuthHeader = mgDataAccess.toHeader(
+    mgDataAccess.authorize(mgGetData, token)
+  );
+  try {
+    const res = await axios.post(
+      mgGetData.url,
+      {
+        capture: true,
+        notify: true,
+      },
+      {
+        headers: {
+          ...mgDataAuthHeader,
+        },
+      }
+    );
+    console.log(res);
+  } catch (err) {
+    console.log(err);
+  }
+};

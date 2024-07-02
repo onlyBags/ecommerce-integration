@@ -303,21 +303,6 @@ export const setOrderAsPayed = async (order: Order) => {
         id: order.id,
       },
     });
-    // const datasourceData = await datasourceRepository.findOne({
-    //   relations: {
-    //     user: true,
-    //     orders: {
-    //       orderLog: true,
-    //     },
-    //   },
-    //   where: {
-    //     orders: {
-    //       orderLog: {
-    //         id: order.orderLog.id,
-    //       },
-    //     },
-    //   },
-    // });
     const wc = await createNewWoocommerceInstance({
       apiKey: orderData.datasource.user.apiKey,
       datasourceId: orderData.datasource.id,

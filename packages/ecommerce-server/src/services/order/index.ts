@@ -22,7 +22,8 @@ export const createOrder = async (
   if (!foundDatasource) {
     throw new Error('Datasource not found');
   }
-  const createdOrder = await (foundDatasource.platform === 'woocommerce'
+  const platform = foundDatasource.platform;
+  const createdOrder = await (platform === 'woocommerce'
     ? createWcOrder(datasourceId, orderData)
     : createMgOrder(datasourceId, orderData));
   if (orderData.paymentMethod.toUpperCase() === 'BINANCE') {
@@ -33,7 +34,10 @@ export const createOrder = async (
     }));
     return createPaymentLink({
       orderId: createdOrder.dgLiveOrder.id,
-      storeOrderId: createdOrder.dgLiveOrder.storeOrderId,
+      storeOrderId:
+        platform === 'woocommerce'
+          ? createdOrder.dgLiveOrder.storeOrderId
+          : createdOrder.dgLiveOrder.orderKey,
       datasourceId,
       customerWallet: orderData.wallet,
       totalPrice: createdOrder.dgLiveOrder.total,
@@ -41,5 +45,5 @@ export const createOrder = async (
       products: items,
     });
   }
-  return;
+  return createdOrder;
 };

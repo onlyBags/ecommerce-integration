@@ -1,9 +1,12 @@
 import {
+  EcommerceWsData,
   IBinanceLink,
   IBinanceQueryOrder,
 } from '@dg-live/ecommerce-data-types';
 import crypto from 'crypto';
 import { envConfig } from '@dg-live/ecommerce-config';
+import { setOrderAsPayed } from '@dg-live/ecommerce-woocommerce';
+import { createOrderInvoice } from '@dg-live/ecommerce-magento';
 import axios, { AxiosResponse } from 'axios';
 import { Request, Response } from 'express';
 
@@ -14,10 +17,13 @@ import {
   Datasource,
   Order,
 } from '@dg-live/ecommerce-db';
+
+import { notifyPurschase } from '@dg-live/ecommerce-websocket';
 const binanceOrderRepository = AppDataSource.getRepository(BinanceOrder);
 const datasourceRepository = AppDataSource.getRepository(Datasource);
 const orderRepository = AppDataSource.getRepository(Order);
 const customerRepository = AppDataSource.getRepository(Customer);
+
 export const binanceWebhook = async (req: Request, res: Response) => {
   try {
     res.status(200).json({ returnCode: 'SUCCESS', returnMessage: null });
@@ -55,7 +61,7 @@ export const binanceWebhook = async (req: Request, res: Response) => {
       }
       try {
         const isValid = verifySignature(payload, decodedSignature, pubKey);
-        console.log('====================================');
+        console.log('1====================================');
         console.log(isValid);
         console.log('====================================');
       } catch (error) {
@@ -64,7 +70,7 @@ export const binanceWebhook = async (req: Request, res: Response) => {
 
       try {
         const isValid2 = verifySignature2(payload, signature, pubKey);
-        console.log('====================================');
+        console.log('2====================================');
         console.log(isValid2);
         console.log('====================================');
       } catch (error) {
@@ -78,7 +84,7 @@ export const binanceWebhook = async (req: Request, res: Response) => {
           body
         )}\n`.replace(/"bizId":"([^"]*)"/g, '"bizId":$1');
         const isValid3 = verifySignature2(payload, signature, pubKey);
-        console.log('====================================');
+        console.log('3====================================');
         console.log(isValid3);
         console.log('====================================');
       } catch (error) {
@@ -87,7 +93,7 @@ export const binanceWebhook = async (req: Request, res: Response) => {
       if (pubKey2) {
         try {
           const isValid = verifySignature(payload, decodedSignature, pubKey2);
-          console.log('====================================');
+          console.log('4====================================');
           console.log(isValid);
           console.log('====================================');
         } catch (error) {
@@ -96,7 +102,7 @@ export const binanceWebhook = async (req: Request, res: Response) => {
 
         try {
           const isValid2 = verifySignature2(payload, signature, pubKey2);
-          console.log('====================================');
+          console.log('5====================================');
           console.log(isValid2);
           console.log('====================================');
         } catch (error) {
@@ -110,7 +116,7 @@ export const binanceWebhook = async (req: Request, res: Response) => {
             body
           )}\n`.replace(/"bizId":"([^"]*)"/g, '"bizId":$1');
           const isValid3 = verifySignature2(payload, signature, pubKey2);
-          console.log('====================================');
+          console.log('6====================================');
           console.log(isValid3);
           console.log('====================================');
         } catch (error) {
@@ -176,9 +182,12 @@ export const createPaymentLink = async ({
       orderAmount: formattedPrice,
       currency: 'USDT',
       fiatAmount: formattedPrice,
-      webhookUrl: `https://fe41-181-169-153-185.ngrok-free.app/v1/binance/webhook`,
-      // webhookUrl: `${envConfig.baseUrl}/binance/webhook`,
+      // webhookUrl: `https://fb49-181-94-42-133.ngrok-free.app/v1/binance/webhook`,
+      webhookUrl: `${envConfig.baseUrl}/binance/webhook`,
       description: 'Onlybags - Marketplace',
+      buyer: {
+        buyerEmail: email,
+      },
       goodsDetails: products.map((product) => ({
         goodsType: '02',
         goodsCategory: 'Z000',
@@ -250,17 +259,94 @@ const queryOrder = async (merchantTradeNo: string): Promise<any> => {
     'BinancePay-Certificate-SN': envConfig.binanceApiKey,
     'BinancePay-Signature': signature,
   };
-  let errorData: IBinanceQueryOrder;
   try {
     const { data: binanceLinkRes }: AxiosResponse<IBinanceQueryOrder> =
       await axios.post(
-        `${envConfig.binanceApiUrl}/binancepay/openapi/v2/queryOrder`,
+        `${envConfig.binanceApiUrl}/binancepay/openapi/v2/order/query`,
         { merchantTradeNo },
         {
           headers,
         }
       );
-    return binanceLinkRes;
+    if (binanceLinkRes.status === 'SUCCESS') {
+      const foundBinanceOrder = await binanceOrderRepository.findOne({
+        where: {
+          prepayId: binanceLinkRes.data.prepayId,
+        },
+        relations: {
+          datasource: true,
+          customer: true,
+          order: true,
+        },
+      });
+      if (!foundBinanceOrder) {
+        throw new Error('Binance Order not found');
+      }
+      if (binanceLinkRes.data.status === 'PAID') {
+        foundBinanceOrder.status = 'PAID';
+        await binanceOrderRepository.save(foundBinanceOrder);
+        const foundOrder = await orderRepository.findOne({
+          where: {
+            id: foundBinanceOrder.order.id,
+          },
+          relations: {
+            datasource: true,
+          },
+        });
+        if (!foundOrder) {
+          throw new Error('Order not found');
+        }
+        foundOrder.status = 'completed';
+        await orderRepository.save(foundOrder);
+        const platform = foundBinanceOrder.datasource.platform;
+        platform === 'woocommerce'
+          ? await setOrderAsPayed(foundOrder)
+          : await createOrderInvoice(foundOrder);
+        const notifyData: EcommerceWsData = {
+          type: 'ecommerce',
+          datasource: foundBinanceOrder.datasource.id,
+          wallet: foundBinanceOrder.customer.wallet,
+          status: 'success',
+          orderId: foundOrder.id,
+          orderKey:
+            platform === 'woocommerce'
+              ? foundOrder.orderKey
+              : foundOrder.orderKey,
+        };
+        notifyPurschase(notifyData);
+      }
+    } else {
+    }
+
+    //     {
+    //   status: "SUCCESS",
+    //   code: "000000",
+    //   data: {
+    //     merchantId: 227843683,
+    //     prepayId: "305025628905840640",
+    //     transactionId: "305025796652466177",
+    //     merchantTradeNo: "1719875425276",
+    //     status: "PAID",
+    //     currency: "USDT",
+    //     openUserId: "43640dc4b0e75b9499f9ea0b9a676f53",
+    //     transactTime: 1719875505583,
+    //     createTime: 1719875427487,
+    //     paymentInfo: {
+    //       payerId: "395183728",
+    //       payMethod: "spot",
+    //       paymentInstructions: [
+    //         {
+    //           currency: "DAI",
+    //           amount: "1.03462968",
+    //           price: "0.96652940",
+    //         },
+    //       ],
+    //       channel: "DEFAULT",
+    //     },
+    //     commission: "0.01",
+    //     orderAmount: "1.00000000",
+    //   },
+    // }
   } catch (error) {
     console.log(error);
     throw new Error('Error querying order');

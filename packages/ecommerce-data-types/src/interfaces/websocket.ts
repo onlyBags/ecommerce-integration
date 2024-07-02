@@ -34,6 +34,7 @@ export interface EcommerceWsData {
   wallet: string;
   status: 'success' | 'fail' | 'pending';
   orderId: number;
+  orderKey: string;
 }
 
 export interface DCGWebSocket extends WebSocket {

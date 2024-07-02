@@ -20,7 +20,7 @@ import axios from 'axios';
 import AWS from 'aws-sdk';
 
 import '@dg-live/ecommerce-websocket';
-import { AppDataSource } from '@dg-live/ecommerce-db';
+import { AppDataSource, Order } from '@dg-live/ecommerce-db';
 import { redisClient } from '@dg-live/ecommerce-cache';
 import { envConfig } from '@dg-live/ecommerce-config';
 import { RegisterRoutes } from '../routes/routes.js';
@@ -28,10 +28,32 @@ import { handleWebhook } from '@dg-live/ecommerce-webhooks';
 import { startGraphPolling } from '@dg-live/ecommerce-web3';
 import { getAllPayments } from '@dg-live/ecommerce-magento';
 import { binanceWebhook } from '@dg-live/ecommerce-payment-service';
+
+import { createOrderInvoice } from '@dg-live/ecommerce-magento';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
 let swaggerDocument: any;
+
+const tst = async () => {
+  try {
+    const orderRepository = AppDataSource.getRepository(Order);
+    const foundOrder = await orderRepository.findOne({
+      where: {
+        orderKey: '00000000',
+      },
+      relations: {
+        datasource: true,
+        customer: true,
+      },
+    });
+    if (foundOrder) {
+      await createOrderInvoice(foundOrder);
+    }
+  } catch (error) {
+    console.log(error);
+  }
+};
 
 if (process.env.NODE_ENV !== 'test') {
   readFile(`${__dirname}/../../public/swagger.json`, 'utf8').then((data) => {
@@ -276,7 +298,6 @@ const server = app.listen(port, async () => {
   } catch (error) {
     console.log('Error connecting to database');
     console.log(error);
-    // process.exit(1);
   }
   console.log(
     `⚡️[server]: Server is running at http://localhost:${port}/docs`

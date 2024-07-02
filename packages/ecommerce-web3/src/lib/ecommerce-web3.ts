@@ -15,8 +15,10 @@ import {
 import {
   getOrderById,
   saveOrder,
-  setOrderAsPayed,
+  setOrderAsPayed as WCSetOrderAsPayed,
 } from '@dg-live/ecommerce-woocommerce';
+
+import { createOrderInvoice } from '@dg-live/ecommerce-magento';
 import {
   Payment,
   WCValidateOrderData,
@@ -113,11 +115,12 @@ const rebuildOrder = async (payment: Payment) => {
   }
 };
 
-const validateOrdersVsWoocommerce = async () => {
+const validateStoreOrders = async () => {
   try {
     const orders = await orderRepository.find({
       relations: {
         orderLog: true,
+        datasource: true,
       },
       where: {
         status: Not('completed'),
@@ -133,11 +136,16 @@ const validateOrdersVsWoocommerce = async () => {
           },
           where: {
             id: order.id,
+            paymentMethod: 'BAG',
           },
         });
         if (!orderToValidate) continue;
         const orderLog = orderToValidate.orderLog;
-        const orderStatus = await setOrderAsPayed(orderToValidate);
+        const platform = order.datasource.platform;
+        const orderStatus =
+          platform === 'woocommerce'
+            ? await WCSetOrderAsPayed(orderToValidate)
+            : await createOrderInvoice(orderToValidate);
         if (orderStatus && orderLog) {
           orderLog.isValidated = true;
           orderLog.orderStatus = 'completed';
@@ -149,7 +157,9 @@ const validateOrdersVsWoocommerce = async () => {
             datasource: orderLog.datasource[0].id,
             wallet: orderLog.datasource.wallet,
             status: 'success',
-            orderId: +order.storeOrderId,
+            orderId: order.id,
+            orderKey:
+              platform === 'woocommerce' ? order.storeOrderId : order.orderKey,
           };
           notifyPurschase(notifyData);
         } else {
@@ -185,7 +195,7 @@ export const startGraphPolling = () => {
       const graphOrdersCount = await fetchTransactionCount();
       if (localOrdersCount < graphOrdersCount) {
         await buildOrders(localOrdersCount);
-        await validateOrdersVsWoocommerce();
+        await validateStoreOrders();
       }
       isPolling = !isPolling;
     }
