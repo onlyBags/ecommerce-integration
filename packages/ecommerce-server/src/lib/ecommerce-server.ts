@@ -27,7 +27,11 @@ import { RegisterRoutes } from '../routes/routes.js';
 import { handleWebhook } from '@dg-live/ecommerce-webhooks';
 import { startGraphPolling } from '@dg-live/ecommerce-web3';
 import { getAllPayments } from '@dg-live/ecommerce-magento';
-import { binanceWebhook } from '@dg-live/ecommerce-payment-service';
+import {
+  binanceWebhook,
+  coinbaseWebhook,
+  coinbaseCreatePaymentLink,
+} from '@dg-live/ecommerce-payment-service';
 
 import { createOrderInvoice } from '@dg-live/ecommerce-magento';
 const __filename = fileURLToPath(import.meta.url);
@@ -81,6 +85,17 @@ app.post('/v1/binance/webhook', express.raw({ type: '*/*' }), (req, res) => {
     res
       .status(500)
       .send('binance-WH-Error: ' + error?.message || 'Unknown error');
+  }
+});
+
+app.post('/v1/coinbase/webhook', express.raw({ type: '*/*' }), (req, res) => {
+  try {
+    coinbaseWebhook(req, res);
+  } catch (error) {
+    console.log(error);
+    res
+      .status(500)
+      .send('coinbase-WH-Error: ' + error?.message || 'Unknown error');
   }
 });
 

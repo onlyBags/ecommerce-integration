@@ -13,7 +13,7 @@ export interface ICoinbaseLink {
   id: string;
   localExchangeRates: LocalExchangeRates;
   logoURL: string;
-  metadata: Metadata;
+  metadata: Record<string, string>;
   name: string;
   offchainEligible: boolean;
   organizationName: string;
@@ -28,14 +28,6 @@ export interface ICoinbaseLink {
   utxo: boolean;
 }
 
-export interface Metadata {}
-
-// export interface PaymentThreshold {
-//   overpaymentAbsoluteThreshold: OverpaymentAbsoluteThreshold;
-//   overpaymentRelativeThreshold: string;
-//   underpaymentAbsoluteThreshold: OverpaymentAbsoluteThreshold;
-//   underpaymentRelativeThreshold: string;
-// }
 export interface Timeline {
   status: string;
   time: Date;
@@ -70,7 +62,7 @@ export interface Data {
   createdAt: Date;
   expiresAt: Date;
   timeline: Timeline[];
-  metadata: Metadata;
+  metadata: Record<string, string>;
   pricingType: string;
   payments: any[];
   addresses: EventAddresses;
@@ -171,6 +163,10 @@ export interface Ethereum {
   currency: string;
 }
 
+export interface Settelment {
+  amount: string;
+  currency: string;
+}
 export interface Usdc {
   amount: string;
   currency: string;
@@ -231,6 +227,7 @@ export interface Pricing {
   dogecoin: Dogecoin;
   litecoin: Litecoin;
   bitcoin: Bitcoin;
+  settlement: Settelment;
 }
 
 export interface CoinbasePaymentStatusData {
@@ -248,7 +245,7 @@ export interface CoinbasePaymentStatusData {
   id: string;
   local_exchange_rates: LocalExchangeRates;
   logo_url: string;
-  metadata: Metadata;
+  metadata: Record<string, string>;
   name: string;
   offchain_eligible: boolean;
   organization_name: string;

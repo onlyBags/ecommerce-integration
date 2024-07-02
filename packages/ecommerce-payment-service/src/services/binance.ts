@@ -136,7 +136,7 @@ export const binanceWebhook = async (req: Request, res: Response) => {
   }
 };
 
-export const createPaymentLink = async ({
+export const binanceCreatePaymentLink = async ({
   orderId,
   storeOrderId,
   datasourceId,
@@ -161,7 +161,7 @@ export const createPaymentLink = async ({
     if (
       !envConfig.binanceApiKey ||
       !envConfig.binanceApiSecret ||
-      !envConfig.baseUrl ||
+      !envConfig.ecommerceBaseUrl ||
       !envConfig.binanceApiUrl
     ) {
       throw new Error(
@@ -183,7 +183,7 @@ export const createPaymentLink = async ({
       currency: 'USDT',
       fiatAmount: formattedPrice,
       // webhookUrl: `https://fb49-181-94-42-133.ngrok-free.app/v1/binance/webhook`,
-      webhookUrl: `${envConfig.baseUrl}/binance/webhook`,
+      webhookUrl: `${envConfig.ecommerceBaseUrl}/binance/webhook`,
       description: 'Onlybags - Marketplace',
       buyer: {
         buyerEmail: email,
@@ -268,37 +268,39 @@ const queryOrder = async (merchantTradeNo: string): Promise<any> => {
           headers,
         }
       );
+    const foundBinanceOrder = await binanceOrderRepository.findOne({
+      where: {
+        prepayId: binanceLinkRes.data.prepayId,
+      },
+      relations: {
+        datasource: true,
+        customer: true,
+        order: true,
+      },
+    });
+    if (!foundBinanceOrder) {
+      throw new Error('Binance Order not found');
+    }
+    const platform = foundBinanceOrder.datasource.platform;
+    const foundOrder = await orderRepository.findOne({
+      where: {
+        id: foundBinanceOrder.order.id,
+      },
+      relations: {
+        datasource: true,
+      },
+    });
+    if (!foundOrder) {
+      throw new Error('Order not found');
+    }
     if (binanceLinkRes.status === 'SUCCESS') {
-      const foundBinanceOrder = await binanceOrderRepository.findOne({
-        where: {
-          prepayId: binanceLinkRes.data.prepayId,
-        },
-        relations: {
-          datasource: true,
-          customer: true,
-          order: true,
-        },
-      });
-      if (!foundBinanceOrder) {
-        throw new Error('Binance Order not found');
-      }
       if (binanceLinkRes.data.status === 'PAID') {
         foundBinanceOrder.status = 'PAID';
         await binanceOrderRepository.save(foundBinanceOrder);
-        const foundOrder = await orderRepository.findOne({
-          where: {
-            id: foundBinanceOrder.order.id,
-          },
-          relations: {
-            datasource: true,
-          },
-        });
-        if (!foundOrder) {
-          throw new Error('Order not found');
-        }
+
         foundOrder.status = 'completed';
         await orderRepository.save(foundOrder);
-        const platform = foundBinanceOrder.datasource.platform;
+
         platform === 'woocommerce'
           ? await setOrderAsPayed(foundOrder)
           : await createOrderInvoice(foundOrder);
@@ -316,37 +318,18 @@ const queryOrder = async (merchantTradeNo: string): Promise<any> => {
         notifyPurschase(notifyData);
       }
     } else {
+      foundOrder.status = 'failed';
+      await orderRepository.save(foundOrder);
+      const notifyData: EcommerceWsData = {
+        type: 'ecommerce',
+        datasource: foundBinanceOrder.datasource.id,
+        wallet: foundBinanceOrder.customer.wallet,
+        status: 'fail',
+        orderId: foundOrder.id,
+        orderKey: foundOrder.orderKey,
+      };
+      notifyPurschase(notifyData);
     }
-
-    //     {
-    //   status: "SUCCESS",
-    //   code: "000000",
-    //   data: {
-    //     merchantId: 227843683,
-    //     prepayId: "305025628905840640",
-    //     transactionId: "305025796652466177",
-    //     merchantTradeNo: "1719875425276",
-    //     status: "PAID",
-    //     currency: "USDT",
-    //     openUserId: "43640dc4b0e75b9499f9ea0b9a676f53",
-    //     transactTime: 1719875505583,
-    //     createTime: 1719875427487,
-    //     paymentInfo: {
-    //       payerId: "395183728",
-    //       payMethod: "spot",
-    //       paymentInstructions: [
-    //         {
-    //           currency: "DAI",
-    //           amount: "1.03462968",
-    //           price: "0.96652940",
-    //         },
-    //       ],
-    //       channel: "DEFAULT",
-    //     },
-    //     commission: "0.01",
-    //     orderAmount: "1.00000000",
-    //   },
-    // }
   } catch (error) {
     console.log(error);
     throw new Error('Error querying order');

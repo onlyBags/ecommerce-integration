@@ -51,7 +51,9 @@ export const envConfig = Object.freeze({
   binanceApiUrl: process.env.BINANCE_API_URL || '',
   coinbaseApiKey: process.env.COINBASE_API_KEY || '',
   coinbaseWhSecret: process.env.COINBASE_WH_SECRET || '',
-  baseUrl: process.env.BASE_URL || '',
+  coinbaseApiVersion: process.env.COINBASE_API_VERSION || '',
+  coinbaseApiUrl: process.env.COINBASE_API_URL || '',
+  ecommerceBaseUrl: process.env.ECOMMERCE_BASE_URL || '',
 });
 
 export default envConfig;

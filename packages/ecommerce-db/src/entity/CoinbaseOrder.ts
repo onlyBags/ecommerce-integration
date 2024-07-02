@@ -10,17 +10,17 @@ import {
 import { Customer, Datasource, Order } from './index.js';
 
 @Entity({
-  name: 'binance_order',
+  name: 'coinbase_order',
 })
-export class BinanceOrder {
+export class CoinbaseOrder {
   @PrimaryGeneratedColumn()
   id: number;
 
   @Column()
-  prepayId: string;
+  coinbaseId: string;
 
   @Column()
-  qrcodeLink: string;
+  code: string;
 
   @Column()
   checkoutUrl: string;

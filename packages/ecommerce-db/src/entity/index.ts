@@ -26,3 +26,4 @@ export * from './MagentoExtensionAttributes.js';
 export * from './MagentoProductLink.js';
 export * from './MagentoConfigurableProductOptions.js';
 export * from './BinanceOrder.js';
+export * from './CoinbaseOrder.js';

@@ -30,6 +30,7 @@ import {
   MagentoProductLink,
   MagentoProduct,
   BinanceOrder,
+  CoinbaseOrder,
 } from '../entity/index.js';
 import { envConfig } from '@dg-live/ecommerce-config';
 
@@ -80,6 +81,7 @@ export const AppDataSource = new typeorm.DataSource({
     MagentoProductLink,
     MagentoProduct,
     BinanceOrder,
+    CoinbaseOrder,
   ],
   migrations: [],
   subscribers: [],
