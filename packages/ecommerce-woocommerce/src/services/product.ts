@@ -1,20 +1,19 @@
 import axios, { AxiosResponse } from 'axios';
 import FormData from 'form-data';
-import { AppDataSource, User } from '@dg-live/ecommerce-db';
+import { AppDataSource, Image, User } from '@dg-live/ecommerce-db';
 import {
   ProductVariation,
   ProductVariationRes,
 } from '@dg-live/ecommerce-data-types';
 const userRepository = AppDataSource.getRepository(User);
 
+const imageRepository = AppDataSource.getRepository(Image);
 export const getProductVariation = async ({
-  apiKey,
   datasourceId,
   productId,
   attributes,
   values,
 }: {
-  apiKey: string;
   datasourceId: number;
   productId: number;
   attributes: string[];
@@ -22,8 +21,10 @@ export const getProductVariation = async ({
 }): Promise<ProductVariation | false> => {
   try {
     const foundUserDatasource = await userRepository.findOne({
-      where: { apiKey, datasource: { id: datasourceId } },
-      relations: ['datasource'],
+      where: { datasource: { id: datasourceId } },
+      relations: {
+        datasource: true,
+      },
     });
     if (!foundUserDatasource) throw new Error("User's datasource not found");
 
@@ -42,22 +43,47 @@ export const getProductVariation = async ({
         password: consumerSecret,
       },
     });
-    return res.data ? mapProductVariation(res.data) : false;
+    return res.data ? await mapProductVariation(productId, res.data) : false;
   } catch (error) {
     console.log('error', error);
     throw error;
   }
 };
 
-const mapProductVariation = (
+const mapProductVariation = async (
+  productId: number,
   productVariationRes: ProductVariationRes
-): ProductVariation => {
+): Promise<ProductVariation> => {
+  const images = await imageRepository.find({
+    where: {
+      woocommerceProduct: {
+        productId,
+      },
+    },
+    relations: {
+      woocommerceProduct: true,
+    },
+  });
   return {
     backordersAllowed: productVariationRes.backorders_allowed,
     dimensions: productVariationRes.dimensions,
     price: productVariationRes.display_price,
     regularPrice: productVariationRes.display_regular_price,
-    image: productVariationRes.image,
+    images: [
+      {
+        id: productVariationRes.image_id,
+        dateCreated: '01/01/2021',
+        dateModified: '01/01/2021',
+        imageId: productVariationRes.image_id,
+        src: productVariationRes.image.src,
+        dateCreatedGmt: null,
+        dateModifiedGmt: null,
+        name: productVariationRes.image.title,
+        alt: productVariationRes.image.alt,
+        woocommerceProduct: images.length ? images[0].woocommerceProduct : null,
+      },
+      ...images,
+    ],
     imageId: productVariationRes.image_id,
     isDownloadable: productVariationRes.is_downloadable,
     isInStock: productVariationRes.is_in_stock,

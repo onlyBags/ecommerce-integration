@@ -233,7 +233,7 @@ export interface ProductVariation {
   dimensions: DimensionsRes;
   price: number;
   regularPrice: number;
-  image: ImageVariation;
+  images: any;
   imageId: number;
   isDownloadable: boolean;
   isInStock: boolean;

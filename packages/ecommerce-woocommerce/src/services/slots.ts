@@ -16,7 +16,9 @@ export const getAllSlots = async ({
       },
       relations: {
         woocommerceProduct: {
-          attributes: true,
+          attributes: {
+            options: true,
+          },
           images: true,
           categories: true,
         },
@@ -74,17 +76,21 @@ function mapWooCommerceProductToArticle(
       name: category.name,
       slug: category.slug,
     })),
-    attributes: woocommerceProduct?.attributes?.map((attribute: any) => ({
-      id: attribute.id,
-      attributeId: attribute.attributeId,
-      name: attribute.name,
-      position: attribute.position,
-      visible: attribute.visible,
-      variation: attribute.variation,
-      options: attribute?.options?.map((option: any) => ({
-        id: option.id,
-        value: option.value,
-      })),
-    })),
+    attributes: woocommerceProduct?.attributes?.map((attribute: any) => {
+      return {
+        id: attribute.id,
+        attributeId: attribute.attributeId,
+        name: attribute.name,
+        position: attribute.position,
+        visible: attribute.visible,
+        variation: attribute.variation,
+        options: attribute?.options?.map((option: any) => {
+          return {
+            id: option.id,
+            value: option.value,
+          };
+        }),
+      };
+    }),
   };
 }

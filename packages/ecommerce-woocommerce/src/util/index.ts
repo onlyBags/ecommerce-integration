@@ -153,6 +153,7 @@ export const parseProductResponse = async (
         product.dateCreated = productData.date_created;
         product.dateModified = productData.date_modified;
         product.type = productData.type;
+
         product.status = productData.status;
         product.featured = productData.featured;
         product.catalogVisibility = productData.catalog_visibility;
@@ -509,101 +510,121 @@ const findDimension = async (
     length: string;
   }
 ): Promise<Dimensions | null> => {
-  const foundItem = await userRepository.findOne({
-    relations: {
-      datasource: {
-        woocommerceProduct: {
-          dimensions: true,
-        },
-      },
-    },
-    where: {
-      apiKey,
-      datasource: {
-        id: datasourceId,
-        woocommerceProduct: {
-          id: productId ? productId : In([0]),
-          dimensions: {
-            width: dimensions.width,
-            height: dimensions.height,
-            length: dimensions.length,
+  try {
+    const foundItem = await userRepository.findOne({
+      relations: {
+        datasource: {
+          woocommerceProduct: {
+            dimensions: true,
           },
         },
       },
-    },
-  });
-  if (foundItem && foundItem.datasource[0].woocommerceProduct[0].dimensions)
-    return foundItem.datasource[0].woocommerceProduct[0].dimensions;
-  return null;
+      where: {
+        apiKey,
+        datasource: {
+          id: datasourceId,
+          woocommerceProduct: {
+            id: productId ? productId : In([0]),
+            dimensions: {
+              width: dimensions.width,
+              height: dimensions.height,
+              length: dimensions.length,
+            },
+          },
+        },
+      },
+    });
+    if (foundItem && foundItem.datasource[0].woocommerceProduct[0].dimensions)
+      return foundItem.datasource[0].woocommerceProduct[0].dimensions;
+    return null;
+  } catch (error) {
+    console.log('Error finding dimensions', error);
+    return null;
+  }
 };
 
 const findCategories = async (apiKey: string, datasourceId: number) => {
-  const categories = await categoryRepository.find({
-    relations: {
-      woocommerceProduct: {
-        datasource: {
-          user: true,
-        },
-      },
-    },
-    where: {
-      woocommerceProduct: {
-        datasource: {
-          id: datasourceId,
-          user: {
-            apiKey,
+  try {
+    const categories = await categoryRepository.find({
+      relations: {
+        woocommerceProduct: {
+          datasource: {
+            user: true,
           },
         },
       },
-    },
-  });
-  return categories;
+      where: {
+        woocommerceProduct: {
+          datasource: {
+            id: datasourceId,
+            user: {
+              apiKey,
+            },
+          },
+        },
+      },
+    });
+    return categories;
+  } catch (error) {
+    console.log('Error finding categories', error);
+    return [];
+  }
 };
 
 const findTags = async (apiKey: string, datasourceId: number) => {
-  const found = tagRepository.find({
-    relations: {
-      woocommerceProduct: {
-        datasource: {
-          user: true,
-        },
-      },
-    },
-    where: {
-      woocommerceProduct: {
-        datasource: {
-          id: datasourceId,
-          user: {
-            apiKey,
+  try {
+    const found = await tagRepository.find({
+      relations: {
+        woocommerceProduct: {
+          datasource: {
+            user: true,
           },
         },
       },
-    },
-  });
-  return found;
+      where: {
+        woocommerceProduct: {
+          datasource: {
+            id: datasourceId,
+            user: {
+              apiKey,
+            },
+          },
+        },
+      },
+    });
+    return found;
+  } catch (error) {
+    console.log('Error finding tags', error);
+    return [];
+  }
 };
 
 const findImages = async (apiKey: string, datasourceId: number) => {
-  const found = await imageRepository.find({
-    relations: {
-      woocommerceProduct: {
-        datasource: {
-          user: true,
-        },
-      },
-    },
-    where: {
-      woocommerceProduct: {
-        datasource: {
-          id: datasourceId,
-          user: {
-            apiKey,
+  try {
+    const found = await imageRepository.find({
+      relations: {
+        woocommerceProduct: {
+          datasource: {
+            user: true,
           },
         },
       },
-    },
-  });
-  return found;
+      where: {
+        woocommerceProduct: {
+          datasource: {
+            id: datasourceId,
+            user: {
+              apiKey,
+            },
+          },
+        },
+      },
+    });
+    return found;
+  } catch (error) {
+    console.log('Error finding images', error);
+    return [];
+  }
 };
 
 const findAttributes = async (
@@ -611,27 +632,32 @@ const findAttributes = async (
   datasourceId: number,
   productId: number
 ) => {
-  const attributes = await attributeRepository.find({
-    relations: {
-      woocommerceProduct: {
-        datasource: {
-          user: true,
-        },
-      },
-    },
-    where: {
-      woocommerceProduct: {
-        productId,
-        datasource: {
-          id: datasourceId,
-          user: {
-            apiKey,
+  try {
+    const attributes = await attributeRepository.find({
+      relations: {
+        woocommerceProduct: {
+          datasource: {
+            user: true,
           },
         },
       },
-    },
-  });
-  return attributes;
+      where: {
+        woocommerceProduct: {
+          productId,
+          datasource: {
+            id: datasourceId,
+            user: {
+              apiKey,
+            },
+          },
+        },
+      },
+    });
+    return attributes;
+  } catch (error) {
+    console.log('Error finding attributes', error);
+    return [];
+  }
 };
 
 const findMetaData = async (apiKey: string, datasourceId: number) => {

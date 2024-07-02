@@ -29,8 +29,6 @@ import {
   getSettings,
 } from '@dg-live/ecommerce-woocommerce';
 
-import { WoocommerceProduct } from '@dg-live/ecommerce-db';
-
 @Route('woocommerce')
 @Tags('Woocommerce')
 export class WoocommerceController extends Controller {
@@ -223,19 +221,12 @@ export class WoocommerceController extends Controller {
   @Get('/variation/{datasourceId}/{productId}')
   @SuccessResponse('200', 'Fetch product variation')
   public async getProductVariation(
-    @Header('api-key') apiKey: string,
     @Path() productId: number,
     @Path() datasourceId: number,
     @Query() attributes: string[],
     @Query() values: string[]
   ): Promise<DGLResponse<ProductVariation | false>> {
     const errorFields: FieldErrors = {};
-    if (!apiKey) {
-      errorFields.apiKey = {
-        message: 'Invalid apiKey',
-        value: apiKey,
-      };
-    }
     if (!productId) {
       errorFields.id = {
         message: 'Invalid product id',
@@ -259,7 +250,6 @@ export class WoocommerceController extends Controller {
 
     try {
       const productVariation = await getProductVariation({
-        apiKey,
         datasourceId,
         productId,
         attributes,
