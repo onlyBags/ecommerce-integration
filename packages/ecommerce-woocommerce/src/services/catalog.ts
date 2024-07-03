@@ -35,7 +35,11 @@ export const getAllProducts = async ({
         id: datasourceId,
       },
       relations: {
-        woocommerceProduct: true,
+        woocommerceProduct: {
+          images: true,
+          categories: true,
+          attributes: true,
+        },
       },
     });
     if (!foundDatasource || !foundDatasource.woocommerceProduct.length)
