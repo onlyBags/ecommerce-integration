@@ -36,10 +36,16 @@ export const getAllProducts = async ({
 
 const addImageBaseUrl = (datasource: Datasource) => {
   const baseUrl = datasource.baseUrl;
-  datasource.magentoProduct.forEach((product) => {
+  datasource.magentoProduct.forEach((product: any) => {
+    const images = [];
     product.mediaGalleryEntries.forEach((media) => {
       media.file = `${baseUrl}/media/catalog/product${media.file}`;
+      images.push({
+        ...media,
+        src: `${baseUrl}/media/catalog/product${media.file}`,
+      });
     });
+    product.images = images;
   });
   return datasource.magentoProduct;
 };
