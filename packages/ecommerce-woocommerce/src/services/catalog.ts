@@ -16,6 +16,7 @@ import {
   Datasource,
   Slot,
 } from '@dg-live/ecommerce-db';
+import { DataSource } from 'typeorm';
 // import { myData } from './mydata.js';
 
 const userRepository = AppDataSource.getRepository(User);
@@ -44,7 +45,32 @@ export const getAllProducts = async ({
     });
     if (!foundDatasource || !foundDatasource.woocommerceProduct.length)
       return [];
-    return foundDatasource.woocommerceProduct;
+
+    const wcProductAndSlots = [];
+    for (const prd of foundDatasource.woocommerceProduct) {
+      const foundSlot = await slotRepository.findOne({
+        relations: {
+          datasource: true,
+          woocommerceProduct: true,
+        },
+        where: {
+          datasource: { id: datasourceId },
+          woocommerceProduct: {
+            productId: prd.productId,
+          },
+        },
+      });
+      if (foundSlot) {
+        delete foundSlot.datasource;
+        delete foundSlot.woocommerceProduct;
+        delete foundSlot.magentoProduct;
+      }
+      wcProductAndSlots.push({
+        ...prd,
+        slot: foundSlot || null,
+      });
+    }
+    return wcProductAndSlots;
   } catch (err) {
     throw err;
   }

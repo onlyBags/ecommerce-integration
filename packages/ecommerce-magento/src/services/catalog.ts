@@ -4,9 +4,11 @@ import {
   AppDataSource,
   MagentoProduct,
   Datasource,
+  Slot,
 } from '@dg-live/ecommerce-db';
 
 const datasourceRepository = AppDataSource.getRepository(Datasource);
+const slotRepository = AppDataSource.getRepository(Slot);
 
 export const getAllProducts = async ({
   datasourceId,
@@ -28,15 +30,40 @@ export const getAllProducts = async ({
       },
     });
     if (!foundDatasource || !foundDatasource.magentoProduct.length) return [];
-    return addImageBaseUrl(foundDatasource);
+
+    const mgProductAndSlots = [];
+    for (const prd of foundDatasource.magentoProduct) {
+      const foundSlot = await slotRepository.findOne({
+        relations: {
+          datasource: true,
+          magentoProduct: true,
+        },
+        where: {
+          datasource: { id: datasourceId },
+          magentoProduct: {
+            productId: prd.productId,
+          },
+        },
+      });
+      if (foundSlot) {
+        delete foundSlot.datasource;
+        delete foundSlot.woocommerceProduct;
+        delete foundSlot.magentoProduct;
+      }
+      mgProductAndSlots.push({
+        ...prd,
+        slot: foundSlot || null,
+      });
+    }
+    // return mgProductAndSlots;
+    return addImageBaseUrl(foundDatasource.baseUrl, mgProductAndSlots);
   } catch (err) {
     throw err;
   }
 };
 
-const addImageBaseUrl = (datasource: Datasource) => {
-  const baseUrl = datasource.baseUrl;
-  datasource.magentoProduct.forEach((product: any) => {
+const addImageBaseUrl = (baseUrl: string, magentoProduct: MagentoProduct[]) => {
+  magentoProduct.forEach((product: any) => {
     const images = [];
     product.mediaGalleryEntries.forEach((media) => {
       media.file = `${baseUrl}/media/catalog/product${media.file}`;
@@ -47,7 +74,7 @@ const addImageBaseUrl = (datasource: Datasource) => {
     });
     product.images = images;
   });
-  return datasource.magentoProduct;
+  return magentoProduct;
 };
 
 export const syncCatalog = async ({
