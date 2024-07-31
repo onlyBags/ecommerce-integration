@@ -33,7 +33,7 @@ export const getAllProducts = async ({
 
     const mgProductAndSlots = [];
     for (const prd of foundDatasource.magentoProduct) {
-      const foundSlot = await slotRepository.findOne({
+      const foundSlots = await slotRepository.find({
         relations: {
           datasource: true,
           magentoProduct: true,
@@ -45,14 +45,16 @@ export const getAllProducts = async ({
           },
         },
       });
-      if (foundSlot) {
-        delete foundSlot.datasource;
-        delete foundSlot.woocommerceProduct;
-        delete foundSlot.magentoProduct;
+      if (foundSlots.length) {
+        foundSlots.forEach((slot) => {
+          delete slot.datasource;
+          delete slot.woocommerceProduct;
+          delete slot.magentoProduct;
+        });
       }
       mgProductAndSlots.push({
         ...prd,
-        slot: foundSlot || null,
+        slot: foundSlots || [],
       });
     }
     // return mgProductAndSlots;
