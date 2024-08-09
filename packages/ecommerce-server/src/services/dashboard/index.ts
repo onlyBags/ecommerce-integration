@@ -101,19 +101,23 @@ export const saveUserDatasource = async (
   try {
     const savedDatasource = await datasourceRepository.save(datasource);
     let storeSettings = [];
-    if (datasource.platform === 'woocommerce') {
-      storeSettings = await getSettings({
-        apiKey,
-        datasourceId: savedDatasource.id,
-      });
+    try {
+      if (datasource.platform === 'woocommerce') {
+        storeSettings = await getSettings({
+          apiKey,
+          datasourceId: savedDatasource.id,
+        });
 
-      const foundCurrencySetting: WooCommerceCurrencySettings[] =
-        storeSettings.filter((x) => x.id === 'woocommerce_currency');
-      if (foundCurrencySetting.length) {
-        const currencySettings = foundCurrencySetting[0];
-        savedDatasource.currencyCode = currencySettings.value;
-        await datasourceRepository.save(savedDatasource);
+        const foundCurrencySetting: WooCommerceCurrencySettings[] =
+          storeSettings.filter((x) => x.id === 'woocommerce_currency');
+        if (foundCurrencySetting.length) {
+          const currencySettings = foundCurrencySetting[0];
+          savedDatasource.currencyCode = currencySettings.value;
+          await datasourceRepository.save(savedDatasource);
+        }
       }
+    } catch (error) {
+      console.error(`Error getting store settings: ${error}`);
     }
     return savedDatasource;
   } catch (err) {
