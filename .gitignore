@@ -39,8 +39,7 @@ testem.log
 Thumbs.db
 
 # Custom
-.env
-.env.prod
-.env.*
+.env*
+!.env.example
 packages/ecommerce-server/public/swagger.json
 packages/ecommerce-server/src/routes/routes.ts
