@@ -31,8 +31,8 @@ describe('ecommerceServer', () => {
       platform: 'Magento',
       baseUrl: '',
       apiKey: 'myapi',
-      consumerKey: 'p14eayseettp3tkdbgritadt4gpxv7ut',
-      consumerSecret: 'brj5tqesk6xq7uq7ssdzwa93m430ug60',
+      consumerKey: '',
+      consumerSecret: '',
       isActive: false,
     });
   });
