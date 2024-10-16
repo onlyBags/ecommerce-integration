@@ -1,13 +1,6 @@
 import supertest from 'supertest';
 import server from './ecommerce-server';
 
-// jest.mock(
-//   '../../public/swagger.json',
-//   () => ({
-//     /* Mocked JSON content */
-//   }),
-//   { virtual: true }
-// );
 
 describe('ecommerceServer', () => {
   const request = supertest.agent(server);
