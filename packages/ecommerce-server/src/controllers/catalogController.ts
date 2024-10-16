@@ -110,26 +110,4 @@ export class CatalogController extends Controller {
     }
   }
 
-  // @Get('/settings/{datasourceId}')
-  // @SuccessResponse('200', 'Webhook')
-  // public async getSettings(
-  //   @Header('api-key') apiKey: string,
-  //   @Path() datasourceId: number
-  // ): Promise<DGLResponse<any>> {
-  //   if (!apiKey) throw new Error('Invalid apiKey');
-  //   if (!datasourceId) throw new Error('Invalid datasourceId');
-  //   try {
-  //     const settings = await getSettings({ apiKey, datasourceId });
-  //     return {
-  //       message: 'settings fetched successfully',
-  //       status: 200,
-  //       data: settings,
-  //     };
-  //   } catch (error) {
-  //     throw new ValidateError(
-  //       {},
-  //       'Error getting webhooks: ' + error.message || ''
-  //     );
-  //   }
-  // }
 }
